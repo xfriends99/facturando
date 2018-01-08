@@ -31,6 +31,7 @@
 								<th>Tipo Cbte.</th>
 								<th>Nro. Cbte.</th>
 								<th>Imp. Original</th>
+								<th>Pago</th>
 								<th>Saldo</th>
 								<th>Acción</th>
 								</tr>
@@ -45,6 +46,7 @@
 								<td>  </td>
 								<td>  </td>
 								<td> {{ '$'. number_format($saldo->importe , 2) }} </td>
+								<td></td>
 								<td><a href= "/eliminarSaldo/{{$saldo->id}}" class="btn btn-danger" onClick="return confirm('¿Esta seguro?');" >Eliminar</a></td>
 							</tr>
 							@endforeach
@@ -56,6 +58,17 @@
 								<td>{{ $invoice->nro_cbte  }}</td>
 								<td>@if($invoice->cbte_tipo==99){{ '$ '. number_format($invoice->imp_net, 2) }} @else @if($invoice->cbte_tipo==3){{ '$ -'. number_format($invoice->imp_total , 2) }}@else{{ '$ '. number_format($invoice->imp_total , 2) }}@endif @endif</td>
 								<td>{{ '$ '. number_format($invoice->saldo , 2)  }}</td>
+								<td>@if($invoice->cbte_tipo==99)
+										{{ '$ '. number_format($invoice->imp_net-$invoice->saldo , 2)  }}
+									@else
+										@if($invoice->cbte_tipo==3)
+											{{ '$ -'. number_format($invoice->imp_total+$invoice->saldo , 2)  }}
+										@else
+											{{ '$ '. number_format($invoice->imp_total-$invoice->saldo , 2)  }}
+										@endif
+									@endif
+
+								</td>
 								<td>@if(number_format($invoice->saldo , 2)>0)<a href= "/agregarPago/{{$invoice->id}}" class="btn btn-success" >Agregar Pago</a>&nbsp;&nbsp;@endif
 								 @if($invoice->cbte_tipo!=3)
 								<a href= "/verPagos/{{$invoice->id}}" class="btn btn-info" >Ver Pagos</a>@endif</td>
