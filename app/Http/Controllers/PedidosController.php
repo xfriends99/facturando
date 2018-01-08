@@ -20,7 +20,7 @@ class PedidosController extends Controller{
 
 	public function getListarPedidos(){
 	
-	        $pedidos = \app\Pedido::where('current_state','=','5')->orWhere('current_state','=','16')->orWhere('current_state','=','12')->orderBy('id_order','DESC')->paginate(10);
+	        $pedidos = \app\Pedido::orderBy('id_order','DESC')->paginate(10);
 
 	        return view('pedidos.list')->with('pedidos',$pedidos);
 		
