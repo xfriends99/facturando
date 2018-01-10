@@ -22,7 +22,8 @@
 								<th>Pedido</th>
 								<th>Cliente</th>
 								<th>Importe Total</th>
- 								<th>Estado</th>
+ 								<th>Estado de facturación</th>
+								<th>Estatus</th>
 								<th>Acción</th>
 							</tr>
 						</thead>
@@ -62,6 +63,7 @@ $factura = 1;
                                                                 @endif
 								<td>{{'$ '.number_format($pedido->total_paid,2) }}</td>
 								<td>@if($pedido->current_state==16 && $remito_b==0) Sin Facturar @elseif($pedido->current_state==5 && $factura==0) Sin Facturar @elseif($pedido->current_state==12) En Proceso @else Facturado @endif</td>
+								<td>{{$pedido->name_state}}</td>
 								<td>@if($pedido->current_state==12) <a href= "expedicion/{{$pedido->id_order}}" target="_blank" class="btn btn-success" >Generar Expedición @else @if($pedido->current_state==16 && $remito_b==0) <a href= "generarRemito/{{$pedido->id_order}}" class="btn" style="background-color: black; color: white;" >Generar Remito</a> &nbsp;&nbsp; @endif @if($pedido->current_state==16 && $remito_b!=0) &nbsp;&nbsp; <a href= "reGenerarRemito/{{$pedido->id_order}}" class="btn" style="background-color: black; color: white;" >Re-Generar Remito</a> &nbsp;&nbsp; @endif @if($remito_a==0) <a href= "generarRemito/{{$pedido->id_order}}" class="btn btn-info" >Generar Remito</a> &nbsp;&nbsp; @endif @if($pedido->current_state==16) <a href= "generarPresupuesto/{{$pedido->id_order}}" target="_blank" class="btn" style="background-color: grey; color: black;">Generar Presupuesto</a> @endif @if($pedido->current_state==5 && $factura==0) <a href= "generarFactura/{{$pedido->id_order}}" onClick="return confirm('¿Esta seguro?');" class="btn btn-danger" >Generar Factura</a> @endif <a href= "expedicion/{{$pedido->id_order}}" target="_blank" class="btn btn-success" >Generar Expedición @endif</a> @if($pedido->orden_compra==null) <button data-toggle="modal" data-target="#myModal" id="modal_{{$pedido->id_order}}" onClick="changeID(this.id)" class="btn btn-info" >OC</button> @endif </td>
 							</tr>
 							@endforeach
