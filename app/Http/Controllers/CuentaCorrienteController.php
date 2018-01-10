@@ -56,9 +56,7 @@ if($id!=null){
 $invoices = \app\InvoiceHead::where('status','=','A')
 			->select(\DB::raw('cta_ctes.saldo,invoice_head.company_name,invoice_head.imp_total,invoice_head.imp_net, cta_ctes.id, invoice_head.nro_cbte, invoice_head.cbte_tipo, invoice_head.fecha_facturacion'))					
 			->leftJoin("cta_ctes", "invoice_head_id", "=", "invoice_head.id")
-			->where('companies_id','=',$id)
-                        ->orderBy('fecha_facturacion','DESC')
-			->paginate(10);
+			->where('companies_id','=',$id)->orderBy('fecha_facturacion','DESC')->get();
 			
 $total = \app\InvoiceHead::where('status','=','A')
 	     //->where('cbte_tipo','!=',3)
@@ -68,13 +66,43 @@ $total = \app\InvoiceHead::where('status','=','A')
 			->where('invoice_head.companies_id','=',$id)
 			->get();
 $saldos = \app\Saldo::where('customer_id','=',$id)->orderBy('created_at','DESC')->where('is_active','=',1)->get();
-			
+
+$row = collect();
+
 foreach ($invoices as $inv){
-    
+    $row->push(['type'=>'invoice', 'date' => $inv->fecha_facturacion,
+        'cbte_tipo' => $inv->cbte_tipo, 'nro_cbte'=> $inv->nro_cbte,
+        'imp_net' => $inv->imp_net, 'imp_total'=> $inv->imp_total,
+        'saldo' => $inv->saldo, 'id' => $inv->id]);
     $companyName = $inv->company_name;
     break;
 }
-return view('ctacte.listctacte')->with('total',$total)->with('invoices',$invoices)->with('companyName',$companyName)->with('companyID',$id)->with('saldos',$saldos);	
+
+foreach ($saldos as $inv){
+    $row->push(['type'=>'saldo', 'date' => $inv->created_at,
+        'medios_pagos_id' => $inv->medios_pagos_id, 'importe'=> $inv->importe,
+        'otro' => $inv->otro, 'id' => $inv->id, 'medioPago_tipo' => $inv->medioPago->tipo]);
+}
+$imp = 0;
+$sald = 0;
+$rowFinal = collect();
+foreach ($row->sortBy('date')->toArray() as $d) {
+    if ($d['type'] == "saldo") {
+        $sald += $d['importe'];
+    } else {
+        if ($d['cbte_tipo'] == 99) {
+            $imp += $d['imp_net'];
+        } else {
+            $imp += $d['imp_total'];
+        }
+        $sald += $d['saldo'];
+    }
+    $rowFinal->push(array_merge($d, ['saldo_acumulado' => $imp - $sald]));
+}
+
+return view('ctacte.listctacte')->with('total',$total)->with('saldos', $saldos)
+    ->with('invoices',$rowFinal->sortByDesc('date')->toArray())->with('companyName',$companyName)
+    ->with('companyID',$id);
 }else{
 	return Redirect::to('ctacte');
 }

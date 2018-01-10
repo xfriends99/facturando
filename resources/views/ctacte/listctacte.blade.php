@@ -37,46 +37,37 @@
 								</tr>
 						</thead>
 						<tbody>
-						     @if(!empty($saldos) && $saldos!=null)
-						    
-						    @foreach($saldos as $saldo)
-							<tr>
-								<th>{{ date("Y-m-d", strtotime($saldo->created_at))  }}</td>
-								<td>@if ($saldo->medios_pagos_id!=0) {{ $saldo->medioPago->tipo }} @else {{ $saldo->otro }} @endif  </td>
-								<td>  </td>
-								<td>  </td>
-								<td> {{ '$'. number_format($saldo->importe , 2) }} </td>
-								<td></td>
-								<td><a href= "/eliminarSaldo/{{$saldo->id}}" class="btn btn-danger" onClick="return confirm('¿Esta seguro?');" >Eliminar</a></td>
-							</tr>
-							@endforeach
-							@endif
-							@foreach($invoices as $invoice)
-							<tr>
-								<th>{{ $invoice->fecha_facturacion  }}</td>
-								<td> @if($invoice->cbte_tipo==1) Factura @elseif ($invoice->cbte_tipo==2) Nota de Débito @elseif($invoice->cbte_tipo==3) Nota de Crédito @elseif($invoice->cbte_tipo==99) Remito @endif </td>
-								<td>{{ $invoice->nro_cbte  }}</td>
-								<td>@if($invoice->cbte_tipo==99){{ '$ '. number_format($invoice->imp_net, 2) }} @else @if($invoice->cbte_tipo==3){{ '$ -'. number_format($invoice->imp_total , 2) }}@else{{ '$ '. number_format($invoice->imp_total , 2) }}@endif @endif</td>
-								<td>{{ '$ '. number_format($invoice->saldo , 2)  }}</td>
-								<td>@if($invoice->cbte_tipo==99)
-										{{ '$ '. number_format($invoice->imp_net-$invoice->saldo , 2)  }}
-									@else
-										@if($invoice->cbte_tipo==3)
-											{{ '$ -'. number_format($invoice->imp_total+$invoice->saldo , 2)  }}
-										@else
-											{{ '$ '. number_format($invoice->imp_total-$invoice->saldo , 2)  }}
-										@endif
-									@endif
 
-								</td>
-								<td>@if(number_format($invoice->saldo , 2)>0)<a href= "/agregarPago/{{$invoice->id}}" class="btn btn-success" >Agregar Pago</a>&nbsp;&nbsp;@endif
-								 @if($invoice->cbte_tipo!=3)
-								<a href= "/verPagos/{{$invoice->id}}" class="btn btn-info" >Ver Pagos</a>@endif</td>
-							</tr>
+							@foreach($invoices as $invoice)
+								@if($invoice['type']=='saldo')
+									<tr>
+										<th>{{ date("Y-m-d", strtotime($invoice['date']))  }}</td>
+										<td>@if ($invoice['medios_pagos_id']!=0) {{ $invoice['medioPago_tipo'] }} @else {{ $invoice['otro'] }} @endif  </td>
+										<td>  </td>
+										<td>  </td>
+										<td> {{ '$ '. number_format($invoice['importe'] , 2) }} </td>
+										<td>{{ '$ '. number_format($invoice['saldo_acumulado'] , 2)  }}</td>
+										<td><a href= "/eliminarSaldo/{{$invoice['id']}}" class="btn btn-danger" onClick="return confirm('¿Esta seguro?');" >Eliminar</a></td>
+									</tr>
+								@else
+									<tr>
+										<th>{{ $invoice['date']  }}</td>
+										<td> @if($invoice['cbte_tipo']==1) Factura @elseif ($invoice['cbte_tipo']==2) Nota de Débito @elseif($invoice['cbte_tipo']==3) Nota de Crédito @elseif($invoice['cbte_tipo']==99) Remito @endif </td>
+										<td>{{ $invoice['nro_cbte']  }}</td>
+										<td>@if($invoice['cbte_tipo']==99){{ '$ '. number_format($invoice['imp_net'], 2) }} @else @if($invoice['cbte_tipo']==3){{ '$ -'. number_format($invoice['imp_total'] , 2) }}@else{{ '$ '. number_format($invoice['imp_total'] , 2) }}@endif @endif</td>
+										<td>{{ '$ '. number_format($invoice['saldo'] , 2)  }}</td>
+										<td>
+											{{ '$ '. number_format($invoice['saldo_acumulado'] , 2)  }}
+										</td>
+										<td>@if(number_format($invoice['saldo'] , 2)>0)<a href= "/agregarPago/{{$invoice['id']}}" class="btn btn-success" >Agregar Pago</a>&nbsp;&nbsp;@endif
+											@if($invoice['cbte_tipo']!=3)
+												<a href= "/verPagos/{{$invoice['id']}}" class="btn btn-info" >Ver Pagos</a>@endif</td>
+									</tr>
+								@endif
 							@endforeach
 						</tbody>
 					</table>
-					<center> <?php echo $invoices->render(); ?> </center>
+					<!--<center>  </center>-->
 				</div>
 			</div>
 		</div>
