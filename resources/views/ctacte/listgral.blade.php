@@ -30,15 +30,15 @@
 							@foreach($invoices as $invoice)
 							<?php 
 							$final = 0; 
-							$saldos = \app\Saldo::where('customer_id','=',$invoice->companies_id)->where('is_active','=',1)->get(); 
+							/*$saldos = \app\Saldo::where('customer_id','=',$invoice->companies_id)->where('is_active','=',1)->get();
 							foreach($saldos as $sal){
 							$final = $final + $sal->importe;
-							}
+							}*/
 							?>
 							
 							<tr>
 								<th>{{ $invoice->company_name }} </th>
-								<td>{{ '$ '.number_format($invoice->sumaSaldo+$final,2) }}</td>
+								<td>{{ '$ '.number_format($invoice->getSaldo($invoice->companies_id),2) }}</td>
 								<td><a href= "/ctacteCompany/{{$invoice->companies_id}}" class="btn btn-info" >Ver detalle</a></td>
                                                         <?php 
 
