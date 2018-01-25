@@ -58,7 +58,7 @@ $invoices = \app\InvoiceHead::where('status','=','A')
 			->select(\DB::raw('invoice_head.id as idfact,cta_ctes.saldo,invoice_head.company_name,invoice_head.imp_total,invoice_head.imp_net, cta_ctes.id, invoice_head.nro_cbte, invoice_head.cbte_tipo, invoice_head.fecha_facturacion'))
 			->leftJoin("cta_ctes", "invoice_head_id", "=", "invoice_head.id")
 			->where('companies_id','=',$id)->orderBy('fecha_facturacion','DESC')->paginate(10);
-			
+
 $total = \app\InvoiceHead::where('status','=','A')
 	     //->where('cbte_tipo','!=',3)
 			->select(\DB::raw('SUM(cta_ctes.saldo) as sumaSaldo, invoice_head.company_name, invoice_head.companies_id'))			
