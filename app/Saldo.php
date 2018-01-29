@@ -49,7 +49,8 @@ class Saldo extends Model
             $row->push(['type'=>'invoice', 'date' => $inv->fecha_facturacion,
                 'cbte_tipo' => $inv->cbte_tipo, 'nro_cbte'=> $inv->nro_cbte,
                 'imp_net' => $inv->imp_net, 'imp_total'=> $inv->imp_total,
-                'saldo' => Pago::where('cta_ctes_id', $inv->id)->sum('pago'),
+                'saldo' => Pago::where('cta_ctes_id', $inv->id)
+                    ->where('is_active',1)->sum('pago'),
                 'id' => $inv->id]);
         }
 
