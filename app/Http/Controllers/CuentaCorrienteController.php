@@ -1,5 +1,7 @@
 <?php namespace app\Http\Controllers;
 
+use app\Pago;
+use app\Saldo;
 use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Validator;
@@ -41,12 +43,15 @@ public function listarCteCta(){
 	
      $invoices = \app\InvoiceHead::where('status','=','A')
      //->where('cbte_tipo','!=',3)
-        ->select(\DB::raw('SUM(cta_ctes.saldo) as sumaSaldo, invoice_head.company_name, invoice_head.companies_id'))
+        ->select(\DB::raw('SUM(cta_ctes.saldo) as sumaSaldo,invoice_head.company_name, invoice_head.companies_id'))
         ->leftJoin("cta_ctes", "invoice_head_id", "=", "invoice_head.id")
         ->groupBy('invoice_head.companies_id')
         ->get();
 
-    return view('ctacte.listgral')->with('invoices',$invoices);
+     $saldos = Saldo::select(\DB::raw('SUM(importe) as saldo, customer_id'))
+         ->where('is_active','=',1)->groupBy('customer_id')->get();
+
+    return view('ctacte.listgral')->with('invoices',$invoices)->with('saldos',$saldos);
 
 }
 
@@ -73,7 +78,9 @@ $lastInvoice = \app\InvoiceHead::where('status','=','A')
     ->orderBy('fecha_facturacion', 'desc')
     ->get()->first();
 
-if(isset($request->page)){
+$salddos = \app\Saldo::where('customer_id','=',$id)->where('is_active','=',1)->get();
+$page = Input::get('page', null);
+if($page!=null && $page!=1){
     $saldos = \app\Saldo::where('customer_id','=',$id)->whereBetween('created_at', [$invoices[0]->fecha_facturacion,$invoices[count($invoices)-1]->fecha_facturacion])
         ->orderBy('created_at','DESC')->where('is_active','=',1)->get();
 } else {
@@ -85,7 +92,9 @@ foreach ($invoices as $inv){
     $row->push(['type'=>'invoice', 'date' => $inv->fecha_facturacion,
         'cbte_tipo' => $inv->cbte_tipo, 'nro_cbte'=> $inv->nro_cbte,
         'imp_net' => $inv->imp_net, 'imp_total'=> $inv->imp_total,
-        'saldo' => $inv->saldo, 'id' => $inv->idfact, 'object' => $inv]);
+        'saldo' => Pago::where('cta_ctes_id', $inv->id)->sum('pago'),
+        'idfact' => $inv->idfact,
+        'id' => $inv->id, 'object' => $inv]);
     $companyName = $inv->company_name;
 }
 
@@ -117,7 +126,9 @@ return view('ctacte.listctacte')->with('total',$total)->with('saldos', $saldos)
     ->with('invoices',$row->sortByDesc('date')->toArray())
     ->with('invos', $invoices)
     ->with('companyName',$companyName)
-    ->with('companyID',$id)->with('last_invoice',$lastInvoice);
+    ->with('companyID',$id)
+    ->with('last_invoice',$lastInvoice)
+    ->with('salddos',$salddos);
 }else{
 	return Redirect::to('ctacte');
 }

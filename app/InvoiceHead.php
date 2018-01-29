@@ -16,7 +16,7 @@ class InvoiceHead extends Model
         if($date_closed!=null){
             $saldos = \app\Saldo::where('customer_id','=',$customer_id)
                 ->orderBy('created_at','ASC')->where('is_active','=',1)
-                ->where('created_at','<',$date_closed)->get();
+                ->where('created_at','< ',$date_closed)->get();
 
             $invoices = \app\InvoiceHead::where('status','=','A')
                 ->select(\DB::raw('cta_ctes.saldo,invoice_head.company_name,invoice_head.imp_total,invoice_head.imp_net, cta_ctes.id, invoice_head.nro_cbte, invoice_head.cbte_tipo, invoice_head.fecha_facturacion'))
@@ -42,7 +42,8 @@ class InvoiceHead extends Model
             $row->push(['type'=>'invoice', 'date' => $inv->fecha_facturacion,
                 'cbte_tipo' => $inv->cbte_tipo, 'nro_cbte'=> $inv->nro_cbte,
                 'imp_net' => $inv->imp_net, 'imp_total'=> $inv->imp_total,
-                'saldo' => $inv->saldo, 'id' => $inv->id]);
+                'saldo' => Pago::where('cta_ctes_id', $inv->id)->sum('pago'),
+                'id' => $inv->id]);
         }
 
         foreach ($saldos as $inv){

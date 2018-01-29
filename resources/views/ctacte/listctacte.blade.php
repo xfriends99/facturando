@@ -6,15 +6,15 @@
 		<div class="col-md-10 col-md-offset-1">
 			<div class="panel panel-default">
 			    <?php	$final = 0;  ?>
-			     @if(!empty($saldos) && $saldos!=null)
+			     @if(!empty($salddos) && $salddos!=null)
 						    
-						    @foreach($saldos as $saldo)
+						    @foreach($salddos as $saldo)
 						 
 						    <?php $final = $final + $saldo->importe; ?>
 						  
 							@endforeach
 							@endif
-				<div class="panel-heading">Cuenta Corriente de <b>{{$companyName}}</b> -------------  Saldo actual: <b>{{'$'. number_format($last_invoice->getSaldo($last_invoice->companies_id),2)}}</b> @foreach($total as $to)<!--<b> {{'$'. number_format($final + $to->sumaSaldo,2)}} </b>--> @endforeach
+				<div class="panel-heading">Cuenta Corriente de <b>{{$companyName}}</b> -------------  Saldo actual: @foreach($total as $to)<b> {{'$'. number_format($final+$to->sumaSaldo,2)}} </b> @endforeach
 				<a href="/addSaldo/{{$companyID}}" style="margin-top:-7px; float:right;margin-right: 25px;" class="btn btn-success">Agregar Saldo</a>
 				</div>
 				<div class="panel-body">
@@ -57,7 +57,7 @@
 										<td>@if($invoice['cbte_tipo']==99){{ '$ '. number_format($invoice['imp_net'], 2) }} @else @if($invoice['cbte_tipo']==3){{ '$ -'. number_format($invoice['imp_total'] , 2) }}@else{{ '$ '. number_format($invoice['imp_total'] , 2) }}@endif @endif</td>
 										<td>{{ '$ '. number_format($invoice['saldo'] , 2)  }}</td>
 										<td>
-											{{ '$ '. number_format($invoice['object']->getSaldo($companyID, $invoice['date'], $invoice['id']) , 2)  }}
+											{{ '$ '. number_format($invoice['object']->getSaldo($companyID, $invoice['date'], $invoice['idfact']) , 2)  }}
 										</td>
 										<td>@if(number_format($invoice['saldo'] , 2)>0)<a href= "/agregarPago/{{$invoice['id']}}" class="btn btn-success" >Agregar Pago</a>&nbsp;&nbsp;@endif
 											@if($invoice['cbte_tipo']!=3)
