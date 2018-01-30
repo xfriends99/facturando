@@ -62,7 +62,9 @@ if($id!=null){
 $invoices = \app\InvoiceHead::where('status','=','A')
 			->select(\DB::raw('invoice_head.id as idfact,cta_ctes.saldo,invoice_head.company_name,invoice_head.imp_total,invoice_head.imp_net, cta_ctes.id, invoice_head.nro_cbte, invoice_head.cbte_tipo, invoice_head.fecha_facturacion'))
 			->leftJoin("cta_ctes", "invoice_head_id", "=", "invoice_head.id")
-			->where('companies_id','=',$id)->orderBy('fecha_facturacion','DESC')->paginate(10);
+			->where('companies_id','=',$id)
+            ->orderBy('fecha_facturacion','DESC')
+            ->orderBy('invoice_head.id','desc')->paginate(10);
 
 $total = \app\InvoiceHead::where('status','=','A')
 	     //->where('cbte_tipo','!=',3)
@@ -82,10 +84,12 @@ $salddos = \app\Saldo::where('customer_id','=',$id)->where('is_active','=',1)->g
 $page = Input::get('page', null);
 if($page!=null && $page!=1){
     $saldos = \app\Saldo::where('customer_id','=',$id)->whereBetween('created_at', [$invoices[0]->fecha_facturacion,$invoices[count($invoices)-1]->fecha_facturacion])
-        ->orderBy('created_at','DESC')->where('is_active','=',1)->get();
+        ->where('is_active','=',1)->orderBy('created_at','DESC')
+        ->orderBy('id','DESC')->get();
 } else {
-    $saldos = \app\Saldo::where('customer_id','=',$id)->where('created_at','>',$invoices[0]->fecha_facturacion)
-        ->orderBy('created_at','DESC')->where('is_active','=',1)->get();
+    $saldos = \app\Saldo::where('customer_id','=',$id)->where('created_at','>',$invoices[count($invoices)-1]->fecha_facturacion)
+        ->where('is_active','=',1)->orderBy('created_at','DESC')
+        ->orderBy('id','DESC')->get();
 }
 $row = collect();
 foreach ($invoices as $inv){

@@ -14,7 +14,7 @@
 						  
 							@endforeach
 							@endif
-				<div class="panel-heading">Cuenta Corriente de <b>{{$companyName}}</b> -------------  Saldo actual: @foreach($total as $to)<b> {{'$'. number_format($final+$to->sumaSaldo,2)}} </b> @endforeach
+				<div class="panel-heading">Cuenta Corriente de <b>{{$companyName}}</b> -------------  Saldo actual: @foreach($total as $to)<b> {{'$'. number_format($to->getSaldo($to->companies_id),2)}} </b> @endforeach
 				<a href="/addSaldo/{{$companyID}}" style="margin-top:-7px; float:right;margin-right: 25px;" class="btn btn-success">Agregar Saldo</a>
 				</div>
 				<div class="panel-body">
@@ -50,6 +50,13 @@
 										<td><a href= "/eliminarSaldo/{{$invoice['id']}}" class="btn btn-danger" onClick="return confirm('¿Esta seguro?');" >Eliminar</a></td>
 									</tr>
 								@else
+									<?php
+									if($invoice['cbte_tipo']==99){
+									    $im = $invoice['imp_net'];
+									} else {
+									    $im = $invoice['imp_total'];
+									}
+									?>
 									<tr>
 										<th>{{ $invoice['date']  }}</td>
 										<td> @if($invoice['cbte_tipo']==1) Factura @elseif ($invoice['cbte_tipo']==2) Nota de Débito @elseif($invoice['cbte_tipo']==3) Nota de Crédito @elseif($invoice['cbte_tipo']==99) Remito @endif </td>
@@ -59,7 +66,7 @@
 										<td>
 											{{ '$ '. number_format($invoice['object']->getSaldo($companyID, $invoice['date'], $invoice['idfact']) , 2)  }}
 										</td>
-										<td>@if(number_format($invoice['saldo'] , 2)>0)<a href= "/agregarPago/{{$invoice['id']}}" class="btn btn-success" >Agregar Pago</a>&nbsp;&nbsp;@endif
+										<td>@if(number_format($invoice['object']->getSaldo($companyID, $invoice['date'], $invoice['idfact']), 2)>0)<a href= "/agregarPago/{{$invoice['id']}}" class="btn btn-success" >Agregar Pago</a>&nbsp;&nbsp;@endif
 											@if($invoice['cbte_tipo']!=3)
 												<a href= "/verPagos/{{$invoice['id']}}" class="btn btn-info" >Ver Pagos</a>@endif</td>
 									</tr>

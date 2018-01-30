@@ -37,7 +37,7 @@
 							
 							<tr>
 								<th>{{ $invoice->company_name }} </th>
-								<td>{{ '$ '.number_format($sald+$invoice->sumaSaldo,2) }}</td>
+								<td>{{ '$ '.number_format($invoice->getSaldo($invoice->companies_id),2) }}</td>
 								<td><a href= "/ctacteCompany/{{$invoice->companies_id}}" class="btn btn-info" >Ver detalle</a></td>
                                                         <?php 
 

@@ -25,14 +25,19 @@ class Saldo extends Model
                 ->where(function($query) use($id, $date_closed){
                     $query->where('created_at','<',$date_closed);
                     $query->orWhere('saldos.id',$id);
-                })->get();
+                    $query->orWhere(function ($q) use($id, $date_closed){
+                        $q->where('created_at', '=', $date_closed);
+                        $q->where('saldos.id','<',$id);
+                    });
+                })->orderBy('id','DESC')->get();
 
             $invoices = \app\InvoiceHead::where('status','=','A')
                 ->select(\DB::raw('cta_ctes.saldo,invoice_head.company_name,invoice_head.imp_total,invoice_head.imp_net, cta_ctes.id, invoice_head.nro_cbte, invoice_head.cbte_tipo, invoice_head.fecha_facturacion'))
                 ->leftJoin("cta_ctes", "invoice_head_id", "=", "invoice_head.id")
                 ->where('companies_id','=',$customer_id)
-                ->where('fecha_facturacion','<',$date_closed)
-                ->orderBy('fecha_facturacion','ASC')->get();
+                ->where('fecha_facturacion','<=',$date_closed)
+                ->orderBy('fecha_facturacion','ASC')
+                ->orderBy('invoice_head.id','desc')->get();
         } else {
             $saldos = \app\Saldo::where('customer_id','=',$customer_id)
                 ->orderBy('created_at','ASC')->where('is_active','=',1)->get();
