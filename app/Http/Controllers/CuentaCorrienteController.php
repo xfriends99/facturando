@@ -83,7 +83,7 @@ $lastInvoice = \app\InvoiceHead::where('status','=','A')
 $salddos = \app\Saldo::where('customer_id','=',$id)->where('is_active','=',1)->get();
 $page = Input::get('page', null);
 if($page!=null && $page!=1){
-    $saldos = \app\Saldo::where('customer_id','=',$id)->whereBetween('created_at', [$invoices[0]->fecha_facturacion,$invoices[count($invoices)-1]->fecha_facturacion])
+    $saldos = \app\Saldo::where('customer_id','=',$id)->whereBetween('created_at', [$invoices[count($invoices)-1]->fecha_facturacion,$invoices[0]->fecha_facturacion])
         ->where('is_active','=',1)->orderBy('created_at','DESC')
         ->orderBy('id','DESC')->get();
 } else {
