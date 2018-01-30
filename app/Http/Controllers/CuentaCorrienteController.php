@@ -1,7 +1,10 @@
 <?php namespace app\Http\Controllers;
 
+use app\Company;
+use app\CtaCte;
 use app\Pago;
 use app\Saldo;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Validator;
@@ -197,7 +200,7 @@ public function eliminarSaldo($id  = null){
 }
 
 public function agregarPago($id = null){
-
+    $invoice = CtaCte::find($id)->load('facturas');
 	if($id!=null){
 		$mpagos = \app\MedioPago::all();
 		return view('ctacte.addPago')->with('id',$id)->with('mpagos',$mpagos);		
@@ -238,6 +241,15 @@ public function agregarPagoPost(){
 			$pago = new \app\Pago;
 
 			$pago->cta_ctes_id = $id;
+            if(Input::get('date_pay',null)!=null){
+                try{
+                    $dt = Carbon::createFromFormat('d/m/Y',Input::get('date_pay'));
+                    $pago->created_at = $dt;
+                } catch(\Exception $e){
+
+                }
+            }
+
 
 			if(Input::get('mpago')=='otro'){
 				$pago->otro = Input::get('otro');

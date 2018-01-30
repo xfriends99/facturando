@@ -41,11 +41,11 @@
 							@foreach($invoices as $invoice)
 								@if($invoice['type']=='saldo')
 									<tr>
-										<th>{{ date("Y-m-d", strtotime($invoice['date']))  }}</td>
-										<td>@if ($invoice['medios_pagos_id']!=0) {{ $invoice['medioPago_tipo'] }} @else {{ $invoice['otro'] }} @endif  </td>
-										<td>  </td>
-										<td>  </td>
-										<td> {{ '$ '. number_format($invoice['importe'] , 2) }} </td>
+										<th>{{ date("Y-m-d", strtotime($invoice['date']))  }}</th>
+										<td>@if ($invoice['medios_pagos_id']!=0) {{ $invoice['medioPago_tipo'] }} @else {{ $invoice['otro'] }} @endif</td>
+										<td></td>
+										<td>{{ '$ '. number_format($invoice['importe'] , 2) }}</td>
+										<td></td>
 										<td>{{ '$ '. number_format($invoice['object']->getSaldo($companyID, $invoice['date'], $invoice['id']) , 2)  }}</td>
 										<td><a href= "/eliminarSaldo/{{$invoice['id']}}" class="btn btn-danger" onClick="return confirm('¿Esta seguro?');" >Eliminar</a></td>
 									</tr>
