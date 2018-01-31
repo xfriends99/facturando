@@ -53,19 +53,6 @@
 									</div>
 								</div>
 
-								<div class="form-group">
-									<label class="col-md-4 control-label">Fecha de pago</label>
-									<div class="col-md-6">
-										<div class='input-group date'>
-											<input readonly id='datetimepicker1' value="{{date('d/m/Y')}}" date-date-format="dd/mm/yyyy" name="date_pay" type='text' class="form-control" />
-											<span class="input-group-addon" id="icon-calendar" style="cursor:pointer;">
-					                        	<span class="glyphicon glyphicon-calendar"></span>
-                    						</span>
-										</div>
-									</div>
-								</div>
-								
-
 							</div>
 						</div>
 
@@ -84,19 +71,6 @@
 	</div>
 </div>
 <script type="text/javascript">
-	$(document).ready(function(){
-        $('#datetimepicker1').datepicker({maxDate: 0, dateFormat:'dd/mm/yy'});
-
-        $('#icon-calendar').click(function(){
-
-            if($('#ui-datepicker-div').css('display')=='block'){
-                $('#icon-calendar').focus();
-			} else {
-                $('#datetimepicker1').focus();
-            }
-		});
-
-    });
 	$('#mpago').change(function(){
 		var mpagoID = $(this).val();
 		if(mpagoID!='otro'){

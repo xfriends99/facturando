@@ -69,7 +69,7 @@ class Saldo extends Model
         $sald = 0;
         foreach ($row->sortBy('date')->toArray() as $d) {
             if ($d['type'] == "saldo") {
-                $sald += $d['importe'];
+                $imp += $d['importe'];
             } else {
                 if ($d['cbte_tipo'] == 99) {
                     $imp += $d['imp_net'];

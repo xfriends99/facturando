@@ -241,15 +241,6 @@ public function agregarPagoPost(){
 			$pago = new \app\Pago;
 
 			$pago->cta_ctes_id = $id;
-            if(Input::get('date_pay',null)!=null){
-                try{
-                    $dt = Carbon::createFromFormat('d/m/Y',Input::get('date_pay'));
-                    $pago->created_at = $dt;
-                } catch(\Exception $e){
-
-                }
-            }
-
 
 			if(Input::get('mpago')=='otro'){
 				$pago->otro = Input::get('otro');
@@ -308,7 +299,16 @@ public function postaddSaldo(){
 			$saldo->users_id = Auth::user()->id;
             
             $saldo->customer_id = $id;
-            
+
+            if(Input::get('date_pay',null)!=null){
+                try{
+                    $dt = Carbon::createFromFormat('d/m/Y',Input::get('date_pay'));
+                    $saldo->created_at = $dt;
+                } catch(\Exception $e){
+
+                }
+            }
+
 			if($saldo->save()){
 					Session::flash('message', 'Pago ingresado correctamente!!');
 					return Redirect::to('ctacteCompany/'.$id);
