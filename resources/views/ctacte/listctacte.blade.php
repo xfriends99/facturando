@@ -58,10 +58,10 @@
 									}
 									?>
 									<tr>
-										<th>{{ $invoice['date']  }}</td>
+										<th>{{ $invoice['date'] }}</td>
 										<td> @if($invoice['cbte_tipo']==1) Factura @elseif ($invoice['cbte_tipo']==2) Nota de Débito @elseif($invoice['cbte_tipo']==3) Nota de Crédito @elseif($invoice['cbte_tipo']==99) Remito @endif </td>
 										<td>{{ $invoice['nro_cbte']  }}</td>
-										<td>@if($invoice['cbte_tipo']==99){{ '$ '. number_format($invoice['imp_net'], 2) }} @else @if($invoice['cbte_tipo']==3){{ '$ -'. number_format($invoice['imp_total'] , 2) }}@else{{ '$ '. number_format($invoice['imp_total'] , 2) }}@endif @endif</td>
+										<td>@if($invoice['cbte_tipo']==99){{ '$ '. number_format($invoice['imp_net'], 2) }} @else @if($invoice['cbte_tipo']==3){{ '$ '. number_format($invoice['imp_total'] , 2) }}@else{{ '$ '. number_format($invoice['imp_total'] , 2) }}@endif @endif</td>
 										<td>{{ '$ '. number_format($invoice['saldo'] , 2)  }}</td>
 										<td>
 											{{ '$ '. number_format($invoice['object']->getSaldo($companyID, $invoice['date'], $invoice['idfact']) , 2)  }}

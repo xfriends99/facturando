@@ -21,9 +21,11 @@ class PedidosController extends Controller{
 	public function getListarPedidos(){
 	
 	        $pedidos = \app\Pedido::join('ps_order_state_lang', 'ps_orders.current_state','=','ps_order_state_lang.id_order_state')
+                ->join('ps_order_state', 'ps_orders.current_state','=','ps_order_state.id_order_state')
                 ->distinct('ps_order_state_lang.id_order_state')
                 ->addSelect('ps_orders.*')
                 ->addSelect('ps_order_state_lang.name as name_state')
+                ->addSelect('ps_order_state.color as color')
                 ->where('ps_order_state_lang.id_lang',2)
                 ->orderBy('id_order','DESC')->paginate(10);
 	        return view('pedidos.list')->with('pedidos',$pedidos);

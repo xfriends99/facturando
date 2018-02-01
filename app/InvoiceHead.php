@@ -65,10 +65,14 @@ class InvoiceHead extends Model
             if ($d['type'] == "saldo") {
                 $imp += $d['importe'];
             } else {
-                if ($d['cbte_tipo'] == 99) {
-                    $imp += $d['imp_net'];
+                if ($d['cbte_tipo'] != 3) {
+                    if ($d['cbte_tipo'] == 99) {
+                        $imp += $d['imp_net'];
+                    } else {
+                        $imp += $d['imp_total'];
+                    }
                 } else {
-                    $imp += $d['imp_total'];
+                    $sald += $d['imp_total'];
                 }
                 $sald += $d['saldo'];
             }

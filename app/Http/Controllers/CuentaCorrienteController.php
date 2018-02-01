@@ -96,13 +96,22 @@ if($page!=null && $page!=1){
 }
 $row = collect();
 foreach ($invoices as $inv){
-    $row->push(['type'=>'invoice', 'date' => $inv->fecha_facturacion,
+    $data = ['type'=>'invoice', 'date' => $inv->fecha_facturacion,
         'cbte_tipo' => $inv->cbte_tipo, 'nro_cbte'=> $inv->nro_cbte,
-        'imp_net' => $inv->imp_net, 'imp_total'=> $inv->imp_total,
+        'imp_net' => $inv->imp_net,
         'saldo' => Pago::where('cta_ctes_id', $inv->id)
             ->where('is_active',1)->sum('pago'),
         'idfact' => $inv->idfact,
-        'id' => $inv->id, 'object' => $inv]);
+        'id' => $inv->id, 'object' => $inv];
+
+    if($inv->cbte_tipo!=3){
+        $data['imp_total'] = $inv->imp_total;
+    } else {
+        $data['imp_total'] = 0;
+        $data['saldo'] += $inv->imp_total;
+    }
+
+    $row->push($data);
     $companyName = $inv->company_name;
 }
 
