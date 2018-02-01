@@ -63,6 +63,7 @@ $factura = 1;
                                                                 @endif
 								<td>{{'$ '.number_format($pedido->total_paid,2) }}</td>
 								<td>
+									<span class="label label-default" style="background: {{$pedido->color}} !important;">
 									@if($pedido->current_state==16 && $remito_b==0)
 										Sin Facturar
 									@elseif($pedido->current_state==5 && $factura==0)
@@ -72,10 +73,11 @@ $factura = 1;
 									@else
 										{{$pedido->name_state}}
 									@endif
+									</span>
 								</td>
 								<td>
 									@if($factura==1)
-										<span class="label label-primary" style="background: {{$pedido->color}} !important;">Facturado</span>
+										F
 									@endif
 								</td>
 								<td>
@@ -85,10 +87,10 @@ $factura = 1;
 										@if($pedido->current_state==16 && $remito_b==0)
 											&nbsp;&nbsp;<a href= "generarRemito/{{$pedido->id_order}}" class="btn" style="background-color: black; color: white;" >Generar Remito</a>
 										@endif
-										@if($pedido->current_state==16 && $remito_b!=0)
+										@if(($pedido->current_state==5 || $pedido->current_state==3 || $pedido->current_state==4 || $pedido->current_state==6 || $pedido->current_state==7 || $pedido->current_state==15 || $pedido->current_state==17 || $pedido->current_state==18 || $pedido->current_state==19 || $pedido->current_state==16) && $remito_b!=0)
 											&nbsp;&nbsp; <a href= "reGenerarRemito/{{$pedido->id_order}}" class="btn" style="background-color: black; color: white;" >Re-Generar Remito</a> &nbsp;&nbsp;
 										@endif
-										@if($remito_a==0 && ($pedido->current_state==16 || $pedido->current_state==5))
+										@if($remito_a==0 && ($pedido->current_state==5 || $pedido->current_state==3 || $pedido->current_state==4 || $pedido->current_state==6 || $pedido->current_state==7 || $pedido->current_state==15 || $pedido->current_state==17 || $pedido->current_state==18 || $pedido->current_state==19 || $pedido->current_state==16))
 											<a href= "generarRemito/{{$pedido->id_order}}" class="btn btn-info" >Generar Remito</a> &nbsp;&nbsp;
 										@endif
 										@if($pedido->current_state==16)
