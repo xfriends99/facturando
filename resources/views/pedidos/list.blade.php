@@ -51,7 +51,6 @@ $factura = 1;
 }
 
 }
-   $factura = 1;
 
  ?>
 							<tr>

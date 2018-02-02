@@ -26,7 +26,7 @@ class PedidosController extends Controller{
                 ->addSelect('ps_orders.*')
                 ->addSelect('ps_order_state_lang.name as name_state')
                 ->addSelect('ps_order_state.color as color')
-                ->where('ps_order_state_lang.id_lang',2)
+                ->where('ps_order_state_lang.id_lang',1)
                 ->orderBy('id_order','DESC')->paginate(10);
 	        return view('pedidos.list')->with('pedidos',$pedidos);
 		
