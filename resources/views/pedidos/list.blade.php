@@ -75,35 +75,27 @@ $factura = 1;
 									</span>
 								</td>
 								<td>
-									@if($factura==1)
+									@if($cbtes && $factura==1 && $pedido->current_state!=3)
 										F
 									@endif
 								</td>
 								<td>
+									@if($pedido->current_state==5)
+										<a href= "expedicion/{{$pedido->id_order}}" target="_blank" class="btn btn-success" >Generar Expedición</a>
+										&nbsp;&nbsp;<a href= "generarPresupuesto/{{$pedido->id_order}}" target="_blank" class="btn" style="background-color: grey; color: black;">Generar Presupuesto</a>
+									@endif
 									@if($pedido->current_state==12)
 										<a href= "expedicion/{{$pedido->id_order}}" target="_blank" class="btn btn-success" >Generar Expedición</a>
-									@elseif($pedido->current_state==5 || $pedido->current_state==3 || $pedido->current_state==4 || $pedido->current_state==6 || $pedido->current_state==7 || $pedido->current_state==15 || $pedido->current_state==17 || $pedido->current_state==18 || $pedido->current_state==19 || $pedido->current_state==16)
-										@if($pedido->current_state==16 && $remito_b==0)
-											&nbsp;&nbsp;<a href= "generarRemito/{{$pedido->id_order}}" class="btn" style="background-color: black; color: white;" >Generar Remito</a>
-										@endif
-										@if(($pedido->current_state==5 || $pedido->current_state==3 || $pedido->current_state==4 || $pedido->current_state==6 || $pedido->current_state==7 || $pedido->current_state==15 || $pedido->current_state==17 || $pedido->current_state==18 || $pedido->current_state==19 || $pedido->current_state==16) && $remito_b!=0)
-											&nbsp;&nbsp; <a href= "reGenerarRemito/{{$pedido->id_order}}" class="btn" style="background-color: black; color: white;" >Re-Generar Remito</a> &nbsp;&nbsp;
-										@endif
-										@if($remito_a==0 && ($pedido->current_state==5 || $pedido->current_state==3 || $pedido->current_state==4 || $pedido->current_state==6 || $pedido->current_state==7 || $pedido->current_state==15 || $pedido->current_state==17 || $pedido->current_state==18 || $pedido->current_state==19 || $pedido->current_state==16))
-											<a href= "generarRemito/{{$pedido->id_order}}" class="btn btn-info" >Generar Remito</a> &nbsp;&nbsp;
-										@endif
-										@if($pedido->current_state==16)
-											<a href= "generarPresupuesto/{{$pedido->id_order}}" target="_blank" class="btn" style="background-color: grey; color: black;">Generar Presupuesto</a>
-										@endif
-										@if(($pedido->current_state==5 || $pedido->current_state==3 || $pedido->current_state==4 || $pedido->current_state==6 || $pedido->current_state==7 || $pedido->current_state==15 || $pedido->current_state==17 || $pedido->current_state==18 || $pedido->current_state==19 || $pedido->current_state==16) && $factura==0)
-											<a href= "generarFactura/{{$pedido->id_order}}" onClick="return confirm('¿Esta seguro?');" class="btn btn-danger" >Generar Factura</a>
-										@endif
-										@if($pedido->current_state==16 || $pedido->current_state==5)
-											<a href= "expedicion/{{$pedido->id_order}}" target="_blank" class="btn btn-success" >Generar Expedición </a>
-										@endif
+										<a href= "generarFactura/{{$pedido->id_order}}" onClick="return confirm('¿Esta seguro?');" class="btn btn-danger" >Generar Factura</a>
 									@endif
-									@if($pedido->orden_compra==null && ($pedido->current_state==16 || $pedido->current_state==12 || $pedido->current_state==5))
-										<button data-toggle="modal" data-target="#myModal" id="modal_{{$pedido->id_order}}" onClick="changeID(this.id)" class="btn btn-info" >OC</button>
+									@if($pedido->current_state==13)
+										<a href= "generarRemito/{{$pedido->id_order}}" class="btn" style="background-color: black; color: white;" >Generar Remito</a>
+									@endif
+									@if($pedido->orden_compra==null)
+										&nbsp;&nbsp;<button data-toggle="modal" data-target="#myModal" id="modal_{{$pedido->id_order}}" onClick="changeID(this.id)" class="btn btn-info" >OC</button>
+									@endif
+									@if($remito_b!=0)
+										&nbsp;&nbsp;<a href= "reGenerarRemito/{{$pedido->id_order}}" class="btn" style="background-color: black; color: white;" >Re-Generar Remito</a>
 									@endif
 								</td>
 							</tr>
