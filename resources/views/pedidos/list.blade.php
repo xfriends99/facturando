@@ -94,7 +94,7 @@ $factura = 1;
 							@endforeach
 						</tbody>
 					</table>
-				<center> <?php echo $pedidos->render(); ?> </center>
+				<center> <?php echo $pedidos->appends(Input::except('page'))->render(); ?> </center>
 				</div>
 			</div>
 		</div>
