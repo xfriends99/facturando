@@ -14,6 +14,7 @@
 					<div class="alert alert-info">{{ Session::get('message') }}</div>
 					@endif
 					<div id="emailResul"></div>
+					<label for="kwd_search">Pedidos: </label> <select class="form-control" name="status" id="status"><option value="">Seleccione</option>@foreach($statuses as $s) <option value="{{$s->id_order_state}}" @if(isset($request['status']) && $request['status']==$s->id_order_state) selected @endif>{{$s->name}}</option>  @endforeach</select>
 					<table class="table table-hover">
 						<thead>
 							<tr>
@@ -63,9 +64,7 @@ $factura = 1;
 								<td>{{'$ '.number_format($pedido->total_paid,2) }}</td>
 								<td>
 									<span class="label label-default" style="background: {{$pedido->color}} !important;">
-									@if($pedido->current_state==16 && $remito_b==0)
-										Sin Facturar
-									@elseif($pedido->current_state==5 && $factura==0)
+									@if($pedido->current_state==5 && $factura==0)
 										Sin Facturar
 									@elseif($pedido->current_state==12)
 										En Proceso
@@ -75,27 +74,28 @@ $factura = 1;
 									</span>
 								</td>
 								<td>
-									@if($cbtes && $factura==1 && $pedido->current_state!=3)
+									@if($cbtes && $factura==1)
 										F
 									@endif
 								</td>
 								<td>
-									@if($pedido->current_state==5)
+									@if($pedido->current_state==3 || $pedido->current_state==7 || $pedido->current_state==8 || $pedido->current_state==9 || $pedido->current_state==12)
 										<a href= "expedicion/{{$pedido->id_order}}" target="_blank" class="btn btn-success" >Generar Expedición</a>
-										&nbsp;&nbsp;<a href= "generarPresupuesto/{{$pedido->id_order}}" target="_blank" class="btn" style="background-color: grey; color: black;">Generar Presupuesto</a>
-									@endif
-									@if($pedido->current_state==12)
-										<a href= "expedicion/{{$pedido->id_order}}" target="_blank" class="btn btn-success" >Generar Expedición</a>
-										<a href= "generarFactura/{{$pedido->id_order}}" onClick="return confirm('¿Esta seguro?');" class="btn btn-danger" >Generar Factura</a>
-									@endif
-									@if($pedido->current_state==13)
-										<a href= "generarRemito/{{$pedido->id_order}}" class="btn" style="background-color: black; color: white;" >Generar Remito</a>
-									@endif
-									@if($pedido->orden_compra==null)
-										&nbsp;&nbsp;<button data-toggle="modal" data-target="#myModal" id="modal_{{$pedido->id_order}}" onClick="changeID(this.id)" class="btn btn-info" >OC</button>
-									@endif
-									@if($remito_b!=0)
-										&nbsp;&nbsp;<a href= "reGenerarRemito/{{$pedido->id_order}}" class="btn" style="background-color: black; color: white;" >Re-Generar Remito</a>
+										@if(!$cbtes && $factura==0)
+											&nbsp;&nbsp;<a href= "generarFactura/{{$pedido->id_order}}" onClick="return confirm('¿Esta seguro?');" class="btn btn-danger" >Generar Factura</a>
+										@endif
+										@if($remito_b==0)
+											&nbsp;&nbsp;<a href= "generarPresupuesto/{{$pedido->id_order}}" target="_blank" class="btn" style="background-color: grey; color: black;">Generar Presupuesto</a>
+										@endif
+										@if($cbtes && $factura==1)
+											&nbsp;&nbsp;<a href= "generarRemito/{{$pedido->id_order}}" class="btn btn-info" >Generar Remito</a>
+											&nbsp;&nbsp;<button data-toggle="modal" data-target="#myModal" id="modal_{{$pedido->id_order}}" onClick="changeID(this.id)" class="btn btn-info" >OC</button>
+										@endif
+										@if($remito_b!=0)
+											&nbsp;&nbsp;<a href= "generarRemito/{{$pedido->id_order}}" class="btn btn-info" >Generar Remito</a>
+											&nbsp;&nbsp;<a href= "reGenerarRemito/{{$pedido->id_order}}" class="btn" style="background-color: black; color: white;" >Re-Generar Remito</a>
+										@endif
+
 									@endif
 								</td>
 							</tr>
@@ -155,6 +155,16 @@ $factura = 1;
 <script>
 $(function() {
 	//twitter bootstrap script
+	$(document).ready(function(){
+	   $('#status').change(function(){
+	       var url = window.location.href.split('?');
+	       url = url[0];
+	       if($(this).val()!=''){
+	           url += '?status='+$(this).val();
+		   }
+           window.location.href = url;
+	   });
+	});
 	$("#submit_modal").click(function(){
 		$.ajax({
 			type: "POST",
