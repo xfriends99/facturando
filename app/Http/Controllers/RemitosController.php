@@ -88,14 +88,14 @@ public function verRemito($id = null){
 				$head = new \app\InvoiceHead;
 
 				$direccion = "";
-				$direccion .= $order->direccion_factura->address1. ', ';
-				$direccion .= $order->direccion_factura->city. ' ('. $order->direccion_factura->postcode. ')' .   ', ';
-				$direccion .= $order->direccion_factura->state->name. ', ';
+				$direccion .= isset($order->direccion_factura) ? $order->direccion_factura->address1. ', ' : '';
+				$direccion .= isset($order->direccion_factura) ? $order->direccion_factura->city. ' ('. $order->direccion_factura->postcode. ')' .   ', ': '';
+				$direccion .= isset($order->direccion_factura) ? $order->direccion_factura->state->name. ', ': '';
 				$direccion .= 'Argentina.';
 
 				$head->fecha_facturacion = date("Y-m-d");
 				$head->id_order = $order->id_order;
-				$head->company_name = $order->direccion_factura->company;
+				$head->company_name = isset($order->direccion_factura) ? $order->direccion_factura->company : '';
 				if($order->current_state==16){
                                 $remito = \app\InvoiceHead::where('id_order','=',$head->id_order)->first();
                                 if($remito==null){

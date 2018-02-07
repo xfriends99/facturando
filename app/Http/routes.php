@@ -249,6 +249,7 @@ return view('produccion.list')->with('productos',$productos)->with('hoy',$today)
 Route::get('expedicion/{id}', function($id)
 {
 	                $order = \app\Pedido::where('id_order','=',$id)->first();
+	                $invoice = \app\InvoiceHead::where('id_order',$order->id_order)->first();
                         $lines = $order->lineas;
                         $html = view('presupuestos.exp')->with('lines',$lines)->with('invoice',$order);
 			$pdf = \App::make('dompdf');		

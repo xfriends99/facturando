@@ -55,7 +55,7 @@ $factura = 1;
 
  ?>
 							<tr>
-								<td style="width:20px;"><div style="border-radius: 50%; behavior: url(PIE.htc); width: 15px; height: 15px; background: @if($factura==1) #000000; border: 3px solid #000; @elseif($remito_b!=0) #108510; border: 1px solid #108510; @else #FFFF00; border: 3px solid #FFFF00; @endif"></div></td>
+								<td style="width:20px;"><div style="border-radius: 50%; behavior: url(PIE.htc); width: 15px; height: 15px; background: @if($factura==1) #000000; border: 3px solid #000; @elseif($remito_a!=0) #108510; border: 1px solid #108510; @else #FFFF00; border: 3px solid #FFFF00; @endif"></div></td>
 								<th style="width:20px;">{{ date('d-m-Y',strtotime($pedido->date_add))  }}</th>
 								<td style="width:20px;">{{ $pedido->id_order}}</td>
 
@@ -70,7 +70,7 @@ $factura = 1;
 								<td style="width:500px;">
 									@if($pedido->current_state==3 || $pedido->current_state==7 || $pedido->current_state==8 || $pedido->current_state==9 || $pedido->current_state==12)
 										<a href= "expedicion/{{$pedido->id_order}}" target="_blank" class="btn btn-success" >Generar Expedición</a>
-										@if($factura==0 && $remito_b==0)
+										@if($factura==0 && $remito_a==0)
 											&nbsp;&nbsp;<a href= "generarFactura/{{$pedido->id_order}}" onClick="return confirm('¿Esta seguro?');" class="btn btn-danger" >Generar Factura</a>
 											&nbsp;&nbsp;<a href= "generarRemito/{{$pedido->id_order}}" class="btn" style="background-color: black; color: white;" >Generar Remito</a>
 										@endif
@@ -78,7 +78,7 @@ $factura = 1;
 											&nbsp;&nbsp;<a href= "generarRemito/{{$pedido->id_order}}" class="btn btn-info" >Generar Remito</a>
 											&nbsp;&nbsp;<button data-toggle="modal" data-target="#myModal" id="modal_{{$pedido->id_order}}" onClick="changeID(this.id)" class="btn btn-info" >OC</button>
 										@endif
-										@if($remito_b!=0)
+										@if($remito_a!=0)
 											&nbsp;&nbsp;<a href= "generarPresupuesto/{{$pedido->id_order}}" target="_blank" class="btn" style="background-color: grey; color: black;">Generar Presupuesto</a>
 											&nbsp;&nbsp;<a href= "reGenerarRemito/{{$pedido->id_order}}" class="btn" style="background-color: black; color: white;" >Re-Generar Remito</a>
 										@endif

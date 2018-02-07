@@ -103,17 +103,17 @@ class FacturaController extends Controller{
 
 			      $head = new \app\InvoiceHead;
 
-			        $direccion = "";
-			        $direccion .= $order->direccion_factura->address1. ', ';
-	                        $direccion .= $order->direccion_factura->city. ' ('. $order->direccion_factura->postcode. ')' .   ', ';
-			        $direccion .= $order->direccion_factura->state->name. ', ';
-			        $direccion .= 'Argentina.';
+            $direccion = "";
+            $direccion .= isset($order->direccion_factura) ? $order->direccion_factura->address1. ', ' : '';
+            $direccion .= isset($order->direccion_factura) ? $order->direccion_factura->city. ' ('. $order->direccion_factura->postcode. ')' .   ', ': '';
+            $direccion .= isset($order->direccion_factura) ? $order->direccion_factura->state->name. ', ': '';
+            $direccion .= 'Argentina.';
 
 				$head->fecha_facturacion = date("Y-m-d");
 				$head->id_order = $order->id_order;
                                 $head->concepto = 1;
                                 $head->orden_compra = $order->orden_compra;
-				$head->company_name = $order->direccion_factura->company;
+                $head->company_name = isset($order->direccion_factura) ? $order->direccion_factura->company : '';
 				$head->tipo_venta = 1;
 				$head->tax_id = preg_replace('/[^0-9.]/', '', $customer->tax_number);
 				$head->fisc_situation = $customer->fisc_situation; 
@@ -162,7 +162,6 @@ class FacturaController extends Controller{
                                 $head->iva_imp_total = $head->imp_iva_21;
 
                                 $head->save();
-
 			return $this->emitirFactura($head->id);		
 		}
 
