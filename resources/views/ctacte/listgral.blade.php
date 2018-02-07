@@ -13,6 +13,7 @@
 					<div class="alert alert-info">{{ Session::get('message') }}</div>
 					@endif
 				    <label for="kwd_search">Cliente: </label> <input type="text" class="form-control" id="kwd_search" value=""/>
+					<label for="kwd_search_v">Filtrar por saldos positivos y negativos: </label> <input style="cursor:pointer;" type="checkbox" id="kwd_search_v" value=""/>
 					<table class="search-table table table-hover" id="my-table">
 						<thead>
 							<tr>
@@ -37,7 +38,7 @@
 							
 							<tr>
 								<th>{{ $invoice->company_name }} </th>
-								<td>{{ '$ '.number_format($invoice->getSaldo($invoice->companies_id),2) }}</td>
+								<td class="saldo_user">{{ '$ '.number_format($invoice->getSaldo($invoice->companies_id),2) }}</td>
 								<td><a href= "/ctacteCompany/{{$invoice->companies_id}}" class="btn btn-info" >Ver detalle</a></td>
                                                         <?php 
 
@@ -65,6 +66,40 @@
 
 $(document).ready(function(){
   $('table.search-table').tableSearch();
+
+  $('#kwd_search_v').change(function(){
+	      var tableObj = $('#my-table'),
+          inputObj = $("#kwd_search"),
+          caseSensitive = false,
+          searchFieldVal = '',
+          pattern = '';
+          searchFieldVal = $("#kwd_search").val();
+          pattern = (caseSensitive)?RegExp(searchFieldVal):RegExp(searchFieldVal, 'i');
+          tableObj.find('tbody tr').hide().each(function(){
+              var currentRow = $(this);
+              if($("#kwd_search_v").is(':checked')) {
+                  valid = false;
+
+                  currentRow.find('th:first').each(function() {
+                      if(pattern.test($(this).html())){
+                          valid = true;
+                      }
+                  });
+                  currentRow.find('.saldo_user').each(function() {
+                      if (valid && $(this).html().indexOf('$ 0.00') == -1 && $(this).html().indexOf('$ -0.00') == -1) {
+                          currentRow.show();
+                      }
+                  });
+              } else {
+                  currentRow.find('th:first').each(function() {
+                      if(pattern.test($(this).html())){
+                          currentRow.show();
+                          return false;
+                      }
+                  });
+              }
+          });
+  });
 });
 
 </script>
