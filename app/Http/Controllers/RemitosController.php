@@ -93,6 +93,9 @@ public function verRemito($id = null){
         $head->fecha_facturacion = date("Y-m-d");
         $head->id_order = $order->id_order;
         $head->company_name = isset($order->direccion_factura) ? $order->direccion_factura->company : '';
+        if($head->company_name==''){
+            $head->company_name = $customer->firstname.' '.$customer->lastname;
+        }
         $remito = \app\InvoiceHead::where('id_order','=',$head->id_order)->first();
         if($remito==null){
             $head->tipo_venta = 0;
