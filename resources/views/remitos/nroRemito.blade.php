@@ -50,7 +50,7 @@
 <div class="form-group">
 									<label class="col-md-4 control-label">Número de Doc.</label>
 									<div class="col-md-6">
-										<input type="text" class="form-control" name="tax_number" value="{{  $order->direccion_factura->vat_number }}"  id="tax_number" oninput='checkString(this.id)' required>
+										<input type="text" class="form-control" name="tax_number" value="@if(isset($order->direccion_factura)){{  $order->direccion_factura->vat_number }} @endif"  id="tax_number" oninput='checkString(this.id)' required>
 									</div>
 								</div>
 

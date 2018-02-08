@@ -184,21 +184,18 @@ Route::get('deleteVendedor/{id}', 'CompaniesController@deleteVendedor');
 
 Route::get('generarPresupuesto/{id}', function($id)
 {
-	                $head = \app\InvoiceHead::where('id_order','=',$id)->first();
-                        if($head!=null){
-                        $customer = \app\Cliente::where('id_customer','=',$head->companies_id)->first();
-                        $lines = \app\InvoiceLine::where('invoice_head_id','=',$head->id)->get();
-                        $html = view('presupuestos.download')->with('lines',$lines)->with('customer ',$customer)->with('invoice',$head);
-			$pdf = \App::make('dompdf');		
-			$pdf = $pdf->loadHTML($html);
-			return $pdf->stream();
-			}else{
-			Session::flash('message', 'Generar remito primero!!');
-					return Redirect::to('listarPedidos');
-			}
-			
-					
-                        
+    $head = \app\InvoiceHead::where('id_order','=',$id)->first();
+    if($head!=null){
+    $customer = \app\Cliente::where('id_customer','=',$head->companies_id)->first();
+    $lines = \app\InvoiceLine::where('invoice_head_id','=',$head->id)->get();
+    $html = view('presupuestos.download')->with('lines',$lines)->with('customer ',$customer)->with('invoice',$head);
+    $pdf = \App::make('dompdf');
+    $pdf = $pdf->loadHTML($html);
+    return $pdf->stream();
+}else{
+    Session::flash('message', 'Generar remito primero!!');
+    return Redirect::to('listarPedidos');
+}
 });
 
 Route::post('addProduction', function(){
