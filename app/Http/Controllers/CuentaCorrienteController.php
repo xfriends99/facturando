@@ -46,7 +46,7 @@ public function listarCteCta(){
 	
      $invoices = \app\InvoiceHead::where('status','=','A')
      //->where('cbte_tipo','!=',3)
-        ->select(\DB::raw('SUM(cta_ctes.saldo) as sumaSaldo,invoice_head.company_name, invoice_head.companies_id'))
+        ->select(\DB::raw('SUM(cta_ctes.saldo) as sumaSaldo,invoice_head.company_name, invoice_head.companies_id, invoice_head.id as idinv'))
         ->leftJoin("cta_ctes", "invoice_head_id", "=", "invoice_head.id")
         ->groupBy('invoice_head.companies_id')
         ->get();
