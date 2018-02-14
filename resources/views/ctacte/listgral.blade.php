@@ -34,16 +34,16 @@
 								   return $item['customer_id'] == $invoice->companies_id;
 								});
 								$sald = $se!==false ? $saldos->get($se)->saldo : 0;
-
+                                $invSaldo = $invoice->getSaldo($invoice->companies_id);
 							?>
 							
 							<tr>
 								<th>@if($invoice->company_name!=''){{ $invoice->company_name }}@elseif($com = \app\Customer::find($invoice->companies_id)) {{$com->firstname}} {{$com->lastname}}  @endif </th>
-								<td class="saldo_user">{{ '$ '.number_format($invoice->getSaldo($invoice->companies_id),2) }}</td>
+								<td class="saldo_user">{{ '$ '.number_format($invSaldo,2) }}</td>
 								<td><a href= "/ctacteCompany/{{$invoice->companies_id}}" class="btn btn-info" >Ver detalle</a></td>
                                                         <?php
 
-							$saldo = $saldo + $invoice->sumaSaldo + $sald;
+							$saldo += $invSaldo;
 							
 							?>
 							</tr>
