@@ -95,8 +95,11 @@ if($page!=null && $page!=1){
         ->orderBy('id','DESC')->get();
 }
 $row = collect();
+$segundos = 9;
 foreach ($invoices as $inv){
+    $date = Carbon::createFromFormat('Y-m-d H:i:s', $inv->fecha_facturacion.' 00:00:0'.$segundos);
     $data = ['type'=>'invoice', 'date' => $inv->fecha_facturacion,
+        'date_ord' => $date,
         'cbte_tipo' => $inv->cbte_tipo, 'nro_cbte'=> $inv->nro_cbte,
         'imp_net' => $inv->imp_net,
         'saldo' => Pago::where('cta_ctes_id', $inv->id)
@@ -113,10 +116,12 @@ foreach ($invoices as $inv){
 
     $row->push($data);
     $companyName = $inv->company_name;
+    $segundos--;
 }
 
 foreach ($saldos as $inv){
     $row->push(['type'=>'saldo', 'date' => $inv->created_at,
+        'date_ord' => $inv->created_at,
         'medios_pagos_id' => $inv->medios_pagos_id, 'importe'=> $inv->importe,
         'otro' => $inv->otro, 'id' => $inv->id,
         'medioPago_tipo' => ($inv->medios_pagos_id!=0) ? $inv->medioPago->tipo : '',
@@ -140,7 +145,7 @@ foreach ($row->sortBy('date')->toArray() as $d) {
 }*/
 
 return view('ctacte.listctacte')->with('total',$total)->with('saldos', $saldos)
-    ->with('invoices',$row->sortByDesc('date')->toArray())
+    ->with('invoices',$row->sortByDesc('date_ord')->toArray())
     ->with('invos', $invoices)
     ->with('companyName',$companyName)
     ->with('companyID',$id)
