@@ -1,5 +1,7 @@
 <?php namespace app\Http\Controllers;
 
+use app\Address;
+use app\Customer;
 use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Validator;
@@ -85,17 +87,25 @@ public function verRemito($id = null){
 
         $head = new \app\InvoiceHead;
 
-        $direccion = "";
-        $direccion .= isset($order->direccion_factura) ? $order->direccion_factura->address1. ', ' : '';
-        $direccion .= isset($order->direccion_factura) ? $order->direccion_factura->city. ' ('. $order->direccion_factura->postcode. ')' .   ', ': '';
-        $direccion .= isset($order->direccion_factura) ? $order->direccion_factura->state->name. ', ': '';
-        $direccion .= 'Argentina.';
+        if($order->direccion_factura){
+            $direccion = "";
+            $direccion .= $order->direccion_factura ? $order->direccion_factura->address1. ', ' : '';
+            $direccion .= $order->direccion_factura ? $order->direccion_factura->city. ' ('. $order->direccion_factura->postcode. ')' .   ', ': '';
+            $direccion .= $order->direccion_factura ? $order->direccion_factura->state->name. ', ': '';
+            $direccion .= 'Argentina.';
+            $head->company_name = $order->direccion_factura ? $order->direccion_factura->company : '';
+        } else {
+            $address = Address::where('id_customer', $customer->id_customer)->get()->first();
+            $direccion = "";
+            $direccion .= $address->address1. ', ';
+            $direccion .= $address->city. ' ('. $address->postcode. ')' .   ', ';
+            $direccion .= $address->state->name. ', ';
+            $direccion .= 'Argentina.';
+            $custo = Customer::find($customer->id_customer);
+            $head->company_name = $custo->firstname.' '.$custo->lastname;
+        }
         $head->fecha_facturacion = date("Y-m-d");
         $head->id_order = $order->id_order;
-        $head->company_name = isset($order->direccion_factura) ? $order->direccion_factura->company : '';
-        if($head->company_name==''){
-            $head->company_name = $customer->firstname.' '.$customer->lastname;
-        }
         $remito = \app\InvoiceHead::where('id_order','=',$head->id_order)->first();
         if($remito==null){
             $head->tipo_venta = 0;

@@ -24,7 +24,7 @@
 </style>
 </head>
 <body>
-	<b style="font-size:30px;"> Cliente: @if(isset($invoice->direccion_factura)) {{$invoice->direccion_factura->company}} @endif</b>
+	<b style="font-size:30px;"> Cliente: @if($invoice->direccion_factura) {{$invoice->direccion_factura->company}} @endif</b>
 		
 	<main style="margin-top: 180px;">
 		<table e border="1">
