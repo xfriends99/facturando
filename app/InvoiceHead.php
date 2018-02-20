@@ -19,10 +19,7 @@ class InvoiceHead extends Model
                 ->where('created_at','<',$date_closed)
                 ->orderBy('id','DESC')->get();
 
-            $invoices = \app\InvoiceHead::where(function($q){
-                $q->where('status','=','A');
-                $q->orWhere('cbte_tipo',99);
-            })
+            $invoices = \app\InvoiceHead::where('status','=','A')
                 ->select(\DB::raw('cta_ctes.saldo,invoice_head.company_name,invoice_head.imp_total,invoice_head.imp_net, cta_ctes.id, invoice_head.nro_cbte, invoice_head.cbte_tipo, invoice_head.fecha_facturacion'))
                 ->leftJoin("cta_ctes", "invoice_head_id", "=", "invoice_head.id")
                 ->where('companies_id','=',$customer_id)
@@ -39,10 +36,7 @@ class InvoiceHead extends Model
             $saldos = \app\Saldo::where('customer_id','=',$customer_id)
                 ->orderBy('created_at','ASC')->where('is_active','=',1)->get();
 
-            $invoices = \app\InvoiceHead::where(function($q){
-                $q->where('status','=','A');
-                $q->orWhere('cbte_tipo',99);
-            })
+            $invoices = \app\InvoiceHead::where('status','=','A')
                 ->select(\DB::raw('cta_ctes.saldo,invoice_head.company_name,invoice_head.imp_total,invoice_head.imp_net, cta_ctes.id, invoice_head.nro_cbte, invoice_head.cbte_tipo, invoice_head.fecha_facturacion'))
                 ->leftJoin("cta_ctes", "invoice_head_id", "=", "invoice_head.id")
                 ->where('companies_id','=',$customer_id)->orderBy('fecha_facturacion','ASC')->get();

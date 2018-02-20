@@ -44,10 +44,7 @@ class CuentaCorrienteController extends Controller {
 
 public function listarCteCta(){
 	
-     $invoices = \app\InvoiceHead::where(function($q){
-         $q->where('status','=','A');
-         $q->orWhere('cbte_tipo',99);
-     })
+     $invoices = \app\InvoiceHead::where('status','=','A')
         ->select(\DB::raw('SUM(cta_ctes.saldo) as sumaSaldo,invoice_head.company_name, invoice_head.companies_id, invoice_head.id as idinv'))
         ->leftJoin("cta_ctes", "invoice_head_id", "=", "invoice_head.id")
         ->groupBy('invoice_head.companies_id')
@@ -64,30 +61,21 @@ public function listarCteCtaEmpresa(\Illuminate\Http\Request $request, $id = nul
 
 if($id!=null){
 
-$invoices = \app\InvoiceHead::where(function($q){
-                $q->where('status','=','A');
-                $q->orWhere('cbte_tipo',99);
-            })
+$invoices = \app\InvoiceHead::where('status','=','A')
 			->select(\DB::raw('invoice_head.id as idfact,cta_ctes.saldo,invoice_head.company_name,invoice_head.imp_total,invoice_head.imp_net, cta_ctes.id, invoice_head.nro_cbte, invoice_head.cbte_tipo, invoice_head.fecha_facturacion'))
 			->leftJoin("cta_ctes", "invoice_head_id", "=", "invoice_head.id")
 			->where('companies_id','=',$id)
             ->orderBy('fecha_facturacion','DESC')
             ->orderBy('invoice_head.id','desc')->paginate(10);
 
-$total = \app\InvoiceHead::where(function($q){
-                $q->where('status','=','A');
-                $q->orWhere('cbte_tipo',99);
-            })
+$total = \app\InvoiceHead::where('status','=','A')
 			->select(\DB::raw('SUM(cta_ctes.saldo) as sumaSaldo, invoice_head.company_name, invoice_head.companies_id'))			
 			->leftJoin("cta_ctes", "invoice_head_id", "=", "invoice_head.id")
 			->groupBy('invoice_head.companies_id')	
 			->where('invoice_head.companies_id','=',$id)
 			->get();
 
-$lastInvoice = \app\InvoiceHead::where(function($q){
-    $q->where('status','=','A');
-    $q->orWhere('cbte_tipo',99);
-})
+$lastInvoice = \app\InvoiceHead::where('status','=','A')
     ->leftJoin("cta_ctes", "invoice_head_id", "=", "invoice_head.id")
     ->where('invoice_head.companies_id','=',$id)
     ->orderBy('fecha_facturacion', 'desc')
