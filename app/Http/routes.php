@@ -259,53 +259,53 @@ Route::get('expedicion/{id}', function($id)
 });
 Route::get('reGenerarRemito/{id}', function($id)
 {			             
-                                     $order = \app\Pedido::where('id_order','=',$id)->first();
-                                     $remito = \app\InvoiceHead::where('id_order','=',$id)->first();
-                                     $lines = \app\InvoiceLine::where('invoice_head_id','=',$remito->id)->delete();
-                                     $remito->imp_net = $order->total_paid_tax_excl;
-				     // Ver que onda con tema IVA 10.5% $head->imp_iva_10_5 = Input::get('iva_10_5');
-				     $remito->imp_iva_21 = $order->total_paid_tax_incl - $order->total_paid_tax_excl;
-				     $remito->imp_total = $order->total_paid_tax_incl;
-                                     $remito->iva_imp_total = $remito->imp_iva_21;
-		                     
-                               foreach($order->lineas as $linea){
+    $order = \app\Pedido::where('id_order','=',$id)->first();
+    $remitos = \app\InvoiceHead::where('id_order','=',$id)->get();
+    foreach($remitos as $remito){
+        $lines = \app\InvoiceLine::where('invoice_head_id','=',$remito->id)->delete();
+        $remito->imp_net = $order->total_paid_tax_excl;
+        // Ver que onda con tema IVA 10.5% $head->imp_iva_10_5 = Input::get('iva_10_5');
+        $remito->imp_iva_21 = $order->total_paid_tax_incl - $order->total_paid_tax_excl;
+        $remito->imp_total = $order->total_paid_tax_incl;
+        $remito->iva_imp_total = $remito->imp_iva_21;
 
-				$line = new \app\InvoiceLine;
-				$line->subtotal = $linea->total_price_tax_excl;
-				$line->quantity = $linea->product_quantity;
-				$line->invoice_head_id = $remito->id;
-				$line->code = $linea->product_reference;
-				$line->name = $linea->product_name;
-                                if(count($linea->producto->costo)){
-                                $line->costo = $linea->producto->costo->product_supplier_price_te;
-                                }
-                                $line->categories_id = $linea->producto->id_category_default;
-				$line->price = $linea->unit_price_tax_excl;
-				$line->tipo_iva = 5; // Ver de arreglarlo en un futuro
-				$line->imp_iva = $linea->total_price_tax_incl - $linea->total_price_tax_excl;
-				$line->save();
-			        
-                                }
-                                $lines = \app\InvoiceLine::where('invoice_head_id','=',$remito->id)->get();
-                                $customer = \app\Cliente::where('id_customer','=',$remito->companies_id)->first();
-			        $pago = $order->payment;
-			        if($remito->tipo_venta==0){
-                        $html = view('remitos.download_b')->with('lines',$lines)->with('customer',$customer)->with('invoice',$remito);
-			$pdf = \App::make('dompdf');
-			$pdf = $pdf->loadHTML($html)->save( 'comprobantes/remito_'.$remito->nro_cbte.'.pdf' );
-			$remito->archivo_pdf = 'remito_'.$remito->nro_cbte.'.pdf';
-                        $ctacte = \app\CtaCte::where('invoice_head_id','=',$remito->id)->first();	
-                        $remito->status = 'A';  
-			$ctacte->saldo = $remito->imp_net;
-			$ctacte->save();
-			}
-                                
-				     $remito->save();
-                                     Session::flash('message', 'Remito re-generado correctamente!!');
-                                     return Redirect::to('listarPedidos');
-			
-					
-                        
+        foreach($order->lineas as $linea){
+
+            $line = new \app\InvoiceLine;
+            $line->subtotal = $linea->total_price_tax_excl;
+            $line->quantity = $linea->product_quantity;
+            $line->invoice_head_id = $remito->id;
+            $line->code = $linea->product_reference;
+            $line->name = $linea->product_name;
+            if(count($linea->producto->costo)){
+                $line->costo = $linea->producto->costo->product_supplier_price_te;
+            }
+            $line->categories_id = $linea->producto->id_category_default;
+            $line->price = $linea->unit_price_tax_excl;
+            $line->tipo_iva = 5; // Ver de arreglarlo en un futuro
+            $line->imp_iva = $linea->total_price_tax_incl - $linea->total_price_tax_excl;
+            $line->save();
+
+        }
+        $lines = \app\InvoiceLine::where('invoice_head_id','=',$remito->id)->get();
+        $customer = \app\Cliente::where('id_customer','=',$remito->companies_id)->first();
+        $pago = $order->payment;
+        if($remito->tipo_venta==0){
+            $html = view('remitos.download_b')->with('lines',$lines)->with('customer',$customer)->with('invoice',$remito);
+            $pdf = \App::make('dompdf');
+            $pdf = $pdf->loadHTML($html)->save( 'comprobantes/remito_'.$remito->nro_cbte.'.pdf' );
+            $remito->archivo_pdf = 'remito_'.$remito->nro_cbte.'.pdf';
+            $ctacte = \app\CtaCte::where('invoice_head_id','=',$remito->id)->first();
+            $remito->status = 'A';
+            $ctacte->saldo = $remito->imp_net;
+            $ctacte->save();
+        }
+
+        $remito->save();
+    }
+
+    Session::flash('message', 'Remito re-generado correctamente!!');
+    return Redirect::to('listarPedidos');
 });
 
 

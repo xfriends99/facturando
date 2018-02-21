@@ -75,12 +75,16 @@ $factura = 1;
 											&nbsp;&nbsp;<a href= "/generarRemito/{{$pedido->id_order}}" class="btn" style="background-color: black; color: white;" >Generar Remito</a>
 										@endif
 										@if($factura==1)
+											@if($remito_a==0)
 											&nbsp;&nbsp;<a href= "/generarRemito/{{$pedido->id_order}}" class="btn btn-info" >Generar Remito</a>
+											@endif
 											&nbsp;&nbsp;<button data-toggle="modal" data-target="#myModal" id="modal_{{$pedido->id_order}}" onClick="changeID(this.id)" class="btn btn-info" >OC</button>
 										@endif
 										@if(($remito_a!=0 || $remito_b!=0) && $factura==0)
 											&nbsp;&nbsp;<a href= "/generarPresupuesto/{{$pedido->id_order}}" target="_blank" class="btn" style="background-color: grey; color: black;">Generar Presupuesto</a>
-											&nbsp;&nbsp;<a href= "/generarRemito/{{$pedido->id_order}}" class="btn btn-info" >Generar Remito</a>
+											@if($remito_a==0)
+												&nbsp;&nbsp;<a href= "/generarRemito/{{$pedido->id_order}}" class="btn btn-info" >Generar Remito</a>
+											@endif
 											&nbsp;&nbsp;<a href= "/reGenerarRemito/{{$pedido->id_order}}" class="btn" style="background-color: black; color: white;" >Re-Generar Remito</a>
 										@endif
 
