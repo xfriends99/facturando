@@ -97,10 +97,10 @@ class InvoiceHead extends Model
 
 	public function users()
 	{
-		return $this->belongsTo('app\User');
+		return $this->belongsTo('app\User', 'users_id');
 	}
 
-        public function corredor()
+    public function corredor()
 	{
 		return $this->belongsTo('app\Cliente','companies_id','id_customer');
 	}

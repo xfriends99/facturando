@@ -169,6 +169,7 @@ Route::get('ventas/{fechas?}', 'ReporteController@ventas');
 
 
 Route::get('listadoCtaCte/{fechas?}', 'ReporteController@pagosCtaCte');
+Route::get('listadoCtaCtes/{fechas?}', 'ReporteController@listadoCtaCte');
 
 Route::get('listarRemitos', 'RemitosController@listarRemito');
 Route::get('descargarRemito/{id}', 'RemitosController@descargarRemito');

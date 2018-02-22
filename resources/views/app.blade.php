@@ -1,4 +1,4 @@
-p<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head><meta http-equiv="Content-Type" content="text/html; charset=gb18030">
 	
@@ -44,6 +44,7 @@ p<!DOCTYPE html>
 
 	<body>
 		<nav class="navbar navbar-default">
+			<small style="color:#60D75A">Versión: 2.0.1</small>
 			<div class="container-fluid">
 				<div class="navbar-header">
 					<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
@@ -127,6 +128,7 @@ p<!DOCTYPE html>
 							<li><a href="/cuentaCorriente">Cuentas Corrientes Clientes</a></li>
 							<li><a href="/ivaVentas">I.V.A. Ventas</a></li>
 							<li><a href="#">Proveedores</a></li>
+							<li><a href="/listadoCtaCtes">Listado Cta. Cte.</a></li>
 							<li><a href="/listadoCtaCte">Listado Pago Cta. Cte.</a></li>
 							<li><a href="/cuentaCorriente">Cuentas Corrientes Proveedores</a></li>
 							<li><a href="/ivaCompras">I.V.A. Compras</a></li>
