@@ -122,7 +122,7 @@ Route::post('editCustomer', 'CompaniesController@editCustomerPost');
 
 Route::get('generarFactura/{id}', 'FacturaController@getGenerarFactura');
 Route::get('listarFacturas', 'FacturaController@listarFacturas');
-Route::post('crearFactura', 'RemitosController@postGenerarFactura');
+Route::post('crearFactura', 'FacturaController@postGenerarFactura');
 Route::get('verFactura/{id}', 'FacturaController@verFactura');
 Route::get('descargarFactura/{id}', 'FacturaController@descargarFactura');
 Route::get('generarPDF/{id}', 'FacturaController@generarPDF');
