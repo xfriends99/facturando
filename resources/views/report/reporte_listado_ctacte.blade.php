@@ -43,20 +43,21 @@
                         <table class="table table-hover">
                             <thead>
                             <tr>
-                                <th>Fecha</th>
-                                <th>Cliente</th>
-                                <th>Pedido</th>
-                                <th>Tipo Cbte.</th>
-                                <th>Nro. Cbte.</th>
-                                <th>Importe</th>
-                                <th>Pago</th>
-                                <th>Usuario</th>
+                                <th style="width: 10%;">Fecha</th>
+                                <th style="width: 20%;">Cliente</th>
+                                <th style="width: 5%;">Pedido</th>
+                                <th style="width: 25%;">Tipo Cbte.</th>
+                                <th style="width: 10%;">Nro. Cbte.</th>
+                                <th style="width: 10%;">Importe</th>
+                                <th style="width: 10%;">Pago</th>
+                                <th style="width: 20%;">Usuario</th>
                             </tr>
                             </thead>
                             <tbody>
 
                             @if($invoices!=null)
                                 @foreach($invoices as $invoice)
+                                    @if($invoice['type']=='invoice')
                                     <?php
                                     if($invoice['cbte_tipo']==99){
                                         $im = $invoice['imp_net'];
@@ -65,7 +66,7 @@
                                     }
                                     ?>
                                     <tr>
-                                        <td>{{ $invoice['date'] }}</td>
+                                        <td>{{ date('d-m-Y',strtotime($invoice['date'])) }}</td>
                                         <td>{{$invoice['companyName']}}</td>
                                         <td>@if($invoice['id_order']){{$invoice['id_order']}}@endif</td>
                                         <td> @if($invoice['cbte_tipo']==1) Factura @elseif ($invoice['cbte_tipo']==2) Nota de Débito @elseif($invoice['cbte_tipo']==3) Nota de Crédito @elseif($invoice['cbte_tipo']==99) Remito @endif </td>
@@ -78,15 +79,28 @@
                                             @endif
                                         </td>
                                     </tr>
-
+                                    @else
+                                        <tr>
+                                            <td>{{ $invoice['date']->format('d-m-Y') }}</td>
+                                            <td>{{$invoice['companyName']}}</td>
+                                            <td></td>
+                                            <td>@if ($invoice['object']->medios_pagos_id!=null) {{ $invoice['object']->medio_pago->tipo }} @else {{ $invoice['object']->otro }} @endif</td>
+                                            <td></td>
+                                            <td></td>
+                                            <td>{{ '$ '. number_format($invoice['imp_total'] , 2)  }}</td>
+                                            <td>
+                                                @if($invoice['object']->users)
+                                                    {{ $invoice['object']->users->name . ' ' . $invoice['object']->users->lastname  }}
+                                                @endif
+                                            </td>
+                                        </tr>
+                                    @endif
                                 @endforeach
                             @endif
 
                             </tbody>
                         </table>
-                        @if($invoices!=null)
-                            <center> <?php echo $invos->appends(Input::except('page'))->render(); ?> </center>
-                        @endif
+
                     </div>
                 </div>
             </div>

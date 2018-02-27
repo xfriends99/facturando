@@ -21,7 +21,7 @@ class PedidosController extends Controller{
 
 	public function getListarPedidos(\Illuminate\Http\Request $request){
 	        $statuses = \DB::table('toallasd_tdp.ps_order_state_lang')
-                ->where('id_lang',1)->whereIn('id_order_state',[3,5,6,7,8,9,12])
+                ->where('id_lang',1)->whereIn('id_order_state',[3,5,6,7,8,9,12,13])
                 ->orderBy('ps_order_state_lang.name','asc')->get();
 	        if($request->get('status')){
                 $pedidos = \app\Pedido::join('ps_order_state_lang', 'ps_orders.current_state','=','ps_order_state_lang.id_order_state')

@@ -68,7 +68,7 @@ $factura = 1;
 								</td>
 								<td style="width:10px;" >@if($factura==1) F @endif </td>
 								<td style="width:500px;">
-									@if($pedido->current_state==3 || $pedido->current_state==7 || $pedido->current_state==8 || $pedido->current_state==9 || $pedido->current_state==12)
+									@if($pedido->current_state==3 || $pedido->current_state==7 || $pedido->current_state==8 || $pedido->current_state==9 || $pedido->current_state==12 || $pedido->current_state==13)
 										<a href= "/expedicion/{{$pedido->id_order}}" target="_blank" class="btn btn-success" >Generar Expedición</a>
 										@if($factura==0 && $remito_a==0 && $remito_b==0)
 											&nbsp;&nbsp;<a href= "/generarFactura/{{$pedido->id_order}}" onClick="return confirm('¿Esta seguro?');" class="btn btn-danger" >Generar Factura</a>

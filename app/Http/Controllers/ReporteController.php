@@ -152,9 +152,13 @@ public function listadoCtaCte(){
             ->select(\DB::raw('invoice_head.id_order, invoice_head.id as idfact,cta_ctes.saldo,invoice_head.company_name,invoice_head.imp_total,invoice_head.imp_net, cta_ctes.id, invoice_head.nro_cbte, invoice_head.cbte_tipo, invoice_head.fecha_facturacion,invoice_head.users_id'))
             ->leftJoin("cta_ctes", "invoice_head_id", "=", "invoice_head.id")
             ->orderBy('fecha_facturacion','DESC')
-            ->orderBy('invoice_head.id','desc')
-            ->whereBetween('fecha_facturacion',$rango)->paginate(10);
+            ->whereBetween('fecha_facturacion',$rango)->get();
 
+        $movimientos = \app\Pago::select(\DB::raw('pagos.*, invoice_head.company_name'))
+            ->join('cta_ctes', 'pagos.cta_ctes_id', '=', 'cta_ctes.id')
+            ->join('invoice_head', 'invoice_head.id', '=', 'cta_ctes.invoice_head_id')
+            ->whereBetween('created_at',$rango)
+            ->where('is_active','=',1)->orderBy('pagos.created_at','desc')->get();
         $row = collect();
         foreach ($invoices as $inv){
             $data = ['type'=>'invoice', 'date' => $inv->fecha_facturacion,
@@ -175,14 +179,63 @@ public function listadoCtaCte(){
             $row->push($data);
         }
 
+        foreach ($movimientos as $inv){
+            $data = ['type'=>'pago', 'date' => $inv->created_at,
+                'cbte_tipo' => '', 'nro_cbte'=> '',
+                'imp_total' => $inv->pago,
+                'idfact' => '', 'id_order' => '',
+                'id' => $inv->id, 'object' => $inv, 'companyName' => $inv->company_name];
+
+            $row->push($data);
+        }
+
         return view('report.reporte_listado_ctacte')
-            ->with('invoices',$row->toArray())->with('desde',Input::get('desde'))
+            ->with('invoices',$row->sortByDesc('date')->toArray())->with('desde',Input::get('desde'))
             ->with('hasta',Input::get('hasta'))->with('invos', $invoices);
     }else{
         $hoy = date("Y-m-d");
-        $invoices = null;
+        $invoices = $invoices = \app\InvoiceHead::where('status','=','A')
+            ->select(\DB::raw('invoice_head.id_order, invoice_head.id as idfact,cta_ctes.saldo,invoice_head.company_name,invoice_head.imp_total,invoice_head.imp_net, cta_ctes.id, invoice_head.nro_cbte, invoice_head.cbte_tipo, invoice_head.fecha_facturacion,invoice_head.users_id'))
+            ->leftJoin("cta_ctes", "invoice_head_id", "=", "invoice_head.id")
+            ->orderBy('fecha_facturacion','DESC')
+            ->where('fecha_facturacion',$hoy)->get();
+
+        $movimientos = \app\Pago::select(\DB::raw('pagos.*, invoice_head.company_name'))
+            ->join('cta_ctes', 'pagos.cta_ctes_id', '=', 'cta_ctes.id')
+            ->join('invoice_head', 'invoice_head.id', '=', 'cta_ctes.invoice_head_id')
+            ->where('created_at', '>=',$hoy. '00:00:00')
+            ->where('is_active','=',1)->orderBy('pagos.created_at','desc')->get();
+        $row = collect();
+        foreach ($invoices as $inv){
+            $data = ['type'=>'invoice', 'date' => $inv->fecha_facturacion,
+                'cbte_tipo' => $inv->cbte_tipo, 'nro_cbte'=> $inv->nro_cbte,
+                'imp_net' => $inv->imp_net,
+                'saldo' => Pago::where('cta_ctes_id', $inv->id)
+                    ->where('is_active',1)->sum('pago'),
+                'idfact' => $inv->idfact, 'id_order' => $inv->id_order,
+                'id' => $inv->id, 'object' => $inv, 'companyName' => $inv->company_name];
+
+            if($inv->cbte_tipo!=3){
+                $data['imp_total'] = $inv->imp_total;
+            } else {
+                $data['imp_total'] = 0;
+                $data['saldo'] += $inv->imp_total;
+            }
+
+            $row->push($data);
+        }
+
+        foreach ($movimientos as $inv){
+            $data = ['type'=>'pago', 'date' => $inv->created_at,
+                'cbte_tipo' => '', 'nro_cbte'=> '',
+                'imp_total' => $inv->pago,
+                'idfact' => '', 'id_order' => '',
+                'id' => $inv->id, 'object' => $inv, 'companyName' => $inv->company_name];
+
+            $row->push($data);
+        }
         return view('report.reporte_listado_ctacte')
-            ->with('hoy',$hoy)->with('invoices',$invoices);
+            ->with('hoy',$hoy)->with('invoices',$row->sortByDesc('date')->toArray());
     }
 }
 
