@@ -153,7 +153,8 @@ public function listadoCtaCte(){
             ->leftJoin("cta_ctes", "invoice_head_id", "=", "invoice_head.id")
             ->orderBy('fecha_facturacion','DESC')
             ->whereBetween('fecha_facturacion',$rango)->get();
-
+        $rango[0] = $rango[0]. ' 00:00:00';
+        $rango[1] = $rango[1]. ' 23:59:59';
         $movimientos = \app\Pago::select(\DB::raw('pagos.*, invoice_head.company_name'))
             ->join('cta_ctes', 'pagos.cta_ctes_id', '=', 'cta_ctes.id')
             ->join('invoice_head', 'invoice_head.id', '=', 'cta_ctes.invoice_head_id')
