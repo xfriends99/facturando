@@ -200,11 +200,10 @@ public function listadoCtaCte(){
             ->leftJoin("cta_ctes", "invoice_head_id", "=", "invoice_head.id")
             ->orderBy('fecha_facturacion','DESC')
             ->where('fecha_facturacion',$hoy)->get();
-
         $movimientos = \app\Pago::select(\DB::raw('pagos.*, invoice_head.company_name'))
             ->join('cta_ctes', 'pagos.cta_ctes_id', '=', 'cta_ctes.id')
             ->join('invoice_head', 'invoice_head.id', '=', 'cta_ctes.invoice_head_id')
-            ->where('created_at', '>=',$hoy. '00:00:00')
+            ->where('created_at',$hoy)
             ->where('is_active','=',1)->orderBy('pagos.created_at','desc')->get();
         $row = collect();
         foreach ($invoices as $inv){
