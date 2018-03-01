@@ -59,7 +59,12 @@ $factura = 1;
 								<th style="width:20px;">{{ date('d-m-Y',strtotime($pedido->date_add))  }}</th>
 								<td style="width:20px;">{{ $pedido->id_order}}</td>
 
-								<td style="width:150px;">@if($pedido->customer!=null){{ $pedido->customer->firstname . ' ' . $pedido->customer->lastname}}@endif</td>
+								<td style="width:150px;">
+									@if($pedido->direccion_factura)
+										{{$pedido->direccion_factura->company}}
+									@elseif($pedido->customer!=null)
+										{{ $pedido->customer->firstname . ' ' . $pedido->customer->lastname}}
+									@endif</td>
 								<td style="width:30px;">{{'$ '.number_format($pedido->total_paid,2) }}</td>
 								<td style="width:50px;">
 									<span class="label label-default" style="background: {{$pedido->color}} !important;">
