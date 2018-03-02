@@ -9,6 +9,7 @@ use Illuminate\Http\Response;
 use Request;
 use Session;
 use Auth;
+use app\ProductoTDP;
 
 class ProductsController extends Controller {
 
@@ -30,134 +31,105 @@ class ProductsController extends Controller {
 	public function getEditProduct($id = null)
 	{	
 
-		$product = \app\Product::find($id);
-		$categories = \app\Category::where('is_active','=','1')->get();
-		$ivas = \app\TipoIVA::all();
-
+		$product = ProductoTDP::find($id);
 		if($product!=null){
-
-			return view('product.edit')
-			->with('product',$product)
-			->with('ivas',$ivas)
-			->with('categories',$categories);
+			return view('product.edit')->with('product',$product);
 		}
 		else{
-			return view('home');
+			return view('products');
 		}
 
 	}
 
-	public function postEditProduct()
-	{	
-		
-		$rules = array(
-			'category' => 'required',
-			'name' => 'required',
-			'iva' => 'required',
-			);
+	public function postEditProduct(\Illuminate\Http\Request $request, $id)
+	{
+
+        $rules = array(
+            'codigo' => 'required',
+            'descripcion' => 'required',
+            'pesoRef' => 'required|numeric',
+            'diametroRef' => 'required|numeric',
+            'metrosRef' => 'required|numeric',
+            'rollosRef' => 'required|integer',
+            'operacion' => 'required',
+            'peso_manga' => 'numeric',
+            'diametro' => 'numeric',
+            'cant_metros' => 'numeric',
+            'cant_por_man' => 'numeric',
+            'cant_por_pack' => 'numeric',
+            'peso_por_pack' => 'numeric',
+            //'tmpo_reb' => '',
+            'emp_util_reb' => 'integer',
+            //'tmpo_corte' => '',
+            'emp_util_corte' => 'integer',
+            //'tmpo_empq' => '',
+            'emp_util_emp' => 'integer',
+            'stock_Fisico' => 'required|integer',
+            'stock_Pedido' => 'required|integer'
+        );
 		
 		$validator = Validator::make(Input::all(), $rules);
-		$id = Input::get('product_id');
-
 		if ($validator->fails()) {
-			return Redirect::to('editCategory/'.$id)
+			return Redirect::to('products/'.$id.'/edit')
 			->withErrors($validator);
 		} else {
-
-			$product = \app\Product::find($id);
-
-			$product->name = Input::get('name');
-			
-			$product->tipo_iva_id = Input::get('iva');
-			
-			$product->categories_id = Input::get('category');
-
-			$punitario = Input::get('punitario');
-			if(!empty($punitario)){
-				$product->price = Input::get('punitario');
-			}
-
-			$descripcion = Input::get('descripcion');
-			if(!empty($descripcion)){
-				$product->description = Input::get('descripcion');
-			}
-
-			$code = Input::get('code');
-			if(!empty($code)) {
-				$product->code = Input::get('code'); 
-			}
-			else{
-				$product->code = $product->id;			
-			}
-
-			if($product->save()){
+			$product = ProductoTDP::find($id);
+            $data = $request->except(['_token']);
+			if($product = $product->update($data)){
 				Session::flash('message', 'Producto actualizado correctamente!!');
-				return Redirect::to('editProduct/'.$id);
-			}
-
-
+				return Redirect::to('products');
+			} else {
+                return Redirect::to('products/'.$id.'/edit')->withErrors('Error al editar el producto');
+            }
 		}
 	}
 
 
 	public function getAddProduct()
 	{
-		$categories = \app\Category::where('is_active','=','1')
-		->get();
-		$ivas = \app\TipoIVA::all();
-
-		return view('product.add')->with('categories',$categories)
-		->with('ivas',$ivas);
-
+		return view('product.add');
 	}
 
-	public function postAddProduct()
+	public function postAddProduct(\Illuminate\Http\Request $request)
 	{
 
-		$rules = array(
-			'category' => 'required',
-			'name' => 'required',
-			'code' => 'unique:products',
-			'iva' => 'required'
-			);
-
+        $rules = array(
+            'codigo' => 'required',
+            'descripcion' => 'required',
+            'pesoRef' => 'required|numeric',
+            'diametroRef' => 'required|numeric',
+            'metrosRef' => 'required|numeric',
+            'rollosRef' => 'required|integer',
+            'operacion' => 'required',
+            'peso_manga' => 'numeric',
+            'diametro' => 'numeric',
+            'cant_metros' => 'numeric',
+            'cant_por_man' => 'numeric',
+            'cant_por_pack' => 'numeric',
+            'peso_por_pack' => 'numeric',
+            //'tmpo_reb' => '',
+            'emp_util_reb' => 'integer',
+            //'tmpo_corte' => '',
+            'emp_util_corte' => 'integer',
+            //'tmpo_empq' => '',
+            'emp_util_emp' => 'integer',
+            'stock_Fisico' => 'required|integer',
+            'stock_Pedido' => 'required|integer'
+        );
 		$validator = Validator::make(Input::all(), $rules);
 
 		if ($validator->fails()) {
-			return Redirect::to('addProduct')
+			return Redirect::to('products/create')
 			->withErrors($validator);
 		} else {
-			$product = new \app\Product;
-
-			$product->tipo_iva_id = Input::get('iva');
-
-			$product->name = Input::get('name');
-			
-			$product->categories_id = Input::get('category');
-
-			$punitario = Input::get('punitario');
-			if(!empty($punitario)){
-				$product->price = Input::get('punitario');
-			}
-
-			$descripcion = Input::get('descripcion');
-			if(!empty($descripcion)){
-				$product->description = Input::get('descripcion');
-			}
-			
-			if($product->save()){
-
-				$code = Input::get('code');
-				if(!empty($code)) {
-					$product->code = Input::get('code'); 
-				}
-				else{
-					$product->code = $product->id;			
-				}
-				$product->save();
+		    $data = array_merge($request->except(['_token']), ['reference' => '']);
+            $product = ProductoTDP::create($data);
+			if($product){
 				Session::flash('message', 'Producto creado correctamente!!');
-				return Redirect::to('addProduct');
-			}
+				return Redirect::to('products');
+			} else {
+                return Redirect::to('products/create')->withErrors('Error al almacenar el producto');
+            }
 
 		}
 	}
@@ -165,8 +137,7 @@ class ProductsController extends Controller {
 	public function listProducts()
 	{
 
-		$products = \app\Product::where('is_active','=','1')
-		->paginate(10);
+		$products = ProductoTDP::orderBy('id', 'desc')->paginate(10);
 
 		return view('product.list')->with('products',$products);
 
@@ -175,12 +146,10 @@ class ProductsController extends Controller {
 	public function deleteProduct( $id = null )
 	{
 
-		$product = \app\Product::find($id);
+		$product = ProductoTDP::find($id);
 
 		if($product!=null){
-
-			$product->is_active = 0;
-			if($product->save()) {
+			if($product->delete()) {
 				Session::flash('message', 'Producto eliminado correctamente!!');
 				return Redirect::to('products');
 			} else{

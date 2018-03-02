@@ -5,6 +5,12 @@ use Illuminate\Database\Eloquent\Model;
 class ProductoTDP extends Model
 {
 
+        protected $fillable = ['codigo', 
+            'descripcion','pesoRef','diametroRef', 'metrosRef','rollosRef',
+            'operacion','peso_manga', 'diametro','cant_metros', 'cant_por_man','cant_por_pack',
+            'peso_por_pack','tmpo_reb', 'emp_util_reb','tmpo_corte',
+            'emp_util_corte','tmpo_empq','emp_util_emp','stock_Fisico', 'stock_Pedido'];
+
         protected $table = 'productosTDP';
 
         public $timestamps = false;

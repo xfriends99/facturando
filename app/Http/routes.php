@@ -31,6 +31,13 @@ Route::get('cargaProd', 'StockController@getStock'); /* Cargo listado de stock. 
 
 Route::get('costo', 'CostoController@getCosto');
 
+Route::get('products', 'ProductsController@listProducts');
+Route::get('products/create', 'ProductsController@getAddProduct');
+Route::post('products/store', 'ProductsController@postAddProduct');
+Route::get('products/{id}/edit', 'ProductsController@getEditProduct');
+Route::post('products/{id}/update', 'ProductsController@postEditProduct');
+Route::get('products/{id}/delete', 'ProductsController@deleteProduct');
+
 Route::get('addProduccion', function(){
 
 return view('produccion.add');

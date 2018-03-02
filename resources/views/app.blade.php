@@ -63,6 +63,7 @@
                                                @endif
                                                @if(!Auth::guest()  && Auth::user()->roles_id==5)
                                                        <li><a href="/stock">Stock</a></li>
+													   <li><a href="/products">Productos</a></li>
                                                @endif
 						@if (!Auth::guest() && Auth::user()->roles_id!=4 && Auth::user()->roles_id!=5)
 						<li><a href="{{ url('/') }}">Home</a></li>
@@ -86,7 +87,7 @@
 					        <li><a href="{{ url('conceptosCaja') }}">Conceptos</a></li>
 </ul>
 						</li>
-@if(Auth::user()->roles_id!=3) <li><a href="/stock">Stock</a></li> @endif	
+@if(Auth::user()->roles_id!=3) <li><a href="/stock">Stock</a></li> 													   <li><a href="/products">Productos</a></li> @endif
                                                         @if(Auth::user()->roles_id==1)
                                                         <li><a href="/viewProd">Producción</a></li>
 							<li><a href="/costo">Costos</a></li>
