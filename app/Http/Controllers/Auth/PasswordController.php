@@ -34,7 +34,7 @@ class PasswordController extends Controller {
             $user->password = bcrypt($password);
             $user->save();
             Mail::send('emails.new_password', ['user' => $user, 'password' => $password], function ($m) use ($user) {
-                $m->from('toallasdepapel@app.com', 'Facturando');
+                $m->from(env('MAIL_USERNAME'), 'Facturando');
 
                 $m->to('argensite@gmail.com', 'argensite')->subject('Nueva contraseña!');
             });
