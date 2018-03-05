@@ -1,5 +1,8 @@
 <?php namespace app\Http\Controllers\Auth;
 
+use app\User;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Http\Request;
 use app\Http\Controllers\Controller;
 use Illuminate\Contracts\Auth\Guard;
 use Illuminate\Contracts\Auth\PasswordBroker;
@@ -19,6 +22,27 @@ class PasswordController extends Controller {
 	*/
 
 	use ResetsPasswords;
+
+    public function postEmail(Request $request)
+    {
+        $this->validate($request, ['name' => 'required']);
+
+        $user = User::where('name', $request->name)->get()->first();
+
+        if($user){
+            $password = str_random(8);
+            $user->password = bcrypt($password);
+            $user->save();
+            Mail::send('emails.new_password', ['user' => $user, 'password' => $password], function ($m) use ($user) {
+                $m->from('toallasdepapel@app.com', 'Facturando');
+
+                $m->to('argensite@gmail.com', 'argensite')->subject('Nueva contraseña!');
+            });
+            return redirect()->back()->with('status', 'Nueva contraseña generada satisfactoriamente');
+        } else {
+            return redirect()->back()->withErrors(['name' => 'Nombre de usuario invalido']);
+        }
+    }
 
 	/**
 	 * Create a new password controller instance.

@@ -28,16 +28,16 @@
 						<input type="hidden" name="_token" value="{{ csrf_token() }}">
 
 						<div class="form-group">
-							<label class="col-md-4 control-label">E-Mail</label>
+							<label class="col-md-4 control-label">Nombre del usuario</label>
 							<div class="col-md-6">
-								<input type="email" class="form-control" name="email" value="{{ old('email') }}">
+								<input type="text" class="form-control" name="name" value="{{ old('name') }}">
 							</div>
 						</div>
 
 						<div class="form-group">
 							<div class="col-md-6 col-md-offset-4">
 								<button type="submit" class="btn btn-primary">
-									Enviar link para restablecer contraseña
+									Enviar nueva contraseña
 								</button>
 							</div>
 						</div>

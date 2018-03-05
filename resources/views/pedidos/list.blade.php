@@ -14,7 +14,14 @@
 					<div class="alert alert-info">{{ Session::get('message') }}</div>
 					@endif
 					<div id="emailResul"></div>
-					<label for="kwd_search">Pedidos: </label> <select class="form-control" name="status" id="status"><option value="">Seleccione</option>@foreach($statuses as $s) <option value="{{$s->id_order_state}}" @if(isset($request['status']) && $request['status']==$s->id_order_state) selected @endif>{{$s->name}}</option>  @endforeach</select>
+					<div class="row">
+						<div class="col-md-6 col-sm-12">
+							<label for="kwd_search">Pedidos: </label> <select class="form-control" name="status" id="status"><option value="">Seleccione</option>@foreach($statuses as $s) <option value="{{$s->id_order_state}}" @if(isset($request['status']) && $request['status']==$s->id_order_state) selected @endif>{{$s->name}}</option>  @endforeach</select>
+						</div>
+						<div class="col-md-6 col-sm-12">
+							<label for="kwd_search">Cliente: </label> <select class="form-control" name="cliente" id="cliente"><option value="">Seleccione</option>@foreach($customers as $key => $v) <option value="{{$key}}" @if(isset($request['cliente']) && $request['cliente']==$key) selected @endif>{{$v}}</option>  @endforeach</select>
+						</div>
+					</div>
 					<table class="table table-hover">
 						<thead>
 							<tr>
@@ -173,6 +180,27 @@ $(function() {
            }
            window.location.href = url;
 	   });
+
+        $('#cliente').change(function(){
+            var urls = window.location.href.split('?');
+            url = urls[0];
+            if($(this).val()!=''){
+                url += '?cliente='+$(this).val();
+            }
+            if(urls[1]){
+                var params = urls[1].split('&');
+                for(var i =0; i<params.length;i++){
+                    if(params[i].indexOf('cliente')==-1){
+                        if($(this).val()!=''){
+                            url += '&'+params[i];
+                        } else {
+                            url += '?'+params[i];
+                        }
+                    }
+                }
+            }
+            window.location.href = url;
+        });
 	});
 	$("#submit_modal").click(function(){
 		$.ajax({
