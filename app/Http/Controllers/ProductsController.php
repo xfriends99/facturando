@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\File;
 use Illuminate\Http\Response;
 use Request;
+use app\Services\UpdateProductService;
 use Session;
 use Auth;
 use app\ProductoTDP;
@@ -18,9 +19,14 @@ class ProductsController extends Controller {
 	 *
 	 * @return void
 	 */
-	public function __construct()
+
+	private $updateProductService;
+
+	public function __construct(UpdateProductService $updateProductService)
 	{
 		$this->middleware('auth');
+
+        $this->updateProductService = $updateProductService;
 	}
 
 	/**
@@ -136,6 +142,8 @@ class ProductsController extends Controller {
 
 	public function listProducts()
 	{
+
+	    $this->updateProductService->updateProduct();
 
 		$products = ProductoTDP::orderBy('id', 'desc')->paginate(10);
 

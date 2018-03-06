@@ -31,15 +31,15 @@
 									<div class="row">
 										<div class="col-md-6">
 											<div class="form-group">
-												<label class="col-md-4 control-label">Código</label>
+												<label class="col-md-4 control-label">Referencia</label>
 												<div class="col-md-6">
-													<input type="text" class="form-control" name="codigo" value="{{$product->codigo}}" >
+													<input type="text" readonly class="form-control" name="reference-read" value="{{$product->reference}}" >
 												</div>
 											</div>
 											<div class="form-group">
 												<label class="col-md-4 control-label">Descripción</label>
 												<div class="col-md-6">
-													<textarea class="form-control" name="descripcion">{{$product->descripcion}}</textarea>
+													<textarea readonly class="form-control" name="descripcion">{{$product->descripcion}}</textarea>
 												</div>
 											</div>
 											<div class="form-group">
