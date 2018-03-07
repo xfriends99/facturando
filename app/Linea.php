@@ -14,6 +14,9 @@ class Linea extends Model
 		return $this->belongsTo('app\Product','product_id','id_product');
 	}
 
-   
+	public function pedido()
+    {
+        return $this->belongsTo('app\Pedido', 'id_order', 'id_order');
+    }
 
 }

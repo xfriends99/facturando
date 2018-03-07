@@ -1,5 +1,6 @@
 <?php namespace app\Http\Controllers;
 
+use app\Linea;
 use app\Pago;
 use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\Redirect;
@@ -127,7 +128,7 @@ public function ventas(){
    }
 
     public function listadoProductoPedidos(){
-        if(Input::has('desde') && Input::has('hasta')){
+        /*if(Input::has('desde') && Input::has('hasta')){
             $rango[0] = Input::get('desde');
             $rango[1] = Input::get('hasta');
 
@@ -139,7 +140,21 @@ public function ventas(){
             $hoy = date("Y-m-d");
             $invoices = \app\InvoiceHead::where('fecha_facturacion','=',$hoy)->orderBy('fecha_facturacion','DESC')->get();
             return view('report.reporte_listado_producto_pedidos')->with('invoices',$invoices)->with('hoy',$hoy);
-        }
+        }*/
+        $pedidos = Linea::select('ps_order_detail.*')
+            ->addSelect('ps_orders.date_add as date_add')
+            ->addSelect('ps_orders.current_state as current_state')
+            ->addSelect('ps_order_state_lang.name as name_state')
+            ->addSelect('ps_order_state.color as color')
+            ->join('ps_orders', 'ps_orders.id_order', '=', 'ps_order_detail.id_order')
+            ->join('ps_order_state_lang', 'ps_orders.current_state','=','ps_order_state_lang.id_order_state')
+            ->join('ps_order_state', 'ps_orders.current_state','=','ps_order_state.id_order_state')
+            ->where('ps_order_state_lang.id_lang',1)
+            ->whereIn('ps_orders.current_state', [3, 13, 12])
+            ->orderBy('ps_orders.date_add', 'desc')
+            ->orderBy('ps_order_detail.product_id')
+            ->orderBy('ps_orders.id_customer')->get();
+        return view('report.reporte_listado_producto_pedidos')->with('pedidos',$pedidos);
     }
 
 public function pagosCtaCte(){
