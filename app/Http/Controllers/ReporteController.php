@@ -151,7 +151,7 @@ public function ventas(){
             ->join('ps_order_state', 'ps_orders.current_state','=','ps_order_state.id_order_state')
             ->where('ps_order_state_lang.id_lang',1)
             ->whereIn('ps_orders.current_state', [3, 13, 12])
-            ->orderBy('ps_orders.date_add', 'desc')
+            ->orderBy('ps_orders.date_add', 'asc')
             ->orderBy('ps_order_detail.product_id')
             ->orderBy('ps_orders.id_customer')->get();
         return view('report.reporte_listado_producto_pedidos')->with('pedidos',$pedidos);
