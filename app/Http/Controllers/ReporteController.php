@@ -126,6 +126,22 @@ public function ventas(){
      }	
    }
 
+    public function listadoProductoPedidos(){
+        if(Input::has('desde') && Input::has('hasta')){
+            $rango[0] = Input::get('desde');
+            $rango[1] = Input::get('hasta');
+
+            $invoices = \app\InvoiceHead::whereBetween('fecha_facturacion',$rango)
+            ->orderBy('fecha_facturacion','DESC')
+            ->get();
+            return view('report.reporte_listado_producto_pedidos')->with('invoices',$invoices)->with('desde',Input::get('desde'))->with('hasta',Input::get('hasta'));
+        }else{
+            $hoy = date("Y-m-d");
+            $invoices = \app\InvoiceHead::where('fecha_facturacion','=',$hoy)->orderBy('fecha_facturacion','DESC')->get();
+            return view('report.reporte_listado_producto_pedidos')->with('invoices',$invoices)->with('hoy',$hoy);
+        }
+    }
+
 public function pagosCtaCte(){
 
 	 if(Input::has('desde') && Input::has('hasta')){

@@ -173,7 +173,7 @@ Route::get('ivaCompras', 'ReporteController@ivaCompras');
 Route::post('listarIVAcompras', 'ReporteController@listarIVAcompras');
 Route::get('cuentaCorriente', 'ReporteController@listarCtaCte');
 Route::get('ventas/{fechas?}', 'ReporteController@ventas');
-
+Route::get('listadoProductoPedidos/{fechas?}', 'ReporteController@listadoProductoPedidos');
 
 Route::get('listadoCtaCte/{fechas?}', 'ReporteController@pagosCtaCte');
 Route::get('listadoCtaCtes/{fechas?}', 'ReporteController@listadoCtaCte');

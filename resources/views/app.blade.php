@@ -21,6 +21,7 @@
 		<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
 		<script src="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.1/js/bootstrap.min.js"></script>
 		<script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+		<script src="/js/typeahead.js"></script>
 		<script>
 		function checkString(id){
 			var element = '#'+id;
@@ -44,7 +45,7 @@
 
 	<body>
 		<nav class="navbar navbar-default">
-			<small style="color:#60D75A">Versión: 2.1.0</small>
+			<small style="color:#60D75A">Versión: 2.2.0</small>
 			<div class="container-fluid">
 				<div class="navbar-header">
 					<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
@@ -129,6 +130,7 @@
 							<li><a href="/cuentaCorriente">Cuentas Corrientes Clientes</a></li>
 							<li><a href="/ivaVentas">I.V.A. Ventas</a></li>
 							<li><a href="#">Proveedores</a></li>
+							<li><a href="/listadoProductoPedidos">Listado Productos Pedidos</a></li>
 							<li><a href="/listadoCtaCtes">Listado Cta. Cte.</a></li>
 							<li><a href="/listadoCtaCte">Listado Pago Cta. Cte.</a></li>
 							<li><a href="/cuentaCorriente">Cuentas Corrientes Proveedores</a></li>

@@ -140,14 +140,26 @@ class ProductsController extends Controller {
 		}
 	}
 
-	public function listProducts()
+	public function listProducts(\Illuminate\Http\Request $request)
 	{
 
 	    $this->updateProductService->updateProduct();
 
-		$products = ProductoTDP::orderBy('id', 'desc')->paginate(10);
+	    $reference = [['id' => 1, 'name'=> '1 - Fabricación Propia de Papelera'],
+            ['id' => 2, 'name'=> '2 - Fabricación de Terceros de Papelera'],
+            ['id' => 3, 'name'=> '3 - Reventa de Productos no Propio de Papelera'],
+            ['id' => 4, 'name'=> '4 - Reventa de Productos no Propio de Plastico'],
+            ['id' => 5, 'name'=> '5 - Reventa de Productos no Propio de Servilleta']];
 
-		return view('product.list')->with('products',$products);
+		$products = ProductoTDP::where('active', 1)
+            ->orderBy('reference', 'asc');
+
+		if($request->get('reference') && $request->reference){
+		    $products->where('reference', 'like', $request->reference.'-%');
+        }
+
+		return view('product.list')->with('products',$products->paginate(15))
+            ->with('reference', $reference)->with('request', $request->all());
 
 	}
 
