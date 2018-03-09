@@ -2,6 +2,7 @@
 
 use app\Linea;
 use app\Pago;
+use app\ProductoTDP;
 use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Validator;
@@ -154,7 +155,30 @@ public function ventas(){
             ->orderBy('ps_orders.date_add', 'asc')
             ->orderBy('ps_order_detail.product_id')
             ->orderBy('ps_orders.id_customer')->get();
-        return view('report.reporte_listado_producto_pedidos')->with('pedidos',$pedidos);
+
+        $pedidos_productos = Linea::select('ps_order_detail.*')
+            ->addSelect('ps_orders.date_add as date_add')
+            ->addSelect('ps_orders.current_state as current_state')
+            ->addSelect('ps_order_state_lang.name as name_state')
+            ->addSelect('ps_order_state.color as color')
+            ->join('ps_orders', 'ps_orders.id_order', '=', 'ps_order_detail.id_order')
+            ->join('ps_order_state_lang', 'ps_orders.current_state','=','ps_order_state_lang.id_order_state')
+            ->join('ps_order_state', 'ps_orders.current_state','=','ps_order_state.id_order_state')
+            ->where('ps_order_state_lang.id_lang',1)
+            ->whereIn('ps_orders.current_state', [3, 13, 12])
+            ->orderBy('ps_order_detail.product_id')
+            ->orderBy('ps_orders.date_add', 'desc')->get();
+        $product_list = collect();
+        foreach ($pedidos_productos as $p){
+            $product_list->push($p->product_id);
+        }
+        $products_id = ProductoTDP::whereIn('id_product', $product_list->toArray())->get();
+        $product_list = [];
+        foreach ($products_id as $p){
+            $product_list[$p->id_product] = $p;
+        }
+        return view('report.reporte_listado_producto_pedidos')->with('pedidos',$pedidos)
+            ->with('product_list', $product_list)->with('pedidos_productos', $pedidos_productos);
     }
 
 public function pagosCtaCte(){

@@ -144,7 +144,6 @@ class ProductsController extends Controller {
 	{
 
 	    $this->updateProductService->updateProduct();
-
 	    $reference = [['id' => 1, 'name'=> '1 - Fabricación Propia de Papelera'],
             ['id' => 2, 'name'=> '2 - Fabricación de Terceros de Papelera'],
             ['id' => 3, 'name'=> '3 - Reventa de Productos no Propio de Papelera'],
@@ -157,9 +156,25 @@ class ProductsController extends Controller {
 		if($request->get('reference') && $request->reference){
 		    $products->where('reference', 'like', $request->reference.'-%');
         }
+        $query2 = clone $products;
+		$products_lists = [];
+		foreach ($query2->get() as $p){
+		    $products_lists[$p->id] = $p->descripcion;
+        }
 
-		return view('product.list')->with('products',$products->paginate(15))
-            ->with('reference', $reference)->with('request', $request->all());
+        if($request->get('name') && $request->name){
+            $pro = null;
+		    if($request->get('reference')){
+                $pro = ProductoTDP::find($request->name);
+            }
+            if($pro==null || explode('-', $pro->reference)[0]==$request->reference){
+                $products->where('id', $request->name);
+            }
+        }
+
+        return view('product.list')->with('products',$products->paginate(15))
+            ->with('reference', $reference)->with('request', $request->all())
+            ->with('products_lists', $products_lists);
 
 	}
 

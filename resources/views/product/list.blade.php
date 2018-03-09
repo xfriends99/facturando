@@ -17,7 +17,7 @@
 							<label for="kwd_search">Referencia: </label> <select class="form-control" name="reference" id="reference"><option value="">Seleccione</option>@foreach($reference as $s) <option value="{{$s['id']}}" @if(isset($request['reference']) && $request['reference']==$s['id']) selected @endif>{{$s['name']}}</option>  @endforeach</select>
 						</div>
 						<div class="col-md-6 col-sm-12">
-
+							<label for="kwd_search">Producto: </label> <input autocomplete="off" class="form-control typeahead" id="name" @if(isset($request['name']) && isset($products_lists[$request['name']])) value="{{$products_lists[$request['name']]}}" @endif>
 						</div>
 					</div>
 					<table class="table table-hover">
@@ -81,6 +81,60 @@
                 }
             }
             window.location.href = url;
+        });
+
+        var $input = $(".typeahead");
+        $input.typeahead({
+            source: [
+					@foreach($products_lists as $key => $v)
+                {id: "{{$key}}", name: "{{$v}}"},
+				@endforeach
+            ],
+            autoSelect: true
+        });
+        $input.change(function() {
+            var current = $input.typeahead("getActive");
+            if (current) {
+                // Some item from your model is active!
+                if (current.name == $input.val()) {
+                    var urls = window.location.href.split('?');
+                    url = urls[0];
+                    if(current.id!=''){
+                        url += '?name='+current.id;
+                    }
+                    if(urls[1]){
+                        var params = urls[1].split('&');
+                        for(var i =0; i<params.length;i++){
+                            if(params[i].indexOf('name')==-1){
+                                if(current.id!=''){
+                                    url += '&'+params[i];
+                                } else {
+                                    url += '?'+params[i];
+                                }
+                            }
+                        }
+                    }
+                    window.location.href = url;
+                    // This means the exact match is found. Use toLowerCase() if you want case insensitive match.
+                } else {
+
+                    // This means it is only a partial match, you can either add a new item
+                    // or take the active if you don't want new items
+                }
+            } else {
+                var urls = window.location.href.split('?');
+                url = urls[0];
+                if(urls[1]){
+                    var params = urls[1].split('&');
+                    for(var i =0; i<params.length;i++){
+                        if(params[i].indexOf('name')==-1){
+                            url += '?'+params[i];
+                        }
+                    }
+                }
+                window.location.href = url;
+                // Nothing is active so it is a new value (or maybe empty value)
+            }
         });
     });
 </script>

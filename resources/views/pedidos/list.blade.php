@@ -181,7 +181,6 @@ $(function() {
            window.location.href = url;
 	   });
 
-
         var $input = $(".typeahead");
         $input.typeahead({
             source: [
