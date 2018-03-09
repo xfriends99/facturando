@@ -45,7 +45,7 @@
 
 	<body>
 		<nav class="navbar navbar-default">
-			<small style="color:#60D75A">Versión: 2.2.0</small>
+			<small style="color:#60D75A">Versión: 2.2.4</small>
 			<div class="container-fluid">
 				<div class="navbar-header">
 					<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
@@ -131,6 +131,7 @@
 							<li><a href="/ivaVentas">I.V.A. Ventas</a></li>
 							<li><a href="#">Proveedores</a></li>
 							<li><a href="/listadoProductoPedidos">Listado Productos Pedidos</a></li>
+							<li><a href="/listadoStock">Listado Stock</a></li>
 							<li><a href="/listadoCtaCtes">Listado Cta. Cte.</a></li>
 							<li><a href="/listadoCtaCte">Listado Pago Cta. Cte.</a></li>
 							<li><a href="/cuentaCorriente">Cuentas Corrientes Proveedores</a></li>
