@@ -25,9 +25,9 @@ class PasswordController extends Controller {
 
     public function postEmail(Request $request)
     {
-        $this->validate($request, ['name' => 'required']);
+        $this->validate($request, ['email' => 'required|email']);
 
-        $user = User::where('name', $request->name)->get()->first();
+        $user = User::where('email', $request->email)->get()->first();
 
         if($user){
             $password = str_random(8);

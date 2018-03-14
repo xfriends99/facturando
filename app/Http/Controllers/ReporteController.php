@@ -187,9 +187,10 @@ public function ventas(){
             ->addSelect('ps_orders.current_state as current_state')
             ->addSelect(\DB::raw('sum(ps_order_detail.product_quantity) as tot_product'))
             ->join('ps_orders', 'ps_orders.id_order', '=', 'ps_order_detail.id_order')
+            ->join('ps_product', 'ps_product.id_product', '=', 'ps_order_detail.id_product')
             ->whereIn('ps_orders.current_state', [3, 13, 12])
             ->groupBy('ps_order_detail.product_id')
-            ->orderBy('ps_order_detail.product_id')
+            ->orderBy('ps_product.reference')
             ->orderBy('ps_orders.date_add', 'desc')->get();
         $product_list = collect();
         foreach ($productos as $p){

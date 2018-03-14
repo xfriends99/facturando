@@ -25,12 +25,10 @@
 							<tr>
 
 								<th>#</th>
-								<th>Código</th>
 								<th>Descripción</th>
-								<th>Referencia</th>
-								<th>Fecha</th>
 								<th>Stock Fisico</th>
 								<th>Stock Pedido</th>
+                                <th>Stock Teorico</th>
 								<th>Acción</th>
 							</tr>
 						</thead>
@@ -40,12 +38,10 @@
                             <?php $i++; ?>
 							<tr>
 								<th>{{ $i }}</th>
-								<td>{{ $product->codigo}}</td>
 								<td>{{ $product->descripcion }}</td>
-								<td>{{ $product->reference }}</td>
-								<td>{{ $product->fecha_Hora }}</td>
 								<td>{{ $product->stock_Fisico }}</td>
 								<td>{{ $product->stock_Pedido }}</td>
+                                <td>{{ $product->stock_Fisico-$product->stock_Pedido }}</td>
 								<td>
 									<a href= "{{url('/products/'.$product->id)}}/edit" class="btn btn-info" >Editar</a>&nbsp;&nbsp;
 									<!--<a href= "{{url('products/'.$product->id)}}/delete" onClick="return confirm('¿Esta seguro?');" class="btn btn-danger" >Eliminar</a> -->

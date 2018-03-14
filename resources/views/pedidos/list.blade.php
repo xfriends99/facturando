@@ -101,6 +101,28 @@ $factura = 1;
 										@endif
 
 									@endif
+									@if($pedido->current_state==5)
+										@if($factura==1)
+                                                <?php $fact = app\InvoiceHead::where('id_order','=',$pedido->id_order)
+                                                	->where('status','!=','D')
+                                                    ->where(function($q){
+                                                        $q->where('cbte_tipo','=','1');
+														$q->orWhere('cbte_tipo','=','6');
+                                                    })
+                                                    ->orderBy('nro_cbte','DESC')->first();?>
+											<a href= "/verFactura/{{$fact->id}}" class="btn btn-danger" >Ver Factura</a>
+										@endif
+										@if(($remito_a!=0 || $remito_b!=0) && $factura==0)
+											<?php $rem = app\InvoiceHead::where('id_order','=',$pedido->id_order)
+                                                    ->where('cbte_tipo','=','99')
+                                                    ->orderBy('fecha_facturacion','DESC')->first();?>
+											<a href= "/verRemito/{{$rem->id}}" class="btn" style="background-color: black; color: white;" >Ver Remito</a>
+										@endif
+									@endif
+
+									@if($pedido->current_state==6)
+										<a href= "/expedicion/{{$pedido->id_order}}" target="_blank" class="btn btn-success" >Ver</a>
+									@endif
 								</td>
 							</tr>
 							@endforeach

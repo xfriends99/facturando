@@ -34,6 +34,9 @@ class Pedido extends Model
 		return $this->hasMany('app\Linea','id_order','id_order');
 	}
 
-
+    public function histories()
+    {
+        return $this->hasMany('app\History','id_order','id_order');
+    }
 
 }

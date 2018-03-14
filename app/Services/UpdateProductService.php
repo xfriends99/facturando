@@ -3,6 +3,7 @@ namespace app\Services;
 
 use app\ProductoTDP;
 use app\Product;
+use app\Pedido;
 
 class UpdateProductService
 {
@@ -30,10 +31,18 @@ class UpdateProductService
                 'active' => $p->active];
             $productTDP = ProductoTDP::where('id_product', $p->id_product)->get()->first();
             if($productTDP){
+                unset($data['stock_Fisico']);
+                unset($data['stock_Pedido']);
                 $productTDP->update($data);
             } else {
                 ProductoTDP::create($data);
             }
         }
+    }
+
+    public function updateStock()
+    {
+        $pedidos = Pedido::select('ps_orders.*')->with(['histories'])->get();
+        return $pedidos[0];
     }
 }

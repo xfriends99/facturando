@@ -9,17 +9,22 @@ use Session;
 use Response;
 use Auth;
 use File;
-
+use app\Services\UpdateProductService;
 
 class PedidosController extends Controller{
 
+    private $updateProductService;
 
-	public function __construct()
+	public function __construct(UpdateProductService $updateProductService)
 	{
 		$this->middleware('auth');
+
+		$this->updateProductService = $updateProductService;
 	}
 
 	public function getListarPedidos(\Illuminate\Http\Request $request){
+
+        //dd($this->updateProductService->updateStock());
         $customers = collect();
         $statuses = \DB::table('toallasd_tdp.ps_order_state_lang')
             ->where('id_lang',1)->whereIn('id_order_state',[3,5,6,7,8,9,12,13])

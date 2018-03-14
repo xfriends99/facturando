@@ -51,7 +51,6 @@ class ProductsController extends Controller {
 	{
 
         $rules = array(
-            'codigo' => 'required',
             'descripcion' => 'required',
             'pesoRef' => 'required|numeric',
             'diametroRef' => 'required|numeric',
@@ -100,7 +99,6 @@ class ProductsController extends Controller {
 	{
 
         $rules = array(
-            'codigo' => 'required',
             'descripcion' => 'required',
             'pesoRef' => 'required|numeric',
             'diametroRef' => 'required|numeric',
