@@ -23,8 +23,7 @@ class PedidosController extends Controller{
 	}
 
 	public function getListarPedidos(\Illuminate\Http\Request $request){
-
-        //dd($this->updateProductService->updateStock());
+        $last_order = $this->updateProductService->updateStock();
         $customers = collect();
         $statuses = \DB::table('toallasd_tdp.ps_order_state_lang')
             ->where('id_lang',1)->whereIn('id_order_state',[3,5,6,7,8,9,12,13])
@@ -70,7 +69,7 @@ class PedidosController extends Controller{
             foreach ($customers->sortBy('v')->toArray() as $r){
                 $cus[$r['key']] = $r['v'];
             }
-	        return view('pedidos.list')->with('request', $request->all())
+	        return view('pedidos.list')->with('last_order', $last_order)->with('request', $request->all())
                 ->with('pedidos',$pedidos->paginate(10))->with('statuses', $statuses)->with('customers', $cus);
 		
 		}

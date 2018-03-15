@@ -70,9 +70,12 @@
 												<label class="col-md-4 control-label">Tipo de operación</label>
 												<div class="col-md-6">
 													<select class="form-control" name="operacion" >
-														<option value="" >Seleccione</option>
+														<option value="R" @if($product->operacion=='R' || $product->operacion=='') selected @endif>Rebobinado</option>
 														<option value="I" @if($product->operacion=='I') selected @endif>Intercalado</option>
-														<option value="R" @if($product->operacion=='R') selected @endif>Rebobinado</option>
+														<option value="V" @if($product->operacion=='V') selected @endif>Reventa</option>
+														<option value="M" @if($product->operacion=='M') selected @endif>Materia Prima</option>
+														<option value="P" @if($product->operacion=='P') selected @endif>Packaging</option>
+														<option value="S" @if($product->operacion=='S') selected @endif>Insumos</option>
 													</select>
 												</div>
 											</div>

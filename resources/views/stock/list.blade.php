@@ -28,11 +28,11 @@
 						<tbody>
 							@foreach($products as $product)
 							<tr>
-                                                                <th>{{ $product->producto->reference  }}</th>
-								<th>{{ $product->producto->nombre->name  }}</th>
-								<td id="{{$product->id_product}}">{{$product->quantity}}</td>
+								<th>{{ $product->reference  }}</th>
+								<th>{{ $product->descripcion  }}</th>
+								<td id="{{$product->id_product}}">{{$product->stock_Fisico}}</td>
 								@if(!Auth::guest()  && Auth::user()->roles_id!=5)
-								<td><input class="form-control" type="text" id="add_{{$product->id_product}}" onblur="update_quantity(this.id,this.value)"> <td>
+								<td><input class="form-control" type="text" id="add_{{$product->id_product}}" onchange="update_quantity(this.id,this.value)"> <td>
 							    @endif
 							
 							</tr>

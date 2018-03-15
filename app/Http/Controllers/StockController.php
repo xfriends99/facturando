@@ -25,8 +25,8 @@ class StockController extends Controller {
 
         public function getStock()
 	{
-                $products = \app\Stock::all();
-
+        //$products = \app\Stock::all();
+        $products = \app\ProductoTDP::where('active', 1)->orderBy('reference')->get();
 		return view('stock.list')->with('products',$products);
 
 	}

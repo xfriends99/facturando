@@ -328,13 +328,19 @@ Route::post('states/{id}', function($id)
 });
 
 Route::get('updateStock/{id}/{quantity}', function($id,$quantity)
-{
+{/*
 	if(Request::ajax()){
         $producto = app\Stock::where('id_product','=',$id)->first();
         $producto->quantity = $producto->quantity + $quantity;
         $producto->save();
         return $producto->quantity;
-	}	
+	}	*/
+    if(Request::ajax()){
+        $producto = app\ProductoTDP::where('id_product','=',$id)->first();
+        $producto->stock_Fisico = $producto->stock_Fisico + $quantity;
+        $producto->save();
+        return $producto->stock_Fisico;
+    }
 });
 
 Route::get('updateCosto/{id}/{quantity}', function($id,$quantity)

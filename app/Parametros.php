@@ -4,12 +4,9 @@ use Illuminate\Database\Eloquent\Model;
 
 class Parametros extends Model
 {
-
-
     protected $table = 'parametros';
 
-	protected $fillable = array('nro_remito_inicial');
+	protected $fillable = ['nro_remito_inicial', 'id_pedido'];
 	public $timestamps = false;
-
 
 }

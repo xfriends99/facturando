@@ -14,6 +14,7 @@
 					<div class="alert alert-info">{{ Session::get('message') }}</div>
 					@endif
 					<div id="emailResul"></div>
+					<span>Id de pedido para Stock: {{$last_order}}</span>
 					<div class="row">
 						<div class="col-md-6 col-sm-12">
 							<label for="kwd_search">Pedidos: </label> <select class="form-control" name="status" id="status"><option value="">Seleccione</option>@foreach($statuses as $s) <option value="{{$s->id_order_state}}" @if(isset($request['status']) && $request['status']==$s->id_order_state) selected @endif>{{$s->name}}</option>  @endforeach</select>
