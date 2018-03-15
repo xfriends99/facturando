@@ -6,6 +6,7 @@ use app\ProductoTDP;
 use app\Product;
 use app\Pedido;
 use app\Parametros;
+use app\Linea;
 
 class UpdateProductService
 {
@@ -28,7 +29,7 @@ class UpdateProductService
                 'metrosRef' => $p->width,
                 'rollosRef' => $p->depth,
                 'stock_Fisico' => $p->physical_quantity,
-                'stock_Pedido' => $p->physical_quantity-$p->usable_quantity,
+                'stock_Pedido' => 0,
                 'id_product' => $p->id_product,
                 'active' => $p->active];
             $productTDP = ProductoTDP::where('id_product', $p->id_product)->get()->first();
@@ -37,6 +38,13 @@ class UpdateProductService
                 unset($data['stock_Pedido']);
                 $productTDP->update($data);
             } else {
+                $lineas = Linea::select('ps_order_detail.*')
+                    ->addSelect(\DB::raw('sum(ps_order_detail.product_quantity) as tot_product'))
+                    ->join('ps_orders', 'ps_orders.id_order', '=', 'ps_order_detail.id_order')
+                    ->whereIn('ps_orders.current_state', [3, 13, 12])
+                    ->where('ps_order_detail.product_id', $p->id_product)
+                    ->groupBy('ps_order_detail.product_id')->first();
+                $data['stock_Pedido'] = $lineas ? $lineas->tot_product : 0;
                 ProductoTDP::create($data);
             }
         }
