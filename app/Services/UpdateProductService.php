@@ -81,7 +81,7 @@ class UpdateProductService
             if($new_stock!=$nivel_stock){
                 PedidoPrestashop::where('id_pedido', $p->id_order)->update([ 'nivel_stock' => $new_stock]);
             }
-            if($valid && ($p->current_state==6 || $p->current_state==5)){
+            if($valid && ($p->current_state==6 || $p->current_state==5 || $p->current_state==15 || $p->current_state==16)){
                 $param->id_pedido = $p->id_order;
                 $param->save();
             } else {
