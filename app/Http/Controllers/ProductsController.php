@@ -84,7 +84,7 @@ class ProductsController extends Controller {
             $data['updated'] = Carbon::now();
 			if($product = $product->update($data)){
 				Session::flash('message', 'Producto actualizado correctamente!!');
-				return Redirect::back();
+                return Redirect::to('products');
 			} else {
                 return Redirect::back()->withErrors('Error al editar el producto');
             }

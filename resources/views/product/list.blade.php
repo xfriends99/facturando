@@ -36,7 +36,7 @@
 							<?php $i = 0; ?>
 							@foreach($products as $product)
                             <?php $i++; ?>
-							<tr @if($date==$product->updated) style="background: #c9c9c9" @endif>
+							<tr>
 								<th>{{ $i }}</th>
 								<td>{{ $product->descripcion }}</td>
 								<td>{{ $product->stock_Fisico }}</td>
