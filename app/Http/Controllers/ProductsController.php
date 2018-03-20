@@ -1,5 +1,6 @@
 <?php namespace app\Http\Controllers;
 
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Validator;
@@ -80,11 +81,12 @@ class ProductsController extends Controller {
 		} else {
 			$product = ProductoTDP::find($id);
             $data = $request->except(['_token']);
+            $data['updated'] = Carbon::now();
 			if($product = $product->update($data)){
 				Session::flash('message', 'Producto actualizado correctamente!!');
-				return Redirect::to('products');
+				return Redirect::back();
 			} else {
-                return Redirect::to('products/'.$id.'/edit')->withErrors('Error al editar el producto');
+                return Redirect::back()->withErrors('Error al editar el producto');
             }
 		}
 	}
@@ -141,7 +143,7 @@ class ProductsController extends Controller {
 	public function listProducts(\Illuminate\Http\Request $request)
 	{
 
-	    $this->updateProductService->updateProduct();
+	    //$this->updateProductService->updateProduct();
 	    $reference = [['id' => 1, 'name'=> '1 - Fabricación Propia de Papelera'],
             ['id' => 2, 'name'=> '2 - Fabricación de Terceros de Papelera'],
             ['id' => 3, 'name'=> '3 - Reventa de Productos no Propio de Papelera'],
@@ -156,7 +158,12 @@ class ProductsController extends Controller {
         }
         $query2 = clone $products;
 		$products_lists = [];
-		foreach ($query2->get() as $p){
+		$iteration_product = $query2->get();
+		$date = $iteration_product[0]->updated;
+		foreach ($iteration_product as $p){
+		    if($p->updated_at>$date){
+		        $date = $p->updated;
+            }
 		    $products_lists[$p->id] = $p->descripcion;
         }
 
@@ -170,7 +177,7 @@ class ProductsController extends Controller {
             }
         }
 
-        return view('product.list')->with('products',$products->paginate(15))
+        return view('product.list')->with('date', $date)->with('products',$products->paginate(15))
             ->with('reference', $reference)->with('request', $request->all())
             ->with('products_lists', $products_lists);
 
