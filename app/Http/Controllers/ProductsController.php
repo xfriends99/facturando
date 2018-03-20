@@ -143,7 +143,7 @@ class ProductsController extends Controller {
 	public function listProducts(\Illuminate\Http\Request $request)
 	{
 
-	    //$this->updateProductService->updateProduct();
+	    $this->updateProductService->updateProduct();
 	    $reference = [['id' => 1, 'name'=> '1 - Fabricación Propia de Papelera'],
             ['id' => 2, 'name'=> '2 - Fabricación de Terceros de Papelera'],
             ['id' => 3, 'name'=> '3 - Reventa de Productos no Propio de Papelera'],
