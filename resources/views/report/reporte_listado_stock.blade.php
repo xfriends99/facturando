@@ -7,7 +7,7 @@
 
             <div class="col-md-12 col-md-offset-0">
                 <div class="panel panel-default">
-                    <div class="panel-heading">Listado de Stock
+                    <div class="panel-heading">Listado de Stock Productos Pedidos
                     </div>
                     <div class="panel-body">
                         @if (Session::has('message'))

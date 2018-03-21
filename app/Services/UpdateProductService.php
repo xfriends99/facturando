@@ -45,6 +45,7 @@ class UpdateProductService
                     ->where('ps_order_detail.product_id', $p->id_product)
                     ->groupBy('ps_order_detail.product_id')->first();
                 $data['stock_Pedido'] = $lineas ? $lineas->tot_product : 0;
+                $data['operacion'] = 'R';
                 ProductoTDP::create($data);
             }
         }
