@@ -181,7 +181,16 @@ public function ventas(){
             ->with('product_list', $product_list)->with('pedidos_productos', $pedidos_productos);
     }
 
-    public function listadoStock(){
+    public function listadoStockTipo(\Illuminate\Http\Request $request){
+        $reference = [['id' => 1, 'name'=> '1 - Fabricación Propia de Papelera'],
+            ['id' => 2, 'name'=> '2 - Fabricación de Terceros de Papelera'],
+            ['id' => 3, 'name'=> '3 - Reventa de Productos no Propio de Papelera'],
+            ['id' => 4, 'name'=> '4 - Reventa de Productos no Propio de Plastico'],
+            ['id' => 5, 'name'=> '5 - Reventa de Productos no Propio de Servilleta'],
+            ['id' => 6, 'name'=> '6 - Materia Prima'],
+            ['id' => 7, 'name'=> '7 - Packaging'],
+            ['id' => 8, 'name'=> '8 - Insumos']];
+
         $productos = Linea::select('ps_order_detail.*')
             ->addSelect('ps_orders.date_add as date_add')
             ->addSelect('ps_orders.current_state as current_state')
@@ -193,19 +202,23 @@ public function ventas(){
             ->orderBy('ps_product.reference')
             ->orderBy('ps_orders.date_add', 'desc')->get();
         $product_list = collect();
+        $product_pedidos_list = [];
         foreach ($productos as $p){
             $product_list->push($p->product_id);
+            $product_pedidos_list[$p->product_id] = $p;
         }
-        $products_id = ProductoTDP::whereIn('id_product', $product_list->toArray())->get();
+        $products_id = ProductoTDP::orderBy('reference')->get();
         $product_list = [];
         foreach ($products_id as $p){
             $product_list[$p->id_product] = $p;
         }
-        return view('report.reporte_listado_stock')
-            ->with('product_list', $product_list)->with('productos', $productos);
+        $request['reference'] = $request->reference ? $request->reference : '';
+        return view('report.reporte_listado_stock_tipo')->with('request', $request)
+            ->with('product_list', $product_list)->with('reference', $reference)
+            ->with('productos', $productos)->with('product_pedidos_list', $product_pedidos_list);
     }
 
-    public function listadoStockTipo(\Illuminate\Http\Request $request){
+    public function listadoStock(\Illuminate\Http\Request $request){
         $reference = [['id' => 1, 'name'=> '1 - Fabricación Propia de Papelera'],
             ['id' => 2, 'name'=> '2 - Fabricación de Terceros de Papelera'],
             ['id' => 3, 'name'=> '3 - Reventa de Productos no Propio de Papelera'],
@@ -234,8 +247,8 @@ public function ventas(){
         foreach ($products_id as $p){
             $product_list[$p->id_product] = $p;
         }
-        $request['reference'] = $request->reference ? $request->reference : 1;
-        return view('report.reporte_listado_stock_tipo')->with('request', $request)
+        $request['reference'] = $request->reference ? $request->reference : '';
+        return view('report.reporte_listado_stock')->with('request', $request)
             ->with('product_list', $product_list)->with('reference', $reference)
             ->with('productos', $productos);
     }

@@ -156,13 +156,13 @@
 											<div class="form-group">
 												<label class="col-md-4 control-label">Cantidad de Packs que hay en Deposito</label>
 												<div class="col-md-6">
-													<input type="text" class="form-control" name="stock_Fisico" value="{{$product->stock_Fisico}}" >
+													<input readonly type="text" class="form-control" name="stock_Fisico" value="{{$product->stock_Fisico}}" >
 												</div>
 											</div>
 											<div class="form-group">
 												<label class="col-md-4 control-label">Cantidad de Packs que estan comprometidos para Venta</label>
 												<div class="col-md-6">
-													<input type="text" class="form-control" name="stock_Pedido" value="{{$product->stock_Pedido}}" >
+													<input readonly type="text" class="form-control" name="stock_Pedido" value="{{$product->stock_Pedido}}" >
 												</div>
 											</div>
 										</div>

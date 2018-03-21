@@ -23,6 +23,7 @@
                                         <label class="col-md-4 control-label">Tipo</label>
                                         <div class="col-md-4">
                                             <select class="form-control" name="reference" >
+                                                <option value="" @if($request['reference']=='') selected @endif>Seleccione</option>
                                                 @foreach($reference as $r)
                                                     <option @if($request['reference']==$r['id']) selected @endif value="{{$r['id']}}">{{$r['name']}}</option>
                                                 @endforeach
@@ -61,16 +62,22 @@
                             </tr>
                             </thead>
                             <tbody>
-                            @foreach($productos as $p)
-                                @if(preg_match('/'.$request['reference'].'-.+/', $product_list[$p->product_id]->reference))
+                            @foreach($product_list as $k => $p)
+                                @if(preg_match('/^'.$request['reference'].'-.+/', $p->reference) || $request['reference']=='')
                                     <tr>
-                                        <td>{{$p->product_name}}</td>
-                                        <td>{{$product_list[$p->product_id]->stock_Fisico}}</td>
-                                        <td>{{$p->tot_product}}</td>
-                                        <td>{{$product_list[$p->product_id]->stock_Fisico-$p->tot_product}}</td>
+                                        <td>{{$p->descripcion}}</td>
+                                        <td>{{$p->stock_Fisico}}</td>
+                                        @if(isset($product_pedidos_list[$p->id_product]))
+                                            <td>{{$product_pedidos_list[$p->id_product]->tot_product}}</td>
+                                            <td>{{$p->stock_Fisico-$product_pedidos_list[$p->id_product]->tot_product}}</td>
+                                        @else
+                                            <td>0</td>
+                                            <td>{{$p->stock_Fisico}}</td>
+                                        @endif
                                     </tr>
                                 @endif
                             @endforeach
+
                             </tbody>
                         </table>
                     </div>
@@ -100,17 +107,25 @@
                             </tr>
                             </thead>
                             <tbody>
-                            @foreach($productos as $p)
-                                @if(preg_match('/'.$request['reference'].'-.+/', $product_list[$p->product_id]->reference))
+
+                            @foreach($product_list as $k => $p)
+                                @if(preg_match('/^'.$request['reference'].'-.+/', $p->reference) || $request['reference']=='')
                                     <tr>
-                                        <td>{{$p->product_name}}</td>
-                                        <td>{{'$ '.number_format($p->product_price,2) }}</td>
-                                        <td>{{$product_list[$p->product_id]->stock_Fisico}}</td>
-                                        <td>{{'$ '.number_format($product_list[$p->product_id]->stock_Fisico*$p->product_price,2) }}</td>
-                                        <td>{{$p->tot_product}}</td>
-                                        <td>{{'$ '.number_format($p->tot_product*$p->product_price,2) }}</td>
-                                        <td>{{$product_list[$p->product_id]->stock_Fisico-$p->tot_product}}</td>
-                                        <td>{{'$ '.number_format(($product_list[$p->product_id]->stock_Fisico-$p->tot_product)*$p->product_price,2) }}</td>
+                                        <td>{{$p->descripcion}}</td>
+                                        <td>{{'$ '.number_format($p->price,2) }}</td>
+                                        <td>{{$p->stock_Fisico}}</td>
+                                        <td>{{'$ '.number_format($p->stock_Fisico*$p->price,2) }}</td>
+                                        @if(isset($product_pedidos_list[$p->id_product]))
+                                            <td>{{$product_pedidos_list[$p->id_product]->tot_product}}</td>
+                                            <td>{{'$ '.number_format($product_pedidos_list[$p->id_product]->tot_product*$p->price,2) }}</td>
+                                            <td>{{$p->stock_Fisico-$product_pedidos_list[$p->id_product]->tot_product}}</td>
+                                            <td>{{'$ '.number_format(($p->stock_Fisico-$product_pedidos_list[$p->id_product]->tot_product)*$p->price,2) }}</td>
+                                        @else
+                                            <td>0</td>
+                                            <td>{{'$ '.number_format(0,2) }}</td>
+                                            <td>0</td>
+                                            <td>{{'$ '.number_format(0,2) }}</td>
+                                        @endif
                                     </tr>
                                 @endif
                             @endforeach
