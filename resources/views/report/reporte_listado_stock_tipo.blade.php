@@ -13,23 +13,19 @@
                             <div class="list-group">
                                 <div class="list-group-item">
                                     <legend>Seleccionado:
-                                        @if((isset($request['operacion']) && $request['operacion']=='R') || !isset($request['operacion'])) Rebobinado @endif
-                                        @if(isset($request['operacion']) && $request['operacion']=='I') Intercalado @endif
-                                        @if(isset($request['operacion']) && $request['operacion']=='V') Reventa @endif
-                                        @if(isset($request['operacion']) && $request['operacion']=='M') Materia Prima @endif
-                                        @if(isset($request['operacion']) && $request['operacion']=='P') Packaging @endif
-                                        @if(isset($request['operacion']) && $request['operacion']=='S') Insumos @endif
+                                        @if(isset($request['reference']))
+                                            @foreach($reference as $r)
+                                                @if($request['reference']==$r['id']) {{$r['name']}} @endif
+                                            @endforeach
+                                        @endif
                                     </legend>
                                     <div class="form-group">
                                         <label class="col-md-4 control-label">Tipo</label>
                                         <div class="col-md-4">
-                                            <select class="form-control" name="operacion" >
-                                                <option value="R" @if((isset($request['operacion']) && $request['operacion']=='R') || !isset($request['operacion'])) selected @endif>Rebobinado</option>
-                                                <option value="I" @if(isset($request['operacion']) && $request['operacion']=='I') selected @endif>Intercalado</option>
-                                                <option value="V" @if(isset($request['operacion']) && $request['operacion']=='V') selected @endif>Reventa</option>
-                                                <option value="M" @if(isset($request['operacion']) && $request['operacion']=='M') selected @endif>Materia Prima</option>
-                                                <option value="P" @if(isset($request['operacion']) && $request['operacion']=='P') selected @endif>Packaging</option>
-                                                <option value="S" @if(isset($request['operacion']) && $request['operacion']=='S') selected @endif>Insumos</option>
+                                            <select class="form-control" name="reference" >
+                                                @foreach($reference as $r)
+                                                    <option @if($request['reference']==$r['id']) selected @endif value="{{$r['id']}}">{{$r['name']}}</option>
+                                                @endforeach
                                             </select>
                                         </div>
                                     </div>
@@ -66,7 +62,7 @@
                             </thead>
                             <tbody>
                             @foreach($productos as $p)
-                                @if($product_list[$p->product_id]->operacion==$request['operacion'])
+                                @if(preg_match('/'.$request['reference'].'-.+/', $product_list[$p->product_id]->reference))
                                     <tr>
                                         <td>{{$p->product_name}}</td>
                                         <td>{{$product_list[$p->product_id]->stock_Fisico}}</td>
@@ -105,7 +101,7 @@
                             </thead>
                             <tbody>
                             @foreach($productos as $p)
-                                @if($product_list[$p->product_id]->operacion==$request['operacion'])
+                                @if(preg_match('/'.$request['reference'].'-.+/', $product_list[$p->product_id]->reference))
                                     <tr>
                                         <td>{{$p->product_name}}</td>
                                         <td>{{'$ '.number_format($p->product_price,2) }}</td>
