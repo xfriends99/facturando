@@ -172,7 +172,7 @@ public function ventas(){
         foreach ($pedidos_productos as $p){
             $product_list->push($p->product_id);
         }
-        $products_id = ProductoTDP::whereIn('id_product', $product_list->toArray())->get();
+        $products_id = ProductoTDP::all();
         $product_list = [];
         foreach ($products_id as $p){
             $product_list[$p->id_product] = $p;

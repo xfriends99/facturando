@@ -85,8 +85,8 @@
                                     <tr>
                                         <td>Total</td>
                                         <td>{{$count}}</td>
-                                        <td colspan="2">En stock Fisico = @if($product_list[$p->product_id]->stock_Fisico!=null) {{$product_list[$p->product_id]->stock_Fisico}} @else 0 @endif</td>
-                                        <td colspan="2">A reponer = @if($count-$product_list[$p->product_id]->stock_Fisico<=0) OK @else {{$count-$product_list[$p->product_id]->stock_Fisico}} @endif</td>
+                                        <td colspan="2">En stock Fisico = @if(isset($product_list[$id_product]->stock_Fisico)) {{$product_list[$id_product]->stock_Fisico}} @else 0 @endif</td>
+                                        <td colspan="2">A reponer = @if(($count-$product_list[$id_product]->stock_Fisico)<=0) OK @else {{$count-$product_list[$id_product]->stock_Fisico}} @endif</td>
                                     </tr>
                                     <?php
                                     $count = 0;
