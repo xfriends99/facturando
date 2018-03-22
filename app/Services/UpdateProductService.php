@@ -41,7 +41,7 @@ class UpdateProductService
                 $lineas = Linea::select('ps_order_detail.*')
                     ->addSelect(\DB::raw('sum(ps_order_detail.product_quantity) as tot_product'))
                     ->join('ps_orders', 'ps_orders.id_order', '=', 'ps_order_detail.id_order')
-                    ->whereIn('ps_orders.current_state', [3, 13, 12])
+                    ->whereIn('ps_orders.current_state', [3, 13, 12, 7, 8, 9])
                     ->where('ps_order_detail.product_id', $p->id_product)
                     ->groupBy('ps_order_detail.product_id')->first();
                 $data['stock_Pedido'] = $lineas ? $lineas->tot_product : 0;
