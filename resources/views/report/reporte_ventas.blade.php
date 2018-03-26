@@ -25,8 +25,17 @@
 									<div class="col-md-4">
 										<input type="date" class="form-control" name="hasta" value="{{ old('hasta') }}"  required>
 									</div>
-								</div>	
-
+								</div>
+								<div class="form-group">
+									<label class="col-md-4 control-label">Filtro por tipo</label>
+									<div class="col-md-4">
+										<select class="form-control" name="type" >
+											<option value="" @if($request['type']=='') selected @endif>Todo</option>
+											<option @if($request['type']=='f') selected @endif value="f">Factura</option>
+											<option @if($request['type']=='r') selected @endif value="r">Remito</option>
+										</select>
+									</div>
+								</div>
 								<div class="form-group">
 							<div class="col-md-4 col-md-offset-4"><br/>
 								<button type="submit" class="btn btn-primary">
@@ -70,7 +79,8 @@
 @foreach($invoice->invoice_lines as $linea)
 
 @if($invoice->status=='A' && ($invoice->cbte_tipo==1 || $invoice->cbte_tipo==99) && $linea->code!=null)
-							<tr>
+	@if($request['type']=='' || ($request['type']=='f' && $invoice->cbte_tipo==1) || ($request['type']=='r' && $invoice->cbte_tipo==99))
+	<tr>
                                     
 
 								<th>{{ date('d-m-Y',strtotime($invoice->fecha_facturacion)) }}</td>
@@ -94,6 +104,7 @@
                                                                 <td>{{$invoice->corredor->corredor->nombre}}</td>
 								
 							</tr>
+@endif
                                                    @endif
                                                         @endforeach
 				

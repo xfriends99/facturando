@@ -31,6 +31,17 @@
                                         </div>
                                     </div>
                                     <div class="form-group">
+                                        <label class="col-md-4 control-label">Filtro por stock teorico</label>
+                                        <div class="col-md-4">
+                                            <select class="form-control" name="teorico" >
+                                                <option value="" @if($request['teorico']=='') selected @endif>Todos</option>
+                                                <option @if($request['teorico']=='<0') selected @endif value="<0"><0</option>
+                                                <option @if($request['teorico']=='=0') selected @endif value="=0">=0</option>
+                                                <option @if($request['teorico']=='>0') selected @endif value=">0">>0</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
                                         <div class="form-group">
                                             <div class="col-md-4 col-md-offset-4"><br/>
                                                 <button type="submit" class="btn btn-primary">
@@ -63,7 +74,10 @@
                             </thead>
                             <tbody>
                             @foreach($productos as $p)
-                                @if(preg_match('/^'.$request['reference'].'-.+/', $product_list[$p->product_id]->reference) || $request['reference']=='')
+                                <?php
+                                $stockTeorico = $product_list[$p->product_id]->stock_Fisico-$p->tot_product;
+                                ?>
+                                @if((preg_match('/^'.$request['reference'].'-.+/', $product_list[$p->product_id]->reference) || $request['reference']=='') && ($request['teorico']=='' || ($stockTeorico<0 && $request['teorico']=='<0') || ($stockTeorico==0 && $request['teorico']=='=0') || ($stockTeorico>0 && $request['teorico']=='>0')))
                                     <tr>
                                         <td>{{$p->product_name}}</td>
                                         <td>{{$product_list[$p->product_id]->stock_Fisico}}</td>
@@ -101,20 +115,48 @@
                             </tr>
                             </thead>
                             <tbody>
+                            <?php
+                            $fisico = 0;
+                            $pedido = 0;
+                            $teorico = 0;
+                            $fisico_cant = 0;
+                            $pedido_cant = 0;
+                            $teorico_cant = 0;
+                            ?>
                             @foreach($productos as $p)
-                                @if(preg_match('/^'.$request['reference'].'-.+/', $product_list[$p->product_id]->reference) || $request['reference']=='')
+                                <?php
+                                $stockTeorico = $product_list[$p->product_id]->stock_Fisico-$p->tot_product;
+                                ?>
+                                @if((preg_match('/^'.$request['reference'].'-.+/', $product_list[$p->product_id]->reference) || $request['reference']=='') && ($request['teorico']=='' || ($stockTeorico<0 && $request['teorico']=='<0') || ($stockTeorico==0 && $request['teorico']=='=0') || ($stockTeorico>0 && $request['teorico']=='>0')))
                                     <tr>
                                         <td>{{$p->product_name}}</td>
-                                        <td>{{'$ '.number_format($p->product_price,2) }}</td>
+                                        <td>{{number_format($p->product_price,2) }}</td>
                                         <td>{{$product_list[$p->product_id]->stock_Fisico}}</td>
-                                        <td>{{'$ '.number_format($product_list[$p->product_id]->stock_Fisico*$p->product_price,2) }}</td>
+                                        <td>{{number_format($product_list[$p->product_id]->stock_Fisico*$p->product_price,2) }}</td>
                                         <td>{{$p->tot_product}}</td>
-                                        <td>{{'$ '.number_format($p->tot_product*$p->product_price,2) }}</td>
+                                        <td>{{number_format($p->tot_product*$p->product_price,2) }}</td>
                                         <td>{{$product_list[$p->product_id]->stock_Fisico-$p->tot_product}}</td>
-                                        <td>{{'$ '.number_format(($product_list[$p->product_id]->stock_Fisico-$p->tot_product)*$p->product_price,2) }}</td>
+                                        <td>{{number_format(($product_list[$p->product_id]->stock_Fisico-$p->tot_product)*$p->product_price,2) }}</td>
                                     </tr>
+                                    <?php
+                                    $fisico+= $product_list[$p->product_id]->stock_Fisico*$p->product_price;
+                                    $pedido+=$p->tot_product*$p->product_price;
+                                    $teorico+=($product_list[$p->product_id]->stock_Fisico-$p->tot_product)*$p->product_price;
+                                    $fisico_cant+= $product_list[$p->product_id]->stock_Fisico;
+                                    $pedido_cant+=$p->tot_product;
+                                    $teorico_cant+=$product_list[$p->product_id]->stock_Fisico-$p->tot_product;
+                                    ?>
                                 @endif
                             @endforeach
+                            <tr>
+                                <td colspan="2">Totales:</td>
+                                <td>{{$fisico_cant}}</td>
+                                <td>{{number_format($fisico,2) }}</td>
+                                <td>{{$pedido_cant}}</td>
+                                <td>{{number_format($pedido,2) }}</td>
+                                <td>{{$teorico_cant}}</td>
+                                <td>{{number_format($teorico,2) }}</td>
+                            </tr>
                             </tbody>
                         </table>
                     </div>

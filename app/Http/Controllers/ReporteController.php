@@ -110,7 +110,7 @@ public function listarCtaCte(){
 
 	}
 
-public function ventas(){
+public function ventas(\Illuminate\Http\Request $request){
 
         if(Input::has('desde') && Input::has('hasta')){
         $rango[0] = Input::get('desde');
@@ -119,11 +119,15 @@ public function ventas(){
         $invoices = \app\InvoiceHead::whereBetween('fecha_facturacion',$rango)
         ->orderBy('fecha_facturacion','DESC')
         ->get();
-         return view('report.reporte_ventas')->with('invoices',$invoices)->with('desde',Input::get('desde'))->with('hasta',Input::get('hasta'));
+        $request['type'] = $request->type ? $request->type : '';
+         return view('report.reporte_ventas')->with('invoices',$invoices)
+             ->with('request', $request->all())->with('desde',Input::get('desde'))->with('hasta',Input::get('hasta'));
        }else{
         $hoy = date("Y-m-d");   
 	$invoices = \app\InvoiceHead::where('fecha_facturacion','=',$hoy)->orderBy('fecha_facturacion','DESC')->get();
-        return view('report.reporte_ventas')->with('invoices',$invoices)->with('hoy',$hoy);
+            $request['type'] = $request->type ? $request->type : '';
+        return view('report.reporte_ventas')->with('invoices',$invoices)
+            ->with('request', $request->all())->with('hoy',$hoy);
      
      }	
    }
@@ -151,7 +155,7 @@ public function ventas(){
             ->join('ps_order_state_lang', 'ps_orders.current_state','=','ps_order_state_lang.id_order_state')
             ->join('ps_order_state', 'ps_orders.current_state','=','ps_order_state.id_order_state')
             ->where('ps_order_state_lang.id_lang',1)
-            ->whereIn('ps_orders.current_state', [3, 13, 12, 7, 8, 9])
+            ->whereIn('ps_orders.current_state', [3, 13, 12])
             ->orderBy('ps_orders.date_add', 'asc')
             ->orderBy('ps_order_detail.product_id')
             ->orderBy('ps_orders.id_customer')->get();
@@ -165,7 +169,7 @@ public function ventas(){
             ->join('ps_order_state_lang', 'ps_orders.current_state','=','ps_order_state_lang.id_order_state')
             ->join('ps_order_state', 'ps_orders.current_state','=','ps_order_state.id_order_state')
             ->where('ps_order_state_lang.id_lang',1)
-            ->whereIn('ps_orders.current_state', [3, 13, 12, 7, 8, 9])
+            ->whereIn('ps_orders.current_state', [3, 13, 12])
             ->orderBy('ps_order_detail.product_id')
             ->orderBy('ps_orders.date_add', 'desc')->get();
         $product_list = collect();
@@ -213,6 +217,7 @@ public function ventas(){
             $product_list[$p->id_product] = $p;
         }
         $request['reference'] = $request->reference ? $request->reference : '';
+        $request['teorico'] = $request->teorico ? $request->teorico : '';
         return view('report.reporte_listado_stock_tipo')->with('request', $request)
             ->with('product_list', $product_list)->with('reference', $reference)
             ->with('productos', $productos)->with('product_pedidos_list', $product_pedidos_list);
@@ -248,6 +253,7 @@ public function ventas(){
             $product_list[$p->id_product] = $p;
         }
         $request['reference'] = $request->reference ? $request->reference : '';
+        $request['teorico'] = $request->teorico ? $request->teorico : '';
         return view('report.reporte_listado_stock')->with('request', $request)
             ->with('product_list', $product_list)->with('reference', $reference)
             ->with('productos', $productos);
