@@ -42,6 +42,17 @@
                                         </div>
                                     </div>
                                     <div class="form-group">
+                                        <label class="col-md-4 control-label">Filtro por stock fisico</label>
+                                        <div class="col-md-4">
+                                            <select class="form-control" name="fisico" >
+                                                <option value="" @if($request['fisico']=='') selected @endif>Todos</option>
+                                            <!--<option @if($request['fisico']=='<0') selected @endif value="<0"><0</option>-->
+                                                <option @if($request['fisico']=='=0') selected @endif value="=0">=0</option>
+                                                <option @if($request['fisico']=='>0') selected @endif value=">0">>0</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
                                         <div class="form-group">
                                             <div class="col-md-4 col-md-offset-4"><br/>
                                                 <button type="submit" class="btn btn-primary">
@@ -76,8 +87,9 @@
                             @foreach($productos as $p)
                                 <?php
                                 $stockTeorico = $product_list[$p->product_id]->stock_Fisico-$p->tot_product;
+                                $stockFisico = $product_list[$p->product_id]->stock_Fisico;
                                 ?>
-                                @if((preg_match('/^'.$request['reference'].'-.+/', $product_list[$p->product_id]->reference) || $request['reference']=='') && ($request['teorico']=='' || ($stockTeorico<0 && $request['teorico']=='<0') || ($stockTeorico==0 && $request['teorico']=='=0') || ($stockTeorico>0 && $request['teorico']=='>0')))
+                                @if((preg_match('/^'.$request['reference'].'-.+/', $product_list[$p->product_id]->reference) || $request['reference']=='') && ($request['teorico']=='' || ($stockTeorico<0 && $request['teorico']=='<0') || ($stockTeorico==0 && $request['teorico']=='=0') || ($stockTeorico>0 && $request['teorico']=='>0')) && ($request['fisico']=='' || ($stockFisico<0 && $request['fisico']=='<0') || ($stockFisico==0 && $request['fisico']=='=0') || ($stockFisico>0 && $request['fisico']=='>0')))
                                     <tr>
                                         <td>{{$p->product_name}}</td>
                                         <td>{{$product_list[$p->product_id]->stock_Fisico}}</td>
@@ -126,8 +138,9 @@
                             @foreach($productos as $p)
                                 <?php
                                 $stockTeorico = $product_list[$p->product_id]->stock_Fisico-$p->tot_product;
+                                $stockFisico = $product_list[$p->product_id]->stock_Fisico;
                                 ?>
-                                @if((preg_match('/^'.$request['reference'].'-.+/', $product_list[$p->product_id]->reference) || $request['reference']=='') && ($request['teorico']=='' || ($stockTeorico<0 && $request['teorico']=='<0') || ($stockTeorico==0 && $request['teorico']=='=0') || ($stockTeorico>0 && $request['teorico']=='>0')))
+                                @if((preg_match('/^'.$request['reference'].'-.+/', $product_list[$p->product_id]->reference) || $request['reference']=='') && ($request['teorico']=='' || ($stockTeorico<0 && $request['teorico']=='<0') || ($stockTeorico==0 && $request['teorico']=='=0') || ($stockTeorico>0 && $request['teorico']=='>0')) && ($request['fisico']=='' || ($stockFisico<0 && $request['fisico']=='<0') || ($stockFisico==0 && $request['fisico']=='=0') || ($stockFisico>0 && $request['fisico']=='>0')))
                                     <tr>
                                         <td>{{$p->product_name}}</td>
                                         <td>{{number_format($p->product_price,2) }}</td>

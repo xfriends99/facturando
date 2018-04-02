@@ -42,6 +42,17 @@
                                         </div>
                                     </div>
                                     <div class="form-group">
+                                        <label class="col-md-4 control-label">Filtro por stock fisico</label>
+                                        <div class="col-md-4">
+                                            <select class="form-control" name="fisico" >
+                                                <option value="" @if($request['fisico']=='') selected @endif>Todos</option>
+                                                <!--<option @if($request['fisico']=='<0') selected @endif value="<0"><0</option>-->
+                                                <option @if($request['fisico']=='=0') selected @endif value="=0">=0</option>
+                                                <option @if($request['fisico']=='>0') selected @endif value=">0">>0</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
                                         <div class="form-group">
                                             <div class="col-md-4 col-md-offset-4"><br/>
                                                 <button type="submit" class="btn btn-primary">
@@ -83,7 +94,7 @@
                                         $stockTeorico = $p->stock_Fisico;
                                     ?>
                                 @endif
-                                @if((preg_match('/^'.$request['reference'].'-.+/', $p->reference) || $request['reference']=='') && ($request['teorico']=='' || ($stockTeorico<0 && $request['teorico']=='<0') || ($stockTeorico==0 && $request['teorico']=='=0') || ($stockTeorico>0 && $request['teorico']=='>0')))
+                                @if((preg_match('/^'.$request['reference'].'-.+/', $p->reference) || $request['reference']=='') && ($request['teorico']=='' || ($stockTeorico<0 && $request['teorico']=='<0') || ($stockTeorico==0 && $request['teorico']=='=0') || ($stockTeorico>0 && $request['teorico']=='>0')) && ($request['fisico']=='' || ($p->stock_Fisico<0 && $request['fisico']=='<0') || ($p->stock_Fisico==0 && $request['fisico']=='=0') || ($p->stock_Fisico>0 && $request['fisico']=='>0')))
                                     <tr>
                                         <td>{{$p->descripcion}}</td>
                                         <td>{{$p->stock_Fisico}}</td>
@@ -146,7 +157,7 @@
                                     $stockTeorico = $p->stock_Fisico;
                                     ?>
                                 @endif
-                                @if((preg_match('/^'.$request['reference'].'-.+/', $p->reference) || $request['reference']=='') && ($request['teorico']=='' || ($stockTeorico<0 && $request['teorico']=='<0') || ($stockTeorico==0 && $request['teorico']=='=0') || ($stockTeorico>0 && $request['teorico']=='>0')))
+                                @if((preg_match('/^'.$request['reference'].'-.+/', $p->reference) || $request['reference']=='') && ($request['teorico']=='' || ($stockTeorico<0 && $request['teorico']=='<0') || ($stockTeorico==0 && $request['teorico']=='=0') || ($stockTeorico>0 && $request['teorico']=='>0')) && ($request['fisico']=='' || ($p->stock_Fisico<0 && $request['fisico']=='<0') || ($p->stock_Fisico==0 && $request['fisico']=='=0') || ($p->stock_Fisico>0 && $request['fisico']=='>0')))
                                     <tr>
                                         <td>{{$p->descripcion}}</td>
                                         <td>{{number_format($p->price,2) }}</td>

@@ -132,7 +132,7 @@ public function ventas(\Illuminate\Http\Request $request){
      }	
    }
 
-    public function listadoProductoPedidos(){
+    public function listadoProductoPedidos(\Illuminate\Http\Request $request){
         /*if(Input::has('desde') && Input::has('hasta')){
             $rango[0] = Input::get('desde');
             $rango[1] = Input::get('hasta');
@@ -146,6 +146,25 @@ public function ventas(\Illuminate\Http\Request $request){
             $invoices = \app\InvoiceHead::where('fecha_facturacion','=',$hoy)->orderBy('fecha_facturacion','DESC')->get();
             return view('report.reporte_listado_producto_pedidos')->with('invoices',$invoices)->with('hoy',$hoy);
         }*/
+        $productos = Linea::select('ps_order_detail.*')
+            ->addSelect('ps_orders.date_add as date_add')
+            ->addSelect('ps_orders.current_state as current_state')
+            ->addSelect(\DB::raw('sum(ps_order_detail.product_quantity) as tot_product'))
+            ->join('ps_orders', 'ps_orders.id_order', '=', 'ps_order_detail.id_order')
+            ->join('ps_product', 'ps_product.id_product', '=', 'ps_order_detail.product_id')
+            ->whereIn('ps_orders.current_state', [3, 13, 12, 7, 8, 9])
+            ->groupBy('ps_order_detail.product_id')
+            ->orderBy('ps_product.reference')
+            ->orderBy('ps_orders.date_add', 'desc')->get();
+        $product_list_order = [];
+        foreach ($productos as $p){
+            $product_list_order[$p->product_id] = $p;
+        }
+        $products_id = ProductoTDP::all();
+        $product_list_tdp = [];
+        foreach ($products_id as $p){
+            $product_list_tdp[$p->id_product] = $p;
+        }
         $pedidos = Linea::select('ps_order_detail.*')
             ->addSelect('ps_orders.date_add as date_add')
             ->addSelect('ps_orders.current_state as current_state')
@@ -170,19 +189,24 @@ public function ventas(\Illuminate\Http\Request $request){
             ->join('ps_order_state', 'ps_orders.current_state','=','ps_order_state.id_order_state')
             ->where('ps_order_state_lang.id_lang',1)
             ->whereIn('ps_orders.current_state', [3, 13, 12])
-            ->orderBy('ps_order_detail.product_id')
-            ->orderBy('ps_orders.date_add', 'desc')->get();
-        $product_list = collect();
+            ->orderBy('ps_orders.date_add', 'asc')
+            ->get();
+        $product_list_pedidos = [];
         foreach ($pedidos_productos as $p){
-            $product_list->push($p->product_id);
+            $pro = $p->product_id."";
+            if(!isset($product_list_pedidos[$pro])) $product_list_pedidos[$pro] = [];
+            $product_list_pedidos[$pro][] = $p;
         }
         $products_id = ProductoTDP::all();
         $product_list = [];
         foreach ($products_id as $p){
             $product_list[$p->id_product] = $p;
         }
+        $request['teorico'] = $request->teorico ? $request->teorico : '';
         return view('report.reporte_listado_producto_pedidos')->with('pedidos',$pedidos)
-            ->with('product_list', $product_list)->with('pedidos_productos', $pedidos_productos);
+            ->with('product_list', $product_list)->with('pedidos_productos', $pedidos_productos)
+            ->with('request', $request->all())->with('product_list_order', $product_list_order)
+            ->with('product_list_tdp', $product_list_tdp)->with('product_list_pedidos', $product_list_pedidos);
     }
 
     public function listadoStockTipo(\Illuminate\Http\Request $request){
@@ -218,6 +242,7 @@ public function ventas(\Illuminate\Http\Request $request){
         }
         $request['reference'] = $request->reference ? $request->reference : '';
         $request['teorico'] = $request->teorico ? $request->teorico : '';
+        $request['fisico'] = $request->fisico ? $request->fisico : '';
         return view('report.reporte_listado_stock_tipo')->with('request', $request)
             ->with('product_list', $product_list)->with('reference', $reference)
             ->with('productos', $productos)->with('product_pedidos_list', $product_pedidos_list);
@@ -254,6 +279,7 @@ public function ventas(\Illuminate\Http\Request $request){
         }
         $request['reference'] = $request->reference ? $request->reference : '';
         $request['teorico'] = $request->teorico ? $request->teorico : '';
+        $request['fisico'] = $request->fisico ? $request->fisico : '';
         return view('report.reporte_listado_stock')->with('request', $request)
             ->with('product_list', $product_list)->with('reference', $reference)
             ->with('productos', $productos);
