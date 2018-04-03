@@ -7,7 +7,18 @@
 	
 		<div class="col-md-12 col-md-offset-0">
 			<div class="panel panel-default">
-				<div class="panel-heading">Detalle de Ventas
+				<div class="panel-heading">
+					<div class="row">
+						<div class="col-md-6">
+							Detalle de Ventas
+						</div>
+						<div class="col-md-6">
+							<div class="btn-group" style="float: right;">
+								<a href="/controlProduccion" class="btn btn-success" >Control de producción</a>
+								<a href="/cargaManualProduccion" class="btn btn-success" >Carga manual de producción</a>
+							</div>
+						</div>
+					</div>
 				</div>
 				<div class="panel-body">
 					<form class="form-horizontal" role="form" method="post" action="/viewProdu">

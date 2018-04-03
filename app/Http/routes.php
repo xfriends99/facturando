@@ -254,6 +254,11 @@ return view('produccion.list')->with('productos',$productos)->with('hoy',$today)
 
 });
 
+Route::get('controlProduccion', 'ProduccionController@controlProduccion');
+Route::get('cargaManualProduccion', 'ProduccionController@cargaManualProduccion');
+Route::get('cargaManualProduccion/getProductType/{id}', 'ProduccionController@getProductType');
+Route::post('cargaManualProduccion/store', 'ProduccionController@store');
+
 Route::get('expedicion/{id}', function($id)
 {
 	                $order = \app\Pedido::where('id_order','=',$id)->first();
