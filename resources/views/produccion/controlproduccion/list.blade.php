@@ -68,6 +68,7 @@
                             @else
                                 <form method="POST" action="/controlProduccion/store" id="form-send">
                                 @foreach($list as $l)
+                                    @if(isset($control_produccion[$l->id_producto]))
                                     <tr>
                                         <th>{{ date('d-m-Y',strtotime($l->created_at)) }}</th>
                                         <td>{{$l->producto->descripcion}}</td>
@@ -111,6 +112,7 @@
                                             <td width="7%"><input class="form-control input-sm ok" id="ok-{{$l->id_producto}}" data-val="{{$l->id_producto}}" name="ok[]"></td>
                                         @endif
                                     </tr>
+                                    @endif
                                 @endforeach
                                 </form>
                             @endif

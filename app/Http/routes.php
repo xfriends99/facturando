@@ -211,17 +211,18 @@ Route::get('generarPresupuesto/{id}', function($id)
 
 Route::post('addProduction', function(){
 
-$product = \app\ProductoTDP::where('codigo', Input::get('producto_id'))->first();
+$prod = app\ProductoTDP::find(Input::get('prod_id'));
 $producto = new \app\Produccion;
 $producto->users_id = Auth::user()->id;
 $producto->kg = Input::get('cantidad');
 $producto->codigo = Input::get('producto_id');
-$producto->id_producto = $product->id;
+$producto->id_producto = $prod->id;
 $contador = Input::get('contador') + 1;
 
 $producto->save();
 
-$prod = app\ProductoTDP::find(Input::get('prod_id'));
+\app\ControlDeProduccion::create(['fecha' => date('Y-m-d'),
+    'id_producto' => $prod->id, 'packs' => $prod->peso_por_pack]);
 
 return view('produccion.add')->with('contador',$contador)->with('prod',$prod)->with('prod_id',Input::get('prod_id'))->with('producto',Input::get('producto_id'));
 
