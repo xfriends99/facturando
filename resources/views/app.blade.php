@@ -45,7 +45,7 @@
 
 	<body>
 		<nav class="navbar navbar-default">
-			<small style="color:#60D75A">Versión: 2.2.10</small>
+			<small style="color:#60D75A">Versión: 2.4.0</small>
 			<div class="container-fluid">
 				<div class="navbar-header">
 					<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">

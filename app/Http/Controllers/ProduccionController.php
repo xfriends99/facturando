@@ -39,7 +39,7 @@ class ProduccionController extends Controller
         foreach ($products as $p){
             $control = ['fecha' => $request->fecha,
                 'id_producto' => $p];
-            $produccion = ['created_at' => $request->fecha,
+            $produccion = ['created_at' => $request->fecha, 'codigo' => $products_database[$p]->codigo,
                 'id_producto' => $p, 'users_id' => \Auth::user()->id];
             if($products_database[$p]->operacion=='I'){
                 if(!is_numeric($request['packs'.$p])){
@@ -81,35 +81,47 @@ class ProduccionController extends Controller
 
     public function controlProduccion(Request $request)
     {
-        if($request->desde && $request->hasta){
-            $list = Produccion::select('produccion.*')
-                ->addSelect(\DB::raw('SUM(mangas) as mangas_sum'))
-                ->addSelect(\DB::raw('SUM(mangas*kg) as kg_sum'))
-                ->addSelect(\DB::raw('SUM(kg) as kg_suma'))
-                ->addSelect(\DB::raw('COUNT(id_producto) as productos_count'))
-                ->whereBetween('created_at', [$request->desde, $request->hasta])
-                ->where('controlado', 0)->with('producto')->groupBy('id_producto')->get();
-            $search = true;
-            $ll = [];
-            foreach ($list as $l){
-                $ll[] = $l->id_producto;
-            }
-            $control_produccion = [];
-            $cr = ControlDeProduccion::whereIn('id_producto', $ll)
-                ->where('controlado', 0)->whereBetween('fecha', [$request->desde, $request->hasta])->get();
-            foreach ($cr as $c){
-                if(!isset($control_produccion[$c->id_producto])) $control_produccion[$c->id_producto] = [];
-                if(!isset($control_produccion[$c->id_producto]['packs'])) $control_produccion[$c->id_producto]['packs'] = $c->packs;
-                $control_produccion[$c->id_producto]['packs'] += $c->packs;
-            }
-        } else {
-            $list = null;
-            $search = false;
-            $control_produccion = null;
+        $list = Produccion::select('produccion.*')
+            ->addSelect(\DB::raw('SUM(mangas) as mangas_sum'))
+            ->addSelect(\DB::raw('SUM(mangas*kg) as kg_sum'))
+            ->addSelect(\DB::raw('SUM(kg) as kg_suma'))
+            ->addSelect(\DB::raw('COUNT(id_producto) as productos_count'))
+            ->where('controlado', 0)->join('productosTDP', 'productosTDP.id', '=', 'id_producto')
+            ->with('producto')->groupBy('id_producto')->get();
+        $ll = [];
+        foreach ($list as $l){
+            $ll[] = $l->id_producto;
+        }
+        $control_produccion = [];
+        $cr = ControlDeProduccion::whereIn('id_producto', $ll)
+            ->where('controlado', 0)->get();
+        foreach ($cr as $c){
+            if(!isset($control_produccion[$c->id_producto])) $control_produccion[$c->id_producto] = [];
+            if(!isset($control_produccion[$c->id_producto]['packs'])) $control_produccion[$c->id_producto]['packs'] = $c->packs;
+            $control_produccion[$c->id_producto]['packs'] += $c->packs;
         }
         $request = $request->all();
         return view('produccion.controlproduccion.list',
-            compact('list', 'search', 'request', 'control_produccion'));
+            compact('list', 'request', 'control_produccion'));
+    }
+
+    public function controlStore(Request $request)
+    {
+        if($request->ok){
+            $index = 0;
+            foreach ($request->ok as $p){
+                if($p!=''){
+                    Produccion::where('id_producto', $p)->update(['controlado' => 1]);
+                    ControlDeProduccion::where('id_producto', $p)->update(['controlado' => 1]);
+                    /*$producto = ProductoTDP::find($p);
+                    $producto->stock_Fisico = $producto->stock_Fisico+$request->stock[$index];
+                    $producto->save();*/
+                }
+            }
+            Session::flash('message', 'Producción actualizada correctamente!!');
+            return Redirect::back();
+        }
+        return Redirect::back()->withErrors('No marco algun producto a ser cargado');
     }
 
 }

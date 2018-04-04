@@ -211,10 +211,12 @@ Route::get('generarPresupuesto/{id}', function($id)
 
 Route::post('addProduction', function(){
 
+$product = \app\ProductoTDP::where('codigo', Input::get('producto_id'))->first();
 $producto = new \app\Produccion;
 $producto->users_id = Auth::user()->id;
 $producto->kg = Input::get('cantidad');
 $producto->codigo = Input::get('producto_id');
+$producto->id_producto = $product->id;
 $contador = Input::get('contador') + 1;
 
 $producto->save();
@@ -254,10 +256,11 @@ return view('produccion.list')->with('productos',$productos)->with('hoy',$today)
 
 });
 
-Route::get('controlProduccion', 'ProduccionController@controlProduccion');
 Route::get('cargaManualProduccion', 'ProduccionController@cargaManualProduccion');
 Route::get('cargaManualProduccion/getProductType/{id}', 'ProduccionController@getProductType');
 Route::post('cargaManualProduccion/store', 'ProduccionController@store');
+Route::get('controlProduccion', 'ProduccionController@controlProduccion');
+Route::post('controlProduccion/store', 'ProduccionController@controlStore');
 
 Route::get('expedicion/{id}', function($id)
 {

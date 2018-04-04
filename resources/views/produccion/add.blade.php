@@ -32,7 +32,7 @@
 								<legend>Producción</legend>
 
 								<input type="hidden" name="_token" value="{{ csrf_token() }}">
-								
+
                                                                 <input type="hidden" name="user_id" value="{{ Auth::user()->id }}">
                                                                 <input type="hidden" name="prod_id" id="prod_id" value="@if(isset($prod_id)){{ $prod_id }}@endif">
 
@@ -58,10 +58,10 @@
 								</div>
 
                                                                 <div class="form-group">
-									
+
 								</div>
 
-								
+
 
 							</div>
 						</div>
@@ -73,7 +73,7 @@
 								</button>
 							</div>
 						</div>
-						
+
 					</form>
 				</div>
 			</div>
@@ -87,11 +87,11 @@
 	    		$('#producto_id').val(ui.item.label);
 	    		$('#contador').val('1');
                         $('#cantidad').val('');
-	    		$('#prod_id').val(ui.item.id); 
+	    		$('#prod_id').val(ui.item.id);
                         $('#desc').html("");
                         var texto =  ui.item.descripcion + "<br>" + "<p style='font-weight: bold;'> Kg: " + ui.item.peso  + " Diam: " + ui.item.diametro + " Mts: " + ui.item.metros + "</p>" ;
 
-                        $('#desc').html(texto);  
+                        $('#desc').html(texto);
                         $("#cantidad").focus();
 	    		return false;
 	    	}
@@ -103,7 +103,7 @@ $( "#producto_id" ).on( "keydown", function(event) {
               $('#desc').html("");
               $.get( "getProdAjax/"+$( "#producto_id" ).val(), function( data ) {
               var texto =  data[0] + "<br>" + "<p style='font-weight: bold;'> Kg: " + data[1]  + " Diam: " + data[2] + " Mts: " + data[3] + "</p>" ;
-              $( "#desc" ).html( texto );      
+              $( "#desc" ).html( texto );
               $('#prod_id').val(data[4]);
               });
               $("#cantidad").focus();
