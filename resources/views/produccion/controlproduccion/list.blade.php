@@ -70,7 +70,7 @@
                                 @foreach($list as $l)
                                     @if(isset($control_produccion[$l->id_producto]))
                                     <tr>
-                                        <th>{{ date('d-m-Y',strtotime($l->created_at)) }}</th>
+                                        <th>{{ date('d/m/Y',strtotime($control_produccion[$l->id_producto]['created_at'])) }}</th>
                                         <td>{{$l->producto->descripcion}}</td>
                                         @if($l->producto->operacion=='I')
                                             <?php

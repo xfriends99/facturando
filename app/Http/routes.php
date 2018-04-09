@@ -212,17 +212,19 @@ Route::get('generarPresupuesto/{id}', function($id)
 Route::post('addProduction', function(){
 
 $prod = app\ProductoTDP::find(Input::get('prod_id'));
+
+$cc = \app\ControlDeProduccion::create(['fecha' => date('Y-m-d'),
+        'id_producto' => $prod->id, 'packs' => $prod->peso_por_pack]);
+
 $producto = new \app\Produccion;
 $producto->users_id = Auth::user()->id;
 $producto->kg = Input::get('cantidad');
 $producto->codigo = Input::get('producto_id');
 $producto->id_producto = $prod->id;
+$producto->control_id = $cc->id;
 $contador = Input::get('contador') + 1;
 
 $producto->save();
-
-\app\ControlDeProduccion::create(['fecha' => date('Y-m-d'),
-    'id_producto' => $prod->id, 'packs' => $prod->peso_por_pack]);
 
 return view('produccion.add')->with('contador',$contador)->with('prod',$prod)->with('prod_id',Input::get('prod_id'))->with('producto',Input::get('producto_id'));
 
@@ -259,6 +261,7 @@ return view('produccion.list')->with('productos',$productos)->with('hoy',$today)
 
 Route::get('cargaManualProduccion', 'ProduccionController@cargaManualProduccion');
 Route::get('cargaManualProduccion/getProductType/{id}', 'ProduccionController@getProductType');
+Route::get('cargaManualProduccion/getListProduct', 'ProduccionController@getListProduct');
 Route::post('cargaManualProduccion/store', 'ProduccionController@store');
 Route::get('controlProduccion', 'ProduccionController@controlProduccion');
 Route::post('controlProduccion/store', 'ProduccionController@controlStore');

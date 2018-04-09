@@ -23,23 +23,26 @@
                         <form class="form-horizontal" role="form" method="POST" action="{{url('/cargaManualProduccion/store')}}">
 
                             <div class="list-group">
-                                <div class="list-group-item" id="list-form">
+                                <div class="list-group-item">
                                     <legend>Producción</legend>
                                     <input type="hidden" name="_token" value="{{ csrf_token() }}">
                                     <input type="hidden" name="products" id="products">
                                     <div class="form-group">
                                         <label class="col-md-4 control-label">Fecha</label>
                                         <div class="col-md-6">
-                                            <input type="date" class="form-control" name="date" value="{{ old('date') }}" required >
+                                            <input id="input-date" type="date" class="form-control" name="date" value="{{ old('date') }}" required >
                                         </div>
                                     </div>
-                                    <div class="form-group">
+                                    <div class="form-group" style="display: none;" id="products_add">
                                         <label class="col-md-4 control-label">Producto</label>
                                         <div class="col-md-6">
                                             <input autocomplete="off" class="form-control typeahead" id="name">
                                         </div>
                                     </div>
                                     <hr>
+                                    <div id="list-form">
+
+                                    </div>
                                 </div>
                             </div>
                             <div class="form-group">
@@ -58,8 +61,48 @@
     </div>
     <script>
         $(document).ready(function () {
-            var $input = $(".typeahead");
             product_list = [];
+            $("#input-date").change(function(){
+                $("#products_add").val('');
+                if($(this).val()!=''){
+                    $("#products_add").show();
+                    $("#list-form").html('');
+                    product_list = [];
+                    $('#products').val('');
+                    $.ajax({
+                        url: '/cargaManualProduccion/getListProduct/?fecha='+$(this).val(),
+                        method: 'GET',
+                        success: function(response){
+                            if(response.data){
+                                for(var i=0; i<response.data.length;i++){
+                                    current = response.data[i];
+                                    product_list.push(current.id);
+                                    var html = '<div class="form-group">';
+                                    if(current.tipo=='I'){
+                                        html += '<label style="text-align: left; padding-bottom: 10px;" class="col-md-offset-4 col-md-8 control-label">'+current.name+' | Intercalado</label>';
+                                        html += '<div class="col-md-offset-4 col-md-2">Packs<input value="'+current.packs+'" class="form-control" type="text" name="packs'+current.id+'"></div>';
+                                        html += '<div class="col-md-2">Mangas<input value="'+current.mangas+'" class="form-control" type="text" name="mangas'+current.id+'"></div>';
+                                        html += '<div class="col-md-2">Peso<input value="'+current.peso+'" class="form-control" type="text" name="peso'+current.id+'"></div>';
+                                    } else {
+                                        html += '<label style="text-align: left; padding-bottom: 10px;" class="col-md-offset-4 col-md-8 control-label">'+current.name+' | Rebobinado</label>';
+                                        html += '<div class="col-md-offset-4 col-md-2">Packs<input value="'+current.packs+'" class="form-control" type="text" name="packs'+current.id+'"></div>';
+                                    }
+                                    html += '</div>';
+                                    $('#list-form').append(html);
+                                }
+                                $('#products').val(product_list.toString());
+                            }
+                        }
+                    });
+                } else {
+                    $("#list-form").html('');
+                    $("#products_add").hide();
+                    product_list = [];
+                    $('#products').val('');
+                }
+            });
+
+            var $input = $(".typeahead");
             $input.typeahead({
                 source: [
                         @foreach($products_lists as $key => $v)
@@ -85,12 +128,12 @@
                                     var html = '<div class="form-group">';
                                     if(response.data=='I'){
                                         html += '<label style="text-align: left; padding-bottom: 10px;" class="col-md-offset-4 col-md-8 control-label">'+current.name+' | Intercalado</label>';
-                                        html += '<div class="col-md-offset-4 col-md-2"><input placeholder="Packs" class="form-control" type="text" name="packs'+current.id+'"></div>';
-                                        html += '<div class="col-md-2"><input placeholder="Mangas" class="form-control" type="text" name="mangas'+current.id+'"></div>';
-                                        html += '<div class="col-md-2"><input placeholder="Peso" class="form-control" type="text" name="peso'+current.id+'"></div>';
+                                        html += '<div class="col-md-offset-4 col-md-2">Packs<input class="form-control" type="text" name="packs'+current.id+'"></div>';
+                                        html += '<div class="col-md-2">Mangas<input class="form-control" type="text" name="mangas'+current.id+'"></div>';
+                                        html += '<div class="col-md-2">Peso<input class="form-control" type="text" name="peso'+current.id+'"></div>';
                                     } else {
                                         html += '<label style="text-align: left; padding-bottom: 10px;" class="col-md-offset-4 col-md-8 control-label">'+current.name+' | Rebobinado</label>';
-                                        html += '<div class="col-md-offset-4 col-md-2"><input placeholder="Packs" class="form-control" type="text" name="packs'+current.id+'"></div>';
+                                        html += '<div class="col-md-offset-4 col-md-2">Packs<input class="form-control" type="text" name="packs'+current.id+'"></div>';
                                     }
                                     html += '</div>';
                                     $('#list-form').append(html);

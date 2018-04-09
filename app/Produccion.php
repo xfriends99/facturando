@@ -6,7 +6,7 @@ class Produccion extends Model
 {
     protected $table = 'produccion';
 
-    protected $fillable = ['created_at', 'kg', 'mangas', 'controlado', 'id_producto', 'users_id'];
+    protected $fillable = ['control_id', 'created_at', 'kg', 'mangas', 'controlado', 'id_producto', 'users_id'];
 
 public function users()
 	{
@@ -16,6 +16,11 @@ public function users()
 	public function producto()
     {
         return $this->belongsTo('app\ProductoTDP', 'id_producto');
+    }
+
+    public function control()
+    {
+        return$this->hasOne(ControlDeProduccion::class, 'id', 'control_id');
     }
 
 }
