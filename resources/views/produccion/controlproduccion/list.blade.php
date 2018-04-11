@@ -63,53 +63,61 @@
                             </tr>
                             </thead>
                             <tbody>
-                            @if(!$list)
+                            @if(!$control)
                                 No se encontraron registros
                             @else
                                 <form method="POST" action="/controlProduccion/store" id="form-send">
-                                @foreach($list as $l)
-                                    @if(isset($control_produccion[$l->id_producto]))
+                                @foreach($control as $l)
+                                    @if(isset($produccion_data[$l->id]))
                                     <tr>
-                                        <th>{{ date('d/m/Y',strtotime($control_produccion[$l->id_producto]['created_at'])) }}</th>
+                                        <th>{{ date('d/m/Y',strtotime($l->fecha)) }}</th>
                                         <td>{{$l->producto->descripcion}}</td>
                                         @if($l->producto->operacion=='I')
                                             <?php
-                                                $v3 = $control_produccion[$l->id_producto]['packs'];
-                                                $v4 = $l->producto->cant_por_pack ? floor(($l->mangas_sum*$l->producto->cant_por_man)/$l->producto->cant_por_pack) : 0;
-                                                $v5 = $l->kg_sum;
-                                                $v6 = $control_produccion[$l->id_producto]['packs']*$l->producto->peso_manga;
+                                            if($l->type_manga=='c'){
+                                                $division = 4;
+                                            } else {
+                                                $division = 5;
+                                            }
+                                            $v3 = $l->packs;
+                                            $v4 = $l->producto->cant_por_man ? floor(($produccion_data[$l->id]->mangas*$l->producto->cant_por_man)/$division) : 0;
+                                            $v5 = $produccion_data[$l->id]->kg;
+                                            $v6 = $l->packs*$produccion_data[$l->id]->kg;
                                             ?>
-                                            <td>{{$l->mangas_sum}}</td>
-                                            <td>{{$control_produccion[$l->id_producto]['packs']}}</td>
-                                            @if($l->producto->cant_por_pack)
-                                                <td>{{floor(($l->mangas_sum*$l->producto->cant_por_man)/$l->producto->cant_por_pack)}}</td>
-                                            @else
-                                                <td>0</td>
-                                            @endif
-                                            <td>{{$l->kg_sum}}</td>
+                                            <td>{{$l->packs}}</td>
+                                                @if($l->producto->cant_por_man)
+                                                    <td>{{floor(($produccion_data[$l->id]->mangas*$l->producto->cant_por_man)/$division)}}</td>
+                                                @else
+                                                    <td>0</td>
+                                                @endif
+                                            <td>{{$produccion_data[$l->id]->mangas}}</td>
+                                            <td>{{number_format($produccion_data[$l->id]->kg, 2)}}</td>
+                                            <td>{{number_format($l->packs*$produccion_data[$l->id]->kg, 2)}}</td>
                                         @else
                                             <?php
-                                                $v3 = $control_produccion[$l->id_producto]['packs'];
-                                                $v4 = $l->producto->cant_por_pack ? floor(($l->productos_count*$l->producto->cant_por_man)/$l->producto->cant_por_pack) : 0;
-                                                $v5 = $l->kg_suma;
-                                                $v6 = $control_produccion[$l->id_producto]['packs']*$l->producto->peso_manga;
+                                            $v3 = $l->packs;
+                                            $v4 = $l->producto->cant_por_pack ? floor(($produccion_data[$l->id]->productos_count*$l->producto->cant_por_man)/$l->producto->cant_por_pack) : 0;
+                                            $v5 = $produccion_data[$l->id]->kg_suma;
+                                            $v6 = $produccion_data[$l->id]->kg_suma*$l->packs;
                                             ?>
-                                            <td>{{$l->productos_count}}</td>
-                                            <td>{{$control_produccion[$l->id_producto]['packs']}}</td>
+                                            <td>{{$l->packs}}</td>
                                             @if($l->producto->cant_por_pack)
-                                                <td>{{floor(($l->productos_count*$l->producto->cant_por_man)/$l->producto->cant_por_pack)}}</td>
+                                                <td>{{floor(($produccion_data[$l->id]->productos_count*$l->producto->cant_por_man)/$l->producto->cant_por_pack)}}</td>
                                             @else
                                                 <td>0</td>
                                             @endif
-                                            <td>{{$l->kg_suma}}</td>
+                                            <td>{{$produccion_data[$l->id]->productos_count}}</td>
+                                            <td>{{number_format($produccion_data[$l->id]->kg_suma, 2)}}</td>
+                                            <td>{{number_format($produccion_data[$l->id]->kg_suma*$l->packs, 2)}}</td>
                                         @endif
-                                        <td>{{$control_produccion[$l->id_producto]['packs']*$l->producto->peso_manga}}</td>
-                                        @if($v3-$v4==0 && $v5-$v6==0)
-                                            <td width="7%"><input value="{{$v3}}" class="form-control input-sm stock-{{$l->id_producto}}" name="stock[]" id="stock-{{$l->id_producto}}" data-val="{{$l->id_producto}}"></td>
-                                            <td width="7%"><input readonly value="S" class="form-control input-sm ok-{{$l->id_producto}}" id="ok-{{$l->id_producto}}" name="ok[]" data-val="{{$l->id_producto}}"></td>
-                                        @else
-                                            <td width="7%"><input class="form-control input-sm stock-{{$l->id_producto}}" id="stock-{{$l->id_producto}}" name="stock[]" data-val="{{$l->id_producto}}"></td>
-                                            <td width="7%"><input class="form-control input-sm ok" id="ok-{{$l->id_producto}}" data-val="{{$l->id_producto}}" name="ok[]"></td>
+                                        @if(isset($v3))
+                                            @if($v3-$v4==0 && $v5-$v6==0)
+                                                <td width="7%"><input value="{{$v3}}" class="form-control input-sm stock-{{$l->id}}" name="stock[]" id="stock-{{$l->id}}" data-val="{{$l->id}}"></td>
+                                                <td width="7%"><input readonly value="S" class="form-control input-sm ok-{{$l->id}}" id="ok-{{$l->id}}" name="ok[]" data-val="{{$l->id}}"></td>
+                                            @else
+                                                <td width="7%"><input class="form-control input-sm stock-{{$l->id}}" id="stock-{{$l->id}}" name="stock[]" data-val="{{$l->id}}"></td>
+                                                <td width="7%"><input class="form-control input-sm ok" id="ok-{{$l->id}}" data-val="{{$l->id}}" name="ok[]"></td>
+                                            @endif
                                         @endif
                                     </tr>
                                     @endif

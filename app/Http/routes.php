@@ -174,6 +174,7 @@ Route::post('listarIVAcompras', 'ReporteController@listarIVAcompras');
 Route::get('cuentaCorriente', 'ReporteController@listarCtaCte');
 Route::get('ventas/{fechas?}', 'ReporteController@ventas');
 Route::get('listadoProductoPedidos/{fechas?}', 'ReporteController@listadoProductoPedidos');
+Route::get('listadoProducto/{fechas?}', 'ReporteController@listadoProducto');
 Route::get('listadoStock', 'ReporteController@listadoStock');
 Route::get('listadoStockTipo', 'ReporteController@listadoStockTipo');
 
@@ -213,15 +214,11 @@ Route::post('addProduction', function(){
 
 $prod = app\ProductoTDP::find(Input::get('prod_id'));
 
-$cc = \app\ControlDeProduccion::create(['fecha' => date('Y-m-d'),
-        'id_producto' => $prod->id, 'packs' => $prod->peso_por_pack]);
-
 $producto = new \app\Produccion;
 $producto->users_id = Auth::user()->id;
 $producto->kg = Input::get('cantidad');
 $producto->codigo = Input::get('producto_id');
 $producto->id_producto = $prod->id;
-$producto->control_id = $cc->id;
 $contador = Input::get('contador') + 1;
 
 $producto->save();
@@ -447,6 +444,9 @@ if(count(Mail::failures()) > 0){
 }
 });
 
+Route::get('update-products', function(){
+    \Artisan::call("csv:process");
+});
 
 
 

@@ -45,15 +45,17 @@ class CajaController extends Controller {
                 $tomorrow = date('Y-m-d', strtotime( '+1 days' ));
                 if(\app\CierreCaja::all()->last()!=null){
                 $ultimo_cierre = strtotime(\app\CierreCaja::all()->last()->created_at);
+                    $is_cierre = \app\CierreCaja::all()->last()->created_at->format('Y-m-d');
                 }else{
                 $ultimo_cierre = 0;
                 }
-
                 $cierreAnterior = \app\Caja::where('created_at','<',$today)->orderBy('created_at', 'desc')->first();
                 $caja = \app\Caja::whereBetween('created_at',[$today,$tomorrow])->get();
                 $today = strtotime(\app\Caja::all()->last()->created_at);
-
-		return view('caja.list')->with('cierreAnterior',$cierreAnterior)->with('caja',$caja)->with('today',$today)->with('ultimo_cierre',$ultimo_cierre);
+                   $is_today = date('Y-m-d');
+		return view('caja.list')->with('cierreAnterior',$cierreAnterior)->with('is_cierre', $is_cierre)
+            ->with('caja',$caja)->with('today',$today)->with('is_today', $is_today)
+            ->with('ultimo_cierre',$ultimo_cierre);
                 }else{
                 
                 $date = date( 'Y-m-d', strtotime( $date ) );

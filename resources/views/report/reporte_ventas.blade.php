@@ -37,6 +37,12 @@
 									</div>
 								</div>
 								<div class="form-group">
+									<label class="col-md-4 control-label">Estados de pedido</label>
+									<div class="col-md-4">
+										<select class="form-control selectpicker" multiple name="status" id="status">@foreach($statuses as $s) <option value="{{$s->id_order_state}}" @if(isset($request['status']) && preg_match('/'.$s->id_order_state.'/', $request['status'])) selected @endif>{{$s->name}}</option>  @endforeach</select>
+									</div>
+								</div>
+								<div class="form-group">
 							<div class="col-md-4 col-md-offset-4"><br/>
 								<button type="submit" class="btn btn-primary">
 									Consultar!
@@ -80,7 +86,8 @@
 
 @if($invoice->status=='A' && ($invoice->cbte_tipo==1 || $invoice->cbte_tipo==99) && $linea->code!=null)
 	@if($request['type']=='' || ($request['type']=='f' && $invoice->cbte_tipo==1) || ($request['type']=='r' && $invoice->cbte_tipo==99))
-	<tr>
+	@if(!isset($request['status']) || (isset($request['status']) && isset($order_states[$invoice->id_order]) && preg_match('/'.$order_states[$invoice->id_order].'/', $request['status'])))
+		<tr>
                                     
 
 								<th>{{ date('d-m-Y',strtotime($invoice->fecha_facturacion)) }}</td>
@@ -104,6 +111,7 @@
                                                                 <td>{{$invoice->corredor->corredor->nombre}}</td>
 								
 							</tr>
+		@endif
 @endif
                                                    @endif
                                                         @endforeach

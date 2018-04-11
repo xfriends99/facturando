@@ -9,6 +9,7 @@ use Illuminate\Http\Response;
 use Request;
 use Session;
 use Auth;
+use app\ProductoTDP;
 
 class CostoController extends Controller {
 
@@ -23,11 +24,20 @@ class CostoController extends Controller {
 	}
 
 
-        public function getCosto()
+        public function getCosto(\Illuminate\Http\Request $request)
 	{
-                $products = \app\Product::all();
-
-		return view('costo.list')->with('products',$products);
+        $productss = ProductoTDP::orderBy('reference', 'asc')->get();
+        $products_lists = [];
+        foreach ($productss as $p){
+            $products_lists[$p->id_product] = $p->descripcion;
+        }
+        if($request->name){
+            $products = \app\Product::where('id_product', $request->name)->get();
+        } else {
+            $products = \app\Product::all();
+        }
+		return view('costo.list')->with('products',$products)
+            ->with('products_lists', $products_lists);
 
 	}
 

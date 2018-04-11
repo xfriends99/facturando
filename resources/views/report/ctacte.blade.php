@@ -13,7 +13,30 @@
 					@if (Session::has('message'))
 					<div class="alert alert-info">{{ Session::get('message') }}</div>
 					@endif
-				
+						<form class="form-horizontal" role="form" method="get" action="/cuentaCorriente">
+							<div class="list-group">
+								<div class="list-group-item">
+									<div class="form-group">
+										<label class="col-md-4 control-label">Filtro por saldo</label>
+										<div class="col-md-4">
+											<select class="form-control" name="saldo" >
+												<option value="" @if($request['saldo']=='') selected @endif>Todos</option>
+												<option @if($request['saldo']=='<0') selected @endif value="<0"><0</option>
+												<option @if($request['saldo']=='=0') selected @endif value="=0">=0</option>
+												<option @if($request['saldo']=='>0') selected @endif value=">0">>0</option>
+											</select>
+										</div>
+									</div>
+									<div class="form-group">
+										<div class="form-group">
+											<div class="col-md-4 col-md-offset-4"><br/>
+												<button type="submit" class="btn btn-primary">
+													Consultar!
+												</button>
+											</div>
+										</div>
+
+						</form>
 					<table class="table table-hover">
 						<thead>
 							<tr>
@@ -36,7 +59,7 @@
 							$final = $final + $sal->importe;
 							}*/
 							?>
-						
+							@if($request['saldo']=='' || ($invSaldo<0 && $request['saldo']=='<0') || ($invSaldo==0 && $request['saldo']=='=0') || ($invSaldo>0 && $request['saldo']=='>0'))
 							<tr>
 								<td>{{ $invoice->company_name  }}</td>
 								<td>{{ '$ '.number_format($invSaldo,2) }}</td>
@@ -44,7 +67,7 @@
 							<?php 
 							$saldo += $invSaldo;
 							?>
-						
+							@endif
 							@endforeach
 							<tr>
 								<td></td>

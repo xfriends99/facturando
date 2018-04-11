@@ -10,13 +10,7 @@
 				<div class="panel-heading">
 					<div class="row">
 						<div class="col-md-6">
-							Detalle de Ventas
-						</div>
-						<div class="col-md-6">
-							<div class="btn-group" style="float: right;">
-								<a href="/controlProduccion" class="btn btn-success" >Control de producción</a>
-								<a href="/cargaManualProduccion" class="btn btn-success" >Carga manual de producción</a>
-							</div>
+							Detalle de Producción
 						</div>
 					</div>
 				</div>

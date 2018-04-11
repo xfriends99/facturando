@@ -56,6 +56,10 @@
                             <tbody>
 
                             @if($invoices!=null)
+                                <?php
+                                $importe = 0;
+                                $pago = 0;
+                                ?>
                                 @foreach($invoices as $invoice)
                                     @if($invoice['type']=='invoice')
                                     <?php
@@ -71,7 +75,21 @@
                                         <td>@if($invoice['id_order']){{$invoice['id_order']}}@endif</td>
                                         <td> @if($invoice['cbte_tipo']==1) Factura @elseif ($invoice['cbte_tipo']==2) Nota de Débito @elseif($invoice['cbte_tipo']==3) Nota de Crédito @elseif($invoice['cbte_tipo']==99) Remito @endif </td>
                                         <td>{{ $invoice['nro_cbte']  }}</td>
-                                        <td>@if($invoice['cbte_tipo']==99){{ '$ '. number_format($invoice['imp_net'], 2) }} @else @if($invoice['cbte_tipo']==3){{ '$ '. number_format($invoice['imp_total'] , 2) }}@else{{ '$ '. number_format($invoice['imp_total'] , 2) }}@endif @endif</td>
+                                        <td>
+                                        @if($invoice['cbte_tipo']==99)
+                                            <?php $importe+=$invoice['imp_net']; ?>
+                                                {{ '$ '. number_format($invoice['imp_net'], 2) }}
+                                        @else
+                                            @if($invoice['cbte_tipo']==3)
+                                                    <?php $importe+=$invoice['imp_total']; ?>
+                                                {{ '$ '. number_format($invoice['imp_total'] , 2) }}
+                                            @else
+                                                <?php $importe+=$invoice['imp_total']; ?>
+                                                {{ '$ '. number_format($invoice['imp_total'] , 2) }}
+                                            @endif
+                                        @endif
+                                        </td>
+                                        <?php $pago+=$invoice['saldo']; ?>
                                         <td>{{ '$ '. number_format($invoice['saldo'] , 2)  }}</td>
                                         <td>
                                             @if(!$invoice['id_order'] && $invoice['object']->users)
@@ -87,6 +105,7 @@
                                             <td>@if ($invoice['object']->medios_pagos_id!=null) {{ $invoice['object']->medio_pago->tipo }} @else {{ $invoice['object']->otro }} @endif</td>
                                             <td></td>
                                             <td></td>
+                                            <?php $pago+=$invoice['imp_total']; ?>
                                             <td>{{ '$ '. number_format($invoice['imp_total'] , 2)  }}</td>
                                             <td>
                                                 @if($invoice['object']->users)
@@ -96,6 +115,13 @@
                                         </tr>
                                     @endif
                                 @endforeach
+                                <tr>
+                                    <td colspan="5">Total</td>
+                                    <td>{{ '$ '. number_format($importe , 2)  }}</td>
+                                    <td>{{ '$ '. number_format($pago , 2)  }}</td>
+                                    <td>
+                                    </td>
+                                </tr>
                             @endif
 
                             </tbody>

@@ -6,8 +6,8 @@
 		<div class="col-md-10 col-md-offset-1">
 			<div class="panel panel-default">
 				<div class="panel-heading">  @if(isset($date)) <b> Caja {{ date('d-m-Y', strtotime($date)) }} </b> @else <b>Caja @if($ultimo_cierre > $today) Cerrada @else Abierta @endif </b>
-<a href= @if($ultimo_cierre > $today) "#" @else "/cerrarCaja" @endif style="margin-top:-7px; float:right;" class="btn btn-info">Cerrar Caja</a>
-&nbsp;&nbsp;&nbsp;<a href="/movimiento" style="margin-top:-7px; float:right;margin-right: 25px;" class="btn btn-success">Nuevo Movimiento</a> @endif
+					@if($is_cierre != $is_today)@if($ultimo_cierre < $today)<a href="/cerrarCaja" style="margin-top:-7px; float:right;" class="btn btn-info">Cerrar Caja</a>@endif
+&nbsp;&nbsp;&nbsp; <a href="/movimiento" style="margin-top:-7px; float:right;margin-right: 25px;" class="btn btn-success">Nuevo Movimiento</a> @endif @endif
 
 				</div>
 				<div class="panel-body">

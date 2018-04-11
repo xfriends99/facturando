@@ -5,6 +5,11 @@ use Illuminate\Database\Eloquent\Model;
 class ControlDeProduccion extends Model
 {
 
-    protected $fillable = ['fecha', 'packs', 'a_stock', 'controlado', 'id_producto'];
+    protected $fillable = ['type_manga', 'fecha', 'packs', 'a_stock', 'controlado', 'id_producto'];
 	protected $table = 'ControlDeProduccion';
+
+    public function producto()
+    {
+        return $this->belongsTo('app\ProductoTDP', 'id_producto');
+    }
 }

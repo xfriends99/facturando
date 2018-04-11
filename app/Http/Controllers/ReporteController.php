@@ -2,6 +2,7 @@
 
 use app\Linea;
 use app\Pago;
+use app\Pedido;
 use app\ProductoTDP;
 use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\Redirect;
@@ -97,7 +98,7 @@ public function cuentaCorriente(){
 	return view('report.ctacte')->with('invoices',$invoices);
 }
 
-public function listarCtaCte(){
+public function listarCtaCte(\Illuminate\Http\Request $request){
 
 
 			$invoices = \app\InvoiceHead::where('status','=','A')
@@ -106,33 +107,73 @@ public function listarCtaCte(){
 			->leftJoin("cta_ctes", "invoice_head_id", "=", "invoice_head.id")
 			->groupBy('invoice_head.companies_id')
 			->get();
-			return view('report.ctacte')->with('invoices',$invoices);
+
+			$request['saldo'] = $request->saldo ? $request->saldo : '';
+			return view('report.ctacte')->with('invoices',$invoices)->with('request', $request->all());
 
 	}
 
 public function ventas(\Illuminate\Http\Request $request){
 
+    $statuses = \DB::table('toallasd_tdp.ps_order_state_lang')
+        ->where('id_lang',1)->whereIn('id_order_state',[3,5,6,7,8,9,12,13])
+        ->orderBy('ps_order_state_lang.name','asc')->get();
+
         if(Input::has('desde') && Input::has('hasta')){
         $rango[0] = Input::get('desde');
-	$rango[1] = Input::get('hasta');
+    	$rango[1] = Input::get('hasta');
 
         $invoices = \app\InvoiceHead::whereBetween('fecha_facturacion',$rango)
         ->orderBy('fecha_facturacion','DESC')
         ->get();
+        $id_orders  = [];
+        foreach ($invoices as $i){
+            $id_orders[] = $i->id_order;
+        }
+        $order_states = [];
+        foreach (Pedido::whereIn('id_order', $id_orders)->get() as $p){
+            $order_states[$p->id_order] = $p->current_state;
+        }
         $request['type'] = $request->type ? $request->type : '';
          return view('report.reporte_ventas')->with('invoices',$invoices)
-             ->with('request', $request->all())->with('desde',Input::get('desde'))->with('hasta',Input::get('hasta'));
+             ->with('request', $request->all())->with('statuses', $statuses)->with('order_states', $order_states)
+             ->with('desde',Input::get('desde'))->with('hasta',Input::get('hasta'));
        }else{
         $hoy = date("Y-m-d");   
 	$invoices = \app\InvoiceHead::where('fecha_facturacion','=',$hoy)->orderBy('fecha_facturacion','DESC')->get();
             $request['type'] = $request->type ? $request->type : '';
         return view('report.reporte_ventas')->with('invoices',$invoices)
-            ->with('request', $request->all())->with('hoy',$hoy);
+            ->with('request', $request->all())->with('statuses', $statuses)->with('hoy',$hoy);
      
      }	
    }
 
+    public function listadoProducto(\Illuminate\Http\Request $request){
+        $reference = [['id' => 1, 'name'=> '1 - Fabricación Propia de Papelera'],
+            ['id' => 2, 'name'=> '2 - Fabricación de Terceros de Papelera'],
+            ['id' => 3, 'name'=> '3 - Reventa de Productos no Propio de Papelera'],
+            ['id' => 4, 'name'=> '4 - Reventa de Productos no Propio de Plastico'],
+            ['id' => 5, 'name'=> '5 - Reventa de Productos no Propio de Servilleta'],
+            ['id' => 6, 'name'=> '6 - Materia Prima'],
+            ['id' => 7, 'name'=> '7 - Packaging'],
+            ['id' => 8, 'name'=> '8 - Insumos']];
+        $product_list = ProductoTDP::all();
+        $request['reference'] = $request->reference ? $request->reference : '';
+        return view('report.products')
+            ->with('product_list', $product_list)->with('request', $request->all())
+            ->with('reference', $reference);
+    }
+
     public function listadoProductoPedidos(\Illuminate\Http\Request $request){
+        $reference = [['id' => 1, 'name'=> '1 - Fabricación Propia de Papelera'],
+            ['id' => 2, 'name'=> '2 - Fabricación de Terceros de Papelera'],
+            ['id' => 3, 'name'=> '3 - Reventa de Productos no Propio de Papelera'],
+            ['id' => 4, 'name'=> '4 - Reventa de Productos no Propio de Plastico'],
+            ['id' => 5, 'name'=> '5 - Reventa de Productos no Propio de Servilleta'],
+            ['id' => 6, 'name'=> '6 - Materia Prima'],
+            ['id' => 7, 'name'=> '7 - Packaging'],
+            ['id' => 8, 'name'=> '8 - Insumos']];
+
         /*if(Input::has('desde') && Input::has('hasta')){
             $rango[0] = Input::get('desde');
             $rango[1] = Input::get('hasta');
@@ -202,11 +243,13 @@ public function ventas(\Illuminate\Http\Request $request){
         foreach ($products_id as $p){
             $product_list[$p->id_product] = $p;
         }
+        $request['reference'] = $request->reference ? $request->reference : '';
         $request['teorico'] = $request->teorico ? $request->teorico : '';
         return view('report.reporte_listado_producto_pedidos')->with('pedidos',$pedidos)
             ->with('product_list', $product_list)->with('pedidos_productos', $pedidos_productos)
             ->with('request', $request->all())->with('product_list_order', $product_list_order)
-            ->with('product_list_tdp', $product_list_tdp)->with('product_list_pedidos', $product_list_pedidos);
+            ->with('product_list_tdp', $product_list_tdp)->with('reference', $reference)
+            ->with('product_list_pedidos', $product_list_pedidos);
     }
 
     public function listadoStockTipo(\Illuminate\Http\Request $request){

@@ -47,8 +47,8 @@ class CajaEspecialController extends Controller {
             
                 if(\app\CierreCajaEspecial::all()->last()!=null){
 
-                $ultimo_cierre = strtotime(\app\CierreCajaEspecial::all()->last()->created_at);   
-
+                $ultimo_cierre = strtotime(\app\CierreCajaEspecial::all()->last()->created_at);
+                    $is_cierre = \app\CierreCajaEspecial::all()->last()->created_at->format('Y-m-d');
                 }else{
                 $ultimo_cierre = 0;
                 }
@@ -58,8 +58,10 @@ class CajaEspecialController extends Controller {
                 $fechaCA = date('Y-m-d', $fechaCA);
                 $caja = \app\CajaEspecial::where('created_at','>',$fechaCA)->get();
                 $today = strtotime(\app\CajaEspecial::all()->last()->created_at);
-             
-		        return view('cajaEspecial.list')->with('cierreAnterior',$cierreAnterior)->with('caja',$caja)->with('today',$today)->with('ultimo_cierre',$ultimo_cierre);
+                $is_today = date('Y-m-d');
+		        return view('cajaEspecial.list')->with('cierreAnterior',$cierreAnterior)
+                    ->with('caja',$caja)->with('today',$today)->with('is_cierre', $is_cierre)
+                    ->with('ultimo_cierre',$ultimo_cierre)->with('is_today', $is_today);
                 
                    
                }else{

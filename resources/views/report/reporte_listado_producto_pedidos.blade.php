@@ -13,6 +13,17 @@
                             <div class="list-group">
                                 <div class="list-group-item">
                                     <div class="form-group">
+                                        <label class="col-md-4 control-label">Tipo</label>
+                                        <div class="col-md-4">
+                                            <select class="form-control" name="reference" >
+                                                <option value="" @if($request['reference']=='') selected @endif>Seleccione</option>
+                                                @foreach($reference as $r)
+                                                    <option @if($request['reference']==$r['id']) selected @endif value="{{$r['id']}}">{{$r['name']}}</option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
                                         <label class="col-md-4 control-label">Filtro por stock teorico</label>
                                         <div class="col-md-4">
                                             <select class="form-control" name="teorico" >
@@ -61,7 +72,7 @@
                                 <?php
                                 $stockTeorico = $product_list_tdp[$p->product_id]->stock_Fisico-$product_list_order[$p->product_id]->tot_product;
                                 ?>
-                                @if($request['teorico']=='' || ($stockTeorico<0 && $request['teorico']=='<0') || ($stockTeorico==0 && $request['teorico']=='=0') || ($stockTeorico>0 && $request['teorico']=='>0'))
+                                @if((preg_match('/^'.$request['reference'].'-.+/', $p->product_reference) || $request['reference']=='') && ($request['teorico']=='' || ($stockTeorico<0 && $request['teorico']=='<0') || ($stockTeorico==0 && $request['teorico']=='=0') || ($stockTeorico>0 && $request['teorico']=='>0')))
                                 <tr>
                                     <th>{{ date('d-m-Y',strtotime($p->date_add)) }}</td>
                                     <td>{{ $p->id_order  }} </td>
@@ -131,7 +142,7 @@
                                     <?php
                                     $stockTeorico_2 = $product_list_tdp[$id_product]->stock_Fisico-$product_list_order[$id_product]->tot_product;
                                     ?>
-                                    @if($request['teorico']=='' || ($stockTeorico_2<0 && $request['teorico']=='<0') || ($stockTeorico_2==0 && $request['teorico']=='=0') || ($stockTeorico_2>0 && $request['teorico']=='>0'))
+                                    @if((preg_match('/^'.$request['reference'].'-.+/', $product_list_tdp[$id_product]->reference) || $request['reference']=='') && ($request['teorico']=='' || ($stockTeorico_2<0 && $request['teorico']=='<0') || ($stockTeorico_2==0 && $request['teorico']=='=0') || ($stockTeorico_2>0 && $request['teorico']=='>0')))
                                         <tr>
                                             <td colspan="2">Total</td>
                                             <td>{{$count}}</td>
@@ -145,7 +156,7 @@
                                     ?>
                                 @endif
                                 <?php $count += $p->product_quantity ?>
-                                @if($request['teorico']=='' || ($stockTeorico<0 && $request['teorico']=='<0') || ($stockTeorico==0 && $request['teorico']=='=0') || ($stockTeorico>0 && $request['teorico']=='>0'))
+                                @if((preg_match('/^'.$request['reference'].'-.+/', $p->product_reference) || $request['reference']=='') && ($request['teorico']=='' || ($stockTeorico<0 && $request['teorico']=='<0') || ($stockTeorico==0 && $request['teorico']=='=0') || ($stockTeorico>0 && $request['teorico']=='>0')))
                                 <tr>
                                     <th>{{ date('d-m-Y',strtotime($p->date_add)) }}</td>
                                     <td>{{$p->product_name}}</td>
@@ -171,9 +182,9 @@
                             <?php
                             $stockTeorico_2 = $product_list_tdp[$p->product_id]->stock_Fisico-$product_list_order[$p->product_id]->tot_product;
                             ?>
-                            @if($request['teorico']=='' || ($stockTeorico_2<0 && $request['teorico']=='<0') || ($stockTeorico_2==0 && $request['teorico']=='=0') || ($stockTeorico_2>0 && $request['teorico']=='>0'))
+                            @if((preg_match('/^'.$request['reference'].'-.+/', $product_list_tdp[$id_product]->reference) || $request['reference']=='') && ($request['teorico']=='' || ($stockTeorico_2<0 && $request['teorico']=='<0') || ($stockTeorico_2==0 && $request['teorico']=='=0') || ($stockTeorico_2>0 && $request['teorico']=='>0')))
                                 <tr>
-                                    <td>Total</td>
+                                    <td  colspan="2">Total</td>
                                     <td>{{$count}}</td>
                                     <td colspan="2">En stock Fisico = @if($product_list[$p->product_id]->stock_Fisico!=null) {{$product_list[$p->product_id]->stock_Fisico}} @else 0 @endif</td>
                                     <td colspan="2">A reponer = @if($count-$product_list[$p->product_id]->stock_Fisico<=0) OK @else {{$count-$product_list[$p->product_id]->stock_Fisico}} @endif</td>

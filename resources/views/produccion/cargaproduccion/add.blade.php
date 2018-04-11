@@ -83,6 +83,14 @@
                                         html += '<div class="col-md-offset-4 col-md-2">Packs<input value="'+current.packs+'" class="form-control" type="text" name="packs'+current.id+'"></div>';
                                         html += '<div class="col-md-2">Mangas<input value="'+current.mangas+'" class="form-control" type="text" name="mangas'+current.id+'"></div>';
                                         html += '<div class="col-md-2">Peso<input value="'+current.peso+'" class="form-control" type="text" name="peso'+current.id+'"></div>';
+                                        html += '<div class="col-md-2">Tipo de manga<select class="form-control" name="type_manga'+current.id+'">';
+                                        if(current.type_manga=='c'){
+                                            html += '<option value="c" selected>Chica</option><option value="g">Grande</option>';
+                                        } else {
+                                            html += '<option value="c">Chica</option><option value="g" selected>Grande</option>';
+                                        }
+
+                                        html += '</select></div>';
                                     } else {
                                         html += '<label style="text-align: left; padding-bottom: 10px;" class="col-md-offset-4 col-md-8 control-label">'+current.name+' | Rebobinado</label>';
                                         html += '<div class="col-md-offset-4 col-md-2">Packs<input value="'+current.packs+'" class="form-control" type="text" name="packs'+current.id+'"></div>';
@@ -131,6 +139,7 @@
                                         html += '<div class="col-md-offset-4 col-md-2">Packs<input class="form-control" type="text" name="packs'+current.id+'"></div>';
                                         html += '<div class="col-md-2">Mangas<input class="form-control" type="text" name="mangas'+current.id+'"></div>';
                                         html += '<div class="col-md-2">Peso<input class="form-control" type="text" name="peso'+current.id+'"></div>';
+                                        html += '<div class="col-md-2">Tipo de manga<select class="form-control" name="type_manga'+current.id+'"><option value="c">Chica</option><option value="g">Grande</option></select></div>';
                                     } else {
                                         html += '<label style="text-align: left; padding-bottom: 10px;" class="col-md-offset-4 col-md-8 control-label">'+current.name+' | Rebobinado</label>';
                                         html += '<div class="col-md-offset-4 col-md-2">Packs<input class="form-control" type="text" name="packs'+current.id+'"></div>';

@@ -1,5 +1,6 @@
 <?php namespace app\Console;
 
+use app\Commands\CsvProductsTdpCommand;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 
@@ -12,6 +13,7 @@ class Kernel extends ConsoleKernel {
 	 */
 	protected $commands = [
 		'app\Console\Commands\Inspire',
+        'app\Console\Commands\CsvProductsTdpCommand'
 	];
 
 	/**

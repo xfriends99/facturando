@@ -72,9 +72,11 @@ class ProduccionController extends Controller
                 if(intval($request['peso'.$p]) < 0){
                     return Redirect::back()->withErrors('EL peso del producto '.$products_database[$p]->descripcion.' debe ser mayor a 0');
                 }
+                $control['type_manga'] = $request['type_manga'.$p];
                 $control['packs'] = $request['packs'.$p];
                 $produccion['mangas'] = $request['mangas'.$p];
                 $produccion['kg'] = $request['peso'.$p];
+                $produccion['created_at'] = $request->date;
             } else {
                 if($request['packs'.$p]=='' || $request['packs'.$p]==null){
                     return Redirect::back()->withErrors('EL packs del producto '.$products_database[$p]->descripcion.' no puede estar vacio');
@@ -94,10 +96,13 @@ class ProduccionController extends Controller
         foreach ($controll as $c){
             if($cc = ControlDeProduccion::where('fecha', $request->date)->where('id_producto', $c['id_producto'])->get()->first()){
                 ControlDeProduccion::where('fecha', $request->date)->where('id_producto', $c['id_producto'])->update($c);
-                Produccion::where('control_id', $cc->id)->update($produccionl[$ii]);
+                Produccion::where('created_at', '>=', $request->date.' 00:00:00')->where('created_at', '<=', $request->date. ' 23:59:59')
+                    ->where('id_producto', $c['id_producto'])->update($produccionl[$ii]);
             } else {
-                $cc = ControlDeProduccion::create($c);
-                Produccion::create(array_merge($produccionl[$ii], ['control_id' => $cc->id]));
+                ControlDeProduccion::create($c);
+                if($products_database[$c['id_producto']]->operacion=='I') {
+                    Produccion::create($produccionl[$ii]);
+                }
             }
             $ii++;
         }
@@ -107,33 +112,27 @@ class ProduccionController extends Controller
 
     public function controlProduccion(Request $request)
     {
-        $list = Produccion::select('produccion.*')
-            ->addSelect(\DB::raw('SUM(mangas) as mangas_sum'))
-            ->addSelect(\DB::raw('SUM(mangas*kg) as kg_sum'))
-            ->addSelect(\DB::raw('SUM(kg) as kg_suma'))
-            ->addSelect(\DB::raw('COUNT(produccion.id_producto) as productos_count'))
-            ->where('produccion.controlado', 0)
-            ->join('productosTDP', 'productosTDP.id', '=', 'produccion.id_producto')
-            ->join('ControlDeProduccion', 'produccion.control_id', '=', 'ControlDeProduccion.id')
-            ->with(['producto', 'control'])
-            ->groupBy('ControlDeProduccion.id_producto')->groupBy('ControlDeProduccion.fecha')->get();
-        $ll = [];
-        foreach ($list as $l){
-            $ll[] = $l->id_producto;
+        $control = ControlDeProduccion::where('controlado', 0)
+            ->groupBy('fecha')->groupBy('id_producto')->with(['producto'])
+            ->orderBy('fecha', 'desc')
+            ->get();
+
+        $produccion_data = [];
+        foreach ($control as $c){
+            $pro = Produccion::select('produccion.*')
+                ->addSelect(\DB::raw('SUM(mangas) as mangas_sum'))
+                ->addSelect(\DB::raw('SUM(kg) as kg_suma'))
+                ->addSelect(\DB::raw('COUNT(produccion.id_producto) as productos_count'))
+                ->where('produccion.controlado', 0)
+                ->where('created_at', '>=', $c->fecha.' 00:00:00')->where('created_at', '<=', $c->fecha. ' 23:59:59')
+                ->where('id_producto', $c->id_producto)
+                ->groupBy('produccion.id_producto')->get()->first();
+            $produccion_data[$c->id] = $pro;
         }
-        $control_produccion = [];
-        $cr = ControlDeProduccion::whereIn('id_producto', $ll)
-            ->where('controlado', 0)->get();
-        foreach ($cr as $c){
-            if(!isset($control_produccion[$c->id_producto])) $control_produccion[$c->id_producto] = [];
-            if(!isset($control_produccion[$c->id_producto]['packs'])) $control_produccion[$c->id_producto]['packs'] = $c->packs;
-            if(!isset($control_produccion[$c->id_producto]['created_at'])) $control_produccion[$c->id_producto]['created_at'] = $c->fecha;
-            $control_produccion[$c->id_producto]['packs'] += $c->packs;
-            $control_produccion[$c->id_producto]['created_at'] = $c->fecha;
-        }
+
         $request = $request->all();
         return view('produccion.controlproduccion.list',
-            compact('list', 'request', 'control_produccion'));
+            compact('list', 'request', 'produccion_data', 'control'));
     }
 
     public function controlStore(Request $request)
@@ -142,9 +141,13 @@ class ProduccionController extends Controller
             $index = 0;
             foreach ($request->ok as $p){
                 if($p!=''){
-                    Produccion::where('id_producto', $p)->update(['controlado' => 1]);
-                    ControlDeProduccion::where('id_producto', $p)->update(['controlado' => 1]);
-                    /*$producto = ProductoTDP::find($p);
+                    $control = ControlDeProduccion::find($p);
+                    $control->controlado = 1;
+                    $control->save();
+                    Produccion::where('id_producto', $control->id_producto)
+                        ->where('created_at', '>=', $control->fecha.' 00:00:00')->where('created_at', '<=', $control->fecha. ' 23:59:59')
+                        ->update(['controlado' => 1]);
+                    /*$producto = ProductoTDP::find($control->id_producto);
                     $producto->stock_Fisico = $producto->stock_Fisico+$request->stock[$index];
                     $producto->save();*/
                 }
@@ -161,17 +164,20 @@ class ProduccionController extends Controller
             return response()->json(['data' => false]);
         }
         $array = [];
-        $pro = Produccion::join('ControlDeProduccion', 'produccion.control_id', '=', 'ControlDeProduccion.id')
-            ->where('ControlDeProduccion.fecha', $request->fecha)
-            ->groupBy('ControlDeProduccion.id_producto')
-            ->with(['control', 'producto'])->get();
+        $pro = ControlDeProduccion::where('fecha', $request->fecha)
+            ->where('controlado', 0)->with(['producto'])->get();
         $index = 0;
         foreach ($pro as $pp){
             $array[] = [];
-            $array[$index]['packs'] = $pp->control->packs;
-            $array[$index]['mangas'] = $pp->mangas;
-            $array[$index]['peso'] = $pp->kg;
-            $array[$index]['tipo'] = $pp->mangas==null ? 'R' : 'I';
+            $array[$index]['packs'] = $pp->packs;
+            if($pp->producto->operacion=='I'){
+                $produccion = Produccion::where('created_at', '>=', $request->fecha.' 00:00:00')->where('created_at', '<=', $request->fecha. ' 23:59:59')
+                    ->where('id_producto', $pp->id_producto)->first();
+                $array[$index]['mangas'] = $produccion->mangas;
+                $array[$index]['peso'] = $produccion->kg;
+                $array[$index]['type_manga'] = $pp->type_manga;
+            }
+            $array[$index]['tipo'] = $pp->producto->operacion;
             $array[$index]['id'] = $pp->id_producto;
             $array[$index]['name'] = $pp->producto->descripcion;
             $index++;

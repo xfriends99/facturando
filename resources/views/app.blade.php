@@ -45,7 +45,7 @@
 
 	<body>
 		<nav class="navbar navbar-default">
-			<small style="color:#60D75A">Versión: 2.4.0</small>
+			<small style="color:#60D75A">Versión: 2.6.7</small>
 			<div class="container-fluid">
 				<div class="navbar-header">
 					<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
@@ -60,8 +60,15 @@
 				<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
 					<ul class="nav navbar-nav">
                                                @if(!Auth::guest() && (Auth::user()->email=='tpcontrolpro2@gmail.com' || Auth::user()->email=='tpcontroladm4@gmail.com'))
-                                                        <li><a href="/viewProd">Producción</a></li>
-                                               @endif
+													<li class="dropdown">
+														<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Producción<span class="caret"></span></a>
+														<ul class="dropdown-menu" role="menu">
+															<li><a href="/viewProd">Detalle</a></li>
+															<li><a href="/cargaManualProduccion">Carga manual</a></li>
+															<li><a href="/controlProduccion">Control</a></li>
+														</ul>
+													</li>
+												@endif
                                                @if(!Auth::guest()  && Auth::user()->roles_id==5)
                                                        <li><a href="/stock">Stock</a></li>
 													   <li><a href="/products">Productos</a></li>
@@ -90,7 +97,15 @@
 						</li>
 @if(Auth::user()->roles_id!=3) <li><a href="/stock">Stock</a></li> 													   <li><a href="/products">Productos</a></li> @endif
                                                         @if(Auth::user()->roles_id==1)
-                                                        <li><a href="/viewProd">Producción</a></li>
+														   <li class="dropdown">
+															   <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Producción<span class="caret"></span></a>
+															   <ul class="dropdown-menu" role="menu">
+																   <li><a href="/viewProd">Detalle</a></li>
+																   <li><a href="/cargaManualProduccion">Carga manual</a></li>
+																   <li><a href="/controlProduccion">Control</a></li>
+															   </ul>
+														   </li>
+
 							<li><a href="/costo">Costos</a></li>
 							<li class="dropdown">
 							<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Caja Privada<span class="caret"></span></a>	
@@ -130,11 +145,12 @@
 							<li><a href="/cuentaCorriente">Cuentas Corrientes Clientes</a></li>
 							<li><a href="/ivaVentas">I.V.A. Ventas</a></li>
 							<li><a href="#">Proveedores</a></li>
+							<li><a href="/listadoProducto">Listado Productos</a></li>
 							<li><a href="/listadoProductoPedidos">Listado Productos Pedidos</a></li>
 							<li><a href="/listadoStock">Listado Stock Productos Pedidos</a></li>
 							<li><a href="/listadoStockTipo">Listado Stock</a></li>
 							<li><a href="/listadoCtaCtes">Listado Cta. Cte.</a></li>
-							<li><a href="/listadoCtaCte">Listado Pago Cta. Cte.</a></li>
+							<!--<li><a href="/listadoCtaCte">Listado Pago Cta. Cte.</a></li>-->
 							<li><a href="/cuentaCorriente">Cuentas Corrientes Proveedores</a></li>
 							<li><a href="/ivaCompras">I.V.A. Compras</a></li>
 							<li><a href="/reporteCaja">Caja</a></li>
