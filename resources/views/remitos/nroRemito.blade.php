@@ -32,7 +32,7 @@
 										<input type="text" class="form-control" name="nro_remito" value="{{ old('nro_remito') }}" required>
 									</div>
 								</div>
-                                                      @if($customer==null)  
+                                                      @if($customer==null)
 <legend>Datos Fiscales</legend>
                                                          <div class="form-group">
 									<label class="col-md-4 control-label">Tipo de Doc.</label>

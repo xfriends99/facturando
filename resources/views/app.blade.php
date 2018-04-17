@@ -151,7 +151,7 @@
 							<li><a href="/listadoStockTipo">Listado Stock</a></li>
 							<li><a href="/listadoCtaCtes">Listado Cta. Cte.</a></li>
 							<!--<li><a href="/listadoCtaCte">Listado Pago Cta. Cte.</a></li>-->
-							<li><a href="/cuentaCorriente">Cuentas Corrientes Proveedores</a></li>
+							<li><a href="/cuentaCorrienteProviders">Cuentas Corrientes Proveedores</a></li>
 							<li><a href="/ivaCompras">I.V.A. Compras</a></li>
 							<li><a href="/reporteCaja">Caja</a></li>
 							<li><a href="/reporteCajaEspecial">Caja Especial</a></li>

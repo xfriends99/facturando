@@ -84,9 +84,10 @@ class FacturaController extends Controller{
         }
 	}
 
-    public function postGenerarFactura($id = null)
+    public function postGenerarFactura(\Illuminate\Http\Request $request, $id = null)
     {
         if($id==null){
+            $this->validate($request, ['tax_number' => 'numeric']);
             $order = \app\Pedido::where('id_order','=',Input::get('nro_orden'))->first();
             $customer = new \app\Cliente;
             $customer->id_customer = $order->id_customer;

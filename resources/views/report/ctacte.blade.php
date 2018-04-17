@@ -21,9 +21,7 @@
 										<div class="col-md-4">
 											<select class="form-control" name="saldo" >
 												<option value="" @if($request['saldo']=='') selected @endif>Todos</option>
-												<option @if($request['saldo']=='<0') selected @endif value="<0"><0</option>
-												<option @if($request['saldo']=='=0') selected @endif value="=0">=0</option>
-												<option @if($request['saldo']=='>0') selected @endif value=">0">>0</option>
+												<option @if($request['saldo']=='<0>') selected @endif value="<0>"><0></option>
 											</select>
 										</div>
 									</div>
@@ -59,7 +57,7 @@
 							$final = $final + $sal->importe;
 							}*/
 							?>
-							@if($request['saldo']=='' || ($invSaldo<0 && $request['saldo']=='<0') || ($invSaldo==0 && $request['saldo']=='=0') || ($invSaldo>0 && $request['saldo']=='>0'))
+							@if($request['saldo']=='' || ((intval($invSaldo)<0 || intval($invSaldo)>0) && $request['saldo']=='<0>'))
 							<tr>
 								<td>{{ $invoice->company_name  }}</td>
 								<td>{{ '$ '.number_format($invSaldo,2) }}</td>

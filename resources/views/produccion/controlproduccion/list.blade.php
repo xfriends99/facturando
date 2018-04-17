@@ -110,7 +110,6 @@
                                             <td>{{number_format($produccion_data[$l->id]->kg_suma, 2)}}</td>
                                             <td>{{number_format($produccion_data[$l->id]->kg_suma*$l->packs, 2)}}</td>
                                         @endif
-                                        @if(isset($v3))
                                             @if($v3-$v4==0 && $v5-$v6==0)
                                                 <td width="7%"><input value="{{$v3}}" class="form-control input-sm stock-{{$l->id}}" name="stock[]" id="stock-{{$l->id}}" data-val="{{$l->id}}"></td>
                                                 <td width="7%"><input readonly value="S" class="form-control input-sm ok-{{$l->id}}" id="ok-{{$l->id}}" name="ok[]" data-val="{{$l->id}}"></td>
@@ -118,7 +117,6 @@
                                                 <td width="7%"><input class="form-control input-sm stock-{{$l->id}}" id="stock-{{$l->id}}" name="stock[]" data-val="{{$l->id}}"></td>
                                                 <td width="7%"><input class="form-control input-sm ok" id="ok-{{$l->id}}" data-val="{{$l->id}}" name="ok[]"></td>
                                             @endif
-                                        @endif
                                     </tr>
                                     @endif
                                 @endforeach

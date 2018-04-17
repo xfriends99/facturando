@@ -73,6 +73,7 @@ public function verRemito($id = null){
             $customer->corredores_id= Input::get('corredor');
             $customer->save();
         }else{
+            $this->validate($request, ['tax_number' => 'numeric']);
             $customer = new \app\Cliente;
             $customer->id_customer = $order->id_customer;
             $customer->fisc_situation = Input::get('tax_type');

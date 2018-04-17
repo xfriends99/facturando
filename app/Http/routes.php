@@ -172,6 +172,7 @@ Route::post('listarIVAventas', 'ReporteController@listarIVAventas');
 Route::get('ivaCompras', 'ReporteController@ivaCompras');
 Route::post('listarIVAcompras', 'ReporteController@listarIVAcompras');
 Route::get('cuentaCorriente', 'ReporteController@listarCtaCte');
+Route::get('cuentaCorrienteProviders', 'ReporteController@listarCtaCteProv');
 Route::get('ventas/{fechas?}', 'ReporteController@ventas');
 Route::get('listadoProductoPedidos/{fechas?}', 'ReporteController@listadoProductoPedidos');
 Route::get('listadoProducto/{fechas?}', 'ReporteController@listadoProducto');
@@ -446,6 +447,10 @@ if(count(Mail::failures()) > 0){
 
 Route::get('update-products', function(){
     \Artisan::call("csv:process");
+});
+
+Route::get('update-tax-numbers', function(){
+    \Artisan::call("system:update_customer");
 });
 
 

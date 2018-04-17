@@ -13,7 +13,8 @@ class Kernel extends ConsoleKernel {
 	 */
 	protected $commands = [
 		'app\Console\Commands\Inspire',
-        'app\Console\Commands\CsvProductsTdpCommand'
+        'app\Console\Commands\CsvProductsTdpCommand',
+        'app\Console\Commands\CustomerUpdateTaxNumberCommand'
 	];
 
 	/**

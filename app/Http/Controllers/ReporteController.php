@@ -113,6 +113,20 @@ public function listarCtaCte(\Illuminate\Http\Request $request){
 
 	}
 
+    public function listarCtaCteProv(\Illuminate\Http\Request $request){
+
+
+        $invoices = \app\FacturaProveedor::where('is_active', 1)
+            ->select(\DB::raw('SUM(importe_total) as sumaSaldo, nombre_proveedor'))
+            ->groupBy('nombre_proveedor')
+            ->get();
+
+        $request['saldo'] = $request->saldo ? $request->saldo : '';
+        return view('report.ctacte_provider')->with('invoices',$invoices)
+            ->with('request', $request->all());
+
+    }
+
 public function ventas(\Illuminate\Http\Request $request){
 
     $statuses = \DB::table('toallasd_tdp.ps_order_state_lang')
