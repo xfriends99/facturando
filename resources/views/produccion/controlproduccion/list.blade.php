@@ -108,7 +108,11 @@
                                             @endif
                                             <td>{{$produccion_data[$l->id]->productos_count}}</td>
                                             <td>{{number_format($produccion_data[$l->id]->kg_suma, 2)}}</td>
-                                            <td>{{number_format($produccion_data[$l->id]->kg_suma*$l->packs, 2)}}</td>
+                                            @if($l->producto->cant_por_pack)
+                                                <td>{{number_format(($l->producto->peso_manga/$l->producto->cant_por_man)*$l->producto->cant_por_pack * $l->packs, 2)}}</td>
+                                            @else
+                                                <td>0</td>
+                                            @endif
                                         @endif
                                             @if($v3-$v4==0 && $v5-$v6==0)
                                                 <td width="7%"><input value="{{$v3}}" class="form-control input-sm stock-{{$l->id}}" name="stock[]" id="stock-{{$l->id}}" data-val="{{$l->id}}"></td>

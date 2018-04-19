@@ -62,7 +62,7 @@ class FacturaController extends Controller{
 
 
        }
- 	public function getGenerarFactura($id = null)
+ 	public function getGenerarFactura(\Illuminate\Http\Request $request, $id = null)
 	{
         $taxes = \app\TaxType::all();
         $fiscal_situations = \app\FiscalSituation::all();
@@ -80,7 +80,7 @@ class FacturaController extends Controller{
             ->with('nro_orden',$id)
             ->with('fiscal_situations',$fiscal_situations);
         }else{
-            return $this->postGenerarFactura($order->id_order);
+            return $this->postGenerarFactura($request, $order->id_order);
         }
 	}
 

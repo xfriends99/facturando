@@ -168,14 +168,17 @@ class ProduccionController extends Controller
             ->where('controlado', 0)->with(['producto'])->get();
         $index = 0;
         foreach ($pro as $pp){
-            $array[] = [];
-            $array[$index]['packs'] = $pp->packs;
             if($pp->producto->operacion=='I'){
                 $produccion = Produccion::where('created_at', '>=', $request->fecha.' 00:00:00')->where('created_at', '<=', $request->fecha. ' 23:59:59')
                     ->where('id_producto', $pp->id_producto)->first();
-                $array[$index]['mangas'] = $produccion->mangas;
-                $array[$index]['peso'] = $produccion->kg;
+                $array[] = [];
+                $array[$index]['packs'] = $pp->packs;
+                $array[$index]['mangas'] = !$produccion ? 0 : $produccion->mangas;
+                $array[$index]['peso'] = !$produccion ? 0 : $produccion->kg;
                 $array[$index]['type_manga'] = $pp->type_manga;
+            } else {
+                $array[] = [];
+                $array[$index]['packs'] = $pp->packs;
             }
             $array[$index]['tipo'] = $pp->producto->operacion;
             $array[$index]['id'] = $pp->id_producto;
