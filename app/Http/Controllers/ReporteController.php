@@ -128,7 +128,15 @@ public function listarCtaCte(\Illuminate\Http\Request $request){
     }
 
 public function ventas(\Illuminate\Http\Request $request){
-
+    $reference = [['id' => 1, 'name'=> '1 - Fabricación Propia de Papelera'],
+        ['id' => 2, 'name'=> '2 - Fabricación de Terceros de Papelera'],
+        ['id' => 3, 'name'=> '3 - Reventa de Productos no Propio de Papelera'],
+        ['id' => 4, 'name'=> '4 - Reventa de Productos no Propio de Plastico'],
+        ['id' => 5, 'name'=> '5 - Reventa de Productos no Propio de Servilleta'],
+        ['id' => 6, 'name'=> '6 - Materia Prima'],
+        ['id' => 7, 'name'=> '7 - Packaging'],
+        ['id' => 8, 'name'=> '8 - Insumos']];
+    $request['reference'] = $request->reference ? $request->reference : '';
     $statuses = \DB::table('toallasd_tdp.ps_order_state_lang')
         ->where('id_lang',1)->whereIn('id_order_state',[3,5,6,7,8,9,12,13])
         ->orderBy('ps_order_state_lang.name','asc')->get();
@@ -145,19 +153,47 @@ public function ventas(\Illuminate\Http\Request $request){
             $id_orders[] = $i->id_order;
         }
         $order_states = [];
+        $pedds = [];
+        $peds = Pedido::select('ps_orders.id_order')
+            ->addSelect('ps_orders.current_state as current_state')
+            ->addSelect('ps_order_state_lang.name as name_state')
+            ->addSelect('ps_order_state.color as color')
+            ->join('ps_order_state_lang', 'ps_orders.current_state','=','ps_order_state_lang.id_order_state')
+            ->join('ps_order_state', 'ps_orders.current_state','=','ps_order_state.id_order_state')
+            ->whereIn('ps_orders.id_order', $id_orders)->get();
+        foreach ($peds as $p){
+            $pedds[$p->id_order] = $p;
+        }
         foreach (Pedido::whereIn('id_order', $id_orders)->get() as $p){
             $order_states[$p->id_order] = $p->current_state;
         }
         $request['type'] = $request->type ? $request->type : '';
          return view('report.reporte_ventas')->with('invoices',$invoices)
              ->with('request', $request->all())->with('statuses', $statuses)->with('order_states', $order_states)
-             ->with('desde',Input::get('desde'))->with('hasta',Input::get('hasta'));
+             ->with('desde',Input::get('desde'))->with('reference', $reference)
+             ->with('hasta',Input::get('hasta'))->with('pedds', $pedds);
        }else{
         $hoy = date("Y-m-d");   
 	$invoices = \app\InvoiceHead::where('fecha_facturacion','=',$hoy)->orderBy('fecha_facturacion','DESC')->get();
+        $id_orders  = [];
+        foreach ($invoices as $i){
+            $id_orders[] = $i->id_order;
+        }
             $request['type'] = $request->type ? $request->type : '';
+        $pedds = [];
+        $peds = Pedido::select('ps_orders.id_order')
+            ->addSelect('ps_orders.current_state as current_state')
+            ->addSelect('ps_order_state_lang.name as name_state')
+            ->addSelect('ps_order_state.color as color')
+            ->join('ps_order_state_lang', 'ps_orders.current_state','=','ps_order_state_lang.id_order_state')
+            ->join('ps_order_state', 'ps_orders.current_state','=','ps_order_state.id_order_state')
+            ->whereIn('ps_orders.id_order', $id_orders)->get();
+        foreach ($peds as $p){
+            $pedds[$p->id_order] = $p;
+        }
         return view('report.reporte_ventas')->with('invoices',$invoices)
-            ->with('request', $request->all())->with('statuses', $statuses)->with('hoy',$hoy);
+        ->with('request', $request->all())->with('statuses', $statuses)
+        ->with('hoy',$hoy)->with('reference', $reference)->with('pedds', $pedds);
      
      }	
    }

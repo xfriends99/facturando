@@ -17,13 +17,13 @@
 								<div class="form-group">
 									<label class="col-md-4 control-label">Desde</label>
 									<div class="col-md-4">
-										<input type="date" class="form-control" name="desde" value="{{ old('desde') }}" required>
+										<input type="date" class="form-control" name="desde" @if(!isset($hoy) && isset($desde)) value="{{ $desde }}" @endif required>
 									</div>
 								</div>							
 								<div class="form-group">
 									<label class="col-md-4 control-label">Hasta</label>
 									<div class="col-md-4">
-										<input type="date" class="form-control" name="hasta" value="{{ old('hasta') }}"  required>
+										<input type="date" class="form-control" name="hasta" @if(!isset($hoy) && isset($hasta)) value="{{ $hasta }}" @endif  required>
 									</div>
 								</div>
 								<div class="form-group">
@@ -40,6 +40,18 @@
 									<label class="col-md-4 control-label">Estados de pedido</label>
 									<div class="col-md-4">
 										<select class="form-control selectpicker" multiple name="status" id="status">@foreach($statuses as $s) <option value="{{$s->id_order_state}}" @if(isset($request['status']) && preg_match('/'.$s->id_order_state.'/', $request['status'])) selected @endif>{{$s->name}}</option>  @endforeach</select>
+									</div>
+								</div>
+								<div class="form-group">
+									<label class="col-md-4 control-label">Tipo de producto</label>
+									<div class="col-md-4">
+										<select class="form-control selectpicker" multiple name="reference" id="reference">
+											<option value="" @if($request['reference']=='') selected @endif>Seleccione</option>
+											@foreach($reference as $r)
+												<option @if($request['reference']==$r['id']) selected @endif value="{{$r['id']}}">
+													{{$r['name']}}</option>
+											@endforeach
+										</select>
 									</div>
 								</div>
 								<div class="form-group">
@@ -60,6 +72,7 @@
 							<tr>
 								<th>Fecha</th>
 								<th>Pedido</th>
+								<th>Status</th>
 								<th>Provincia</th>
 								<th>Tipo Cbte.</th>
 								<th>Nro. Cbte.</th>
@@ -87,17 +100,26 @@
 @if($invoice->status=='A' && ($invoice->cbte_tipo==1 || $invoice->cbte_tipo==99) && $linea->code!=null)
 	@if($request['type']=='' || ($request['type']=='f' && $invoice->cbte_tipo==1) || ($request['type']=='r' && $invoice->cbte_tipo==99))
 	@if(!isset($request['status']) || (isset($request['status']) && isset($order_states[$invoice->id_order]) && preg_match('/'.$order_states[$invoice->id_order].'/', $request['status'])))
+<?php
+$product = app\Product::find($linea->product_id);
+?>
+@if($product && ($request['reference']=='' || preg_match('/^'.$request['reference'].'-.+/', $product->reference)))
 		<tr>
                                     
 
 								<th>{{ date('d-m-Y',strtotime($invoice->fecha_facturacion)) }}</td>
-								<td>{{ $invoice->id_order  }} </td>
 								<?php $order = \app\Pedido::where('id_order','=',$invoice->id_order)->first();	?>
+								<td>{{ $invoice->id_order  }} </td>
+			<td style="padding: 0px !important;">
+                                        <span class="label label-default" style="background: {{$pedds[$invoice->id_order]->color}} !important;">
+                                            {{$pedds[$invoice->id_order]->name_state}}
+                                        </span>
+			</td>
 								<td> {{ $order->direccion_factura->state->name }} </td>
 								<td> @if($invoice->cbte_tipo==1 ) Factura @else Remito B @endif </td>
 								<td>{{ $invoice->nro_cbte  }}</td>
 								<td>{{ $invoice->company_name  }}</td>                                                  
-								<td>@if(app\Product::find($linea->product_id)!=null){{app\Product::find($linea->product_id)->reference}} @else {{$linea->code}} @endif</td>
+								<td>@if($product!=null){{$product->reference}} @else {{$linea->code}} @endif</td>
 								<td>{{$linea->name}}</td>
 								<td>{{$linea->quantity}}</td>
                                                                 <td>{{ number_format($linea->price, 2, ',', '.') }}</td>
@@ -112,6 +134,7 @@
 								
 							</tr>
 		@endif
+	@endif
 @endif
                                                    @endif
                                                         @endforeach

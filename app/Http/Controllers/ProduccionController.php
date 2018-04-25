@@ -38,14 +38,11 @@ class ProduccionController extends Controller
             $products_database[$p->id] = $p;
         }
         $controll = [];
-        $produccionl = [];
         foreach ($products as $p){
             $control = ['fecha' => $request->date,
                 'id_producto' => $p];
-            $produccion = ['codigo' => $products_database[$p]->codigo,
-                'id_producto' => $p, 'users_id' => \Auth::user()->id];
             if($products_database[$p]->operacion=='I'){
-                if($request['packs'.$p]=='' || $request['packs'.$p]==null){
+                /*if($request['packs'.$p]=='' || $request['packs'.$p]==null){
                     return Redirect::back()->withErrors('EL packs del producto '.$products_database[$p]->descripcion.' no puede estar vacio');
                 }
                 if($request['mangas'.$p]=='' || $request['mangas'.$p]==null){
@@ -53,14 +50,14 @@ class ProduccionController extends Controller
                 }
                 if($request['peso'.$p]=='' || $request['peso'.$p]==null){
                     return Redirect::back()->withErrors('El peso del producto '.$products_database[$p]->descripcion.' no puede estar vacio');
-                }
-                if(!is_numeric($request['packs'.$p])){
+                }*/
+                if($request['packs'.$p]!='' && !is_numeric($request['packs'.$p])){
                     return Redirect::back()->withErrors('EL packs del producto '.$products_database[$p]->descripcion.' debe ser numerico');
                 }
-                if(!is_numeric($request['mangas'.$p])){
+                if($request['mangas'.$p]!='' && !is_numeric($request['mangas'.$p])){
                     return Redirect::back()->withErrors('La manga del producto '.$products_database[$p]->descripcion.' debe ser numerico');
                 }
-                if(!is_numeric($request['peso'.$p])){
+                if($request['peso'.$p]!='' && !is_numeric($request['peso'.$p])){
                     return Redirect::back()->withErrors('El peso del producto '.$products_database[$p]->descripcion.' debe ser numerico');
                 }
                 if(intval($request['packs'.$p]) < 0){
@@ -73,36 +70,29 @@ class ProduccionController extends Controller
                     return Redirect::back()->withErrors('EL peso del producto '.$products_database[$p]->descripcion.' debe ser mayor a 0');
                 }
                 $control['type_manga'] = $request['type_manga'.$p];
-                $control['packs'] = $request['packs'.$p];
-                $produccion['mangas'] = $request['mangas'.$p];
-                $produccion['kg'] = $request['peso'.$p];
-                $produccion['created_at'] = $request->date;
+                $control['packs'] = ($request['packs'.$p]!='' && is_numeric($request['packs'.$p])) ? $request['packs'.$p] : 0;
+                $control['mangas'] = ($request['mangas'.$p]!='' && is_numeric($request['mangas'.$p])) ? $request['mangas'.$p] : 0;
+                $control['kg'] = ($request['kg'.$p]!='' && is_numeric($request['kg'.$p])) ? $request['kg'.$p] : 0;
             } else {
-                if($request['packs'.$p]=='' || $request['packs'.$p]==null){
+                /*if($request['packs'.$p]=='' || $request['packs'.$p]==null){
                     return Redirect::back()->withErrors('EL packs del producto '.$products_database[$p]->descripcion.' no puede estar vacio');
-                }
-                if(!is_numeric($request['packs'.$p])){
+                }*/
+                if($request['packs'.$p]!='' && !is_numeric($request['packs'.$p])){
                     return Redirect::back()->withErrors('EL packs del producto '.$products_database[$p]->descripcion.' debe ser numerico');
                 }
                 if(intval($request['packs'.$p]) < 0){
                     return Redirect::back()->withErrors('EL packs del producto '.$products_database[$p]->descripcion.' debe ser mayor a 0');
                 }
-                $control['packs'] = $request['packs'.$p];
+                $control['packs'] = ($request['packs'.$p]!='' && is_numeric($request['packs'.$p])) ? $request['packs'.$p] : 0;
             }
             $controll[] = $control;
-            $produccionl[] = $produccion;
         }
         $ii = 0;
         foreach ($controll as $c){
             if($cc = ControlDeProduccion::where('fecha', $request->date)->where('id_producto', $c['id_producto'])->get()->first()){
                 ControlDeProduccion::where('fecha', $request->date)->where('id_producto', $c['id_producto'])->update($c);
-                Produccion::where('created_at', '>=', $request->date.' 00:00:00')->where('created_at', '<=', $request->date. ' 23:59:59')
-                    ->where('id_producto', $c['id_producto'])->update($produccionl[$ii]);
             } else {
                 ControlDeProduccion::create($c);
-                if($products_database[$c['id_producto']]->operacion=='I') {
-                    Produccion::create($produccionl[$ii]);
-                }
             }
             $ii++;
         }
@@ -113,17 +103,16 @@ class ProduccionController extends Controller
     public function controlProduccion(Request $request)
     {
         $control = ControlDeProduccion::where('controlado', 0)
+            ->where('packs', '>', 0)
             ->groupBy('fecha')->groupBy('id_producto')->with(['producto'])
             ->orderBy('fecha', 'desc')
             ->get();
-
         $produccion_data = [];
         foreach ($control as $c){
             $pro = Produccion::select('produccion.*')
                 ->addSelect(\DB::raw('SUM(mangas) as mangas_sum'))
                 ->addSelect(\DB::raw('SUM(kg) as kg_suma'))
                 ->addSelect(\DB::raw('COUNT(produccion.id_producto) as productos_count'))
-                ->where('produccion.controlado', 0)
                 ->where('created_at', '>=', $c->fecha.' 00:00:00')->where('created_at', '<=', $c->fecha. ' 23:59:59')
                 ->where('id_producto', $c->id_producto)
                 ->groupBy('produccion.id_producto')->get()->first();
@@ -140,16 +129,15 @@ class ProduccionController extends Controller
         if($request->ok){
             $index = 0;
             foreach ($request->ok as $p){
-                if($p!=''){
+                if($p!='' && is_numeric($p)){
                     $control = ControlDeProduccion::find($p);
-                    $control->controlado = 1;
-                    $control->save();
-                    Produccion::where('id_producto', $control->id_producto)
-                        ->where('created_at', '>=', $control->fecha.' 00:00:00')->where('created_at', '<=', $control->fecha. ' 23:59:59')
-                        ->update(['controlado' => 1]);
-                    /*$producto = ProductoTDP::find($control->id_producto);
-                    $producto->stock_Fisico = $producto->stock_Fisico+$request->stock[$index];
-                    $producto->save();*/
+                    if($control){
+                        $control->controlado = 1;
+                        $control->save();
+                        $producto = ProductoTDP::find($control->id_producto);
+                        $producto->stock_Fisico = $producto->stock_Fisico+$request->stock[$index];
+                        $producto->save();
+                    }
                 }
             }
             Session::flash('message', 'Producción actualizada correctamente!!');
@@ -169,12 +157,10 @@ class ProduccionController extends Controller
         $index = 0;
         foreach ($pro as $pp){
             if($pp->producto->operacion=='I'){
-                $produccion = Produccion::where('created_at', '>=', $request->fecha.' 00:00:00')->where('created_at', '<=', $request->fecha. ' 23:59:59')
-                    ->where('id_producto', $pp->id_producto)->first();
                 $array[] = [];
                 $array[$index]['packs'] = $pp->packs;
-                $array[$index]['mangas'] = !$produccion ? 0 : $produccion->mangas;
-                $array[$index]['peso'] = !$produccion ? 0 : $produccion->kg;
+                $array[$index]['mangas'] = $pp->mangas ? $pp->mangas : 0;
+                $array[$index]['peso'] = $pp->kg ? $pp->kg : 0;
                 $array[$index]['type_manga'] = $pp->type_manga;
             } else {
                 $array[] = [];
