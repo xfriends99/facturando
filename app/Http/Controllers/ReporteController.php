@@ -144,7 +144,6 @@ public function ventas(\Illuminate\Http\Request $request){
         if(Input::has('desde') && Input::has('hasta')){
         $rango[0] = Input::get('desde');
     	$rango[1] = Input::get('hasta');
-
         $invoices = \app\InvoiceHead::whereBetween('fecha_facturacion',$rango)
         ->orderBy('fecha_facturacion','DESC')
         ->get();
@@ -158,9 +157,10 @@ public function ventas(\Illuminate\Http\Request $request){
             ->addSelect('ps_orders.current_state as current_state')
             ->addSelect('ps_order_state_lang.name as name_state')
             ->addSelect('ps_order_state.color as color')
+            ->leftJoin('ps_order_state', 'ps_orders.current_state','=','ps_order_state.id_order_state')
             ->join('ps_order_state_lang', 'ps_orders.current_state','=','ps_order_state_lang.id_order_state')
-            ->join('ps_order_state', 'ps_orders.current_state','=','ps_order_state.id_order_state')
             ->whereIn('ps_orders.id_order', $id_orders)->get();
+
         foreach ($peds as $p){
             $pedds[$p->id_order] = $p;
         }
@@ -168,6 +168,8 @@ public function ventas(\Illuminate\Http\Request $request){
             $order_states[$p->id_order] = $p->current_state;
         }
         $request['type'] = $request->type ? $request->type : '';
+        $request['status'] = $request->status ? implode(',', $request->status) : '';
+        $request['reference'] = $request->reference ? implode(',', $request->reference) : '';
          return view('report.reporte_ventas')->with('invoices',$invoices)
              ->with('request', $request->all())->with('statuses', $statuses)->with('order_states', $order_states)
              ->with('desde',Input::get('desde'))->with('reference', $reference)
@@ -186,7 +188,7 @@ public function ventas(\Illuminate\Http\Request $request){
             ->addSelect('ps_order_state_lang.name as name_state')
             ->addSelect('ps_order_state.color as color')
             ->join('ps_order_state_lang', 'ps_orders.current_state','=','ps_order_state_lang.id_order_state')
-            ->join('ps_order_state', 'ps_orders.current_state','=','ps_order_state.id_order_state')
+            ->leftJoin('ps_order_state', 'ps_orders.current_state','=','ps_order_state.id_order_state')
             ->whereIn('ps_orders.id_order', $id_orders)->get();
         foreach ($peds as $p){
             $pedds[$p->id_order] = $p;

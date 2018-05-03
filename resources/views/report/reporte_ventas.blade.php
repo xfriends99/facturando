@@ -39,19 +39,20 @@
 								<div class="form-group">
 									<label class="col-md-4 control-label">Estados de pedido</label>
 									<div class="col-md-4">
-										<select class="form-control selectpicker" multiple name="status" id="status">@foreach($statuses as $s) <option value="{{$s->id_order_state}}" @if(isset($request['status']) && preg_match('/'.$s->id_order_state.'/', $request['status'])) selected @endif>{{$s->name}}</option>  @endforeach</select>
+										
+@foreach($statuses as $s) {{$s->name}}
+<input @if(isset($request['status']) && preg_match('/'.$s->id_order_state.'/', $request['status'])) checked @endif type="checkbox" name="status[]" value={{$s->id_order_state}}><br>
+@endforeach
 									</div>
 								</div>
 								<div class="form-group">
 									<label class="col-md-4 control-label">Tipo de producto</label>
 									<div class="col-md-4">
-										<select class="form-control selectpicker" multiple name="reference" id="reference">
-											<option value="" @if($request['reference']=='') selected @endif>Seleccione</option>
-											@foreach($reference as $r)
-												<option @if($request['reference']==$r['id']) selected @endif value="{{$r['id']}}">
-													{{$r['name']}}</option>
-											@endforeach
-										</select>
+@foreach($reference as $r) {{$r['name']}}
+<input @if(isset($request['reference']) && preg_match('/'.$r['id'].'/', $request['reference'])) checked @endif type="checkbox" name="reference[]" value={{$r['id']}}><br>
+@endforeach
+			
+	
 									</div>
 								</div>
 								<div class="form-group">
@@ -103,18 +104,23 @@
 <?php
 $product = app\Product::find($linea->product_id);
 ?>
-@if($product && ($request['reference']=='' || preg_match('/^'.$request['reference'].'-.+/', $product->reference)))
+@if($product && ($request['reference']=='' || preg_match('/'.explode('-', $product->reference)[0].'/', $request['reference'])))
 		<tr>
                                     
 
 								<th>{{ date('d-m-Y',strtotime($invoice->fecha_facturacion)) }}</td>
 								<?php $order = \app\Pedido::where('id_order','=',$invoice->id_order)->first();	?>
 								<td>{{ $invoice->id_order  }} </td>
+
+			@if(isset($pedds[$invoice->id_order]))
 			<td style="padding: 0px !important;">
-                                        <span class="label label-default" style="background: {{$pedds[$invoice->id_order]->color}} !important;">
+                                        <span class="label label-default" style="background: {{$pedds[$invoice->id_order]->color}} !important;" >
                                             {{$pedds[$invoice->id_order]->name_state}}
                                         </span>
 			</td>
+			@else
+				<td style="padding: 0px !important;"></td>
+			@endif
 								<td> {{ $order->direccion_factura->state->name }} </td>
 								<td> @if($invoice->cbte_tipo==1 ) Factura @else Remito B @endif </td>
 								<td>{{ $invoice->nro_cbte  }}</td>

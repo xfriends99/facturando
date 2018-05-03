@@ -72,7 +72,7 @@ class ProduccionController extends Controller
                 $control['type_manga'] = $request['type_manga'.$p];
                 $control['packs'] = ($request['packs'.$p]!='' && is_numeric($request['packs'.$p])) ? $request['packs'.$p] : 0;
                 $control['mangas'] = ($request['mangas'.$p]!='' && is_numeric($request['mangas'.$p])) ? $request['mangas'.$p] : 0;
-                $control['kg'] = ($request['kg'.$p]!='' && is_numeric($request['kg'.$p])) ? $request['kg'.$p] : 0;
+                $control['kg'] = ($request['peso'.$p]!='' && is_numeric($request['peso'.$p])) ? $request['peso'.$p] : 0;
             } else {
                 /*if($request['packs'.$p]=='' || $request['packs'.$p]==null){
                     return Redirect::back()->withErrors('EL packs del producto '.$products_database[$p]->descripcion.' no puede estar vacio');

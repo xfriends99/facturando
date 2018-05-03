@@ -19,7 +19,7 @@ class UpdateProductService
             ->groupBy('ps_product.id_product')->get();
 
         foreach ($productsPs as $p){
-            $code = explode('-', $p->link_rewrite);
+            $code = explode(' ', $p->name);
             $data = ['descripcion' => $p->name,
                 'codigo' => $code[0],
                 'reference' => $p->reference,

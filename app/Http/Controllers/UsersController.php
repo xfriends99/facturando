@@ -1,5 +1,6 @@
 <?php namespace app\Http\Controllers;
 
+use app\Permission;
 use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Validator;
@@ -30,13 +31,20 @@ class UsersController extends Controller {
 	public function getEditProfile($id = null)
 	{	
 
+	    $permissions = [];
+	    foreach (Permission::orderBy('orde')->get() as $p){
+	        if(!isset($permissions[$p->type])) $permissions[$p->type] = [];
+	        $permissions[$p->type][] = $p;
+        }
 		$user = \app\User::find($id);
+        $user->load(['permissions']);
 		if($user!=null){
 			if(Auth::user()->roles_id == 1){
 				$roles = \app\Role::all();
 				return view('user.edit')
 				->with('user',$user)
-				->with('roles',$roles);
+				->with('roles',$roles)
+                ->with('permissions', $permissions);
 			}else{
 				return view('home');
 			}
@@ -47,8 +55,7 @@ class UsersController extends Controller {
 	}
 
 	public function postEditProfile()
-	{	
-
+	{
 		$id = Input::get('user_id');
 		if(Auth::user()->roles_id==1){
 			$rules = array(
@@ -108,6 +115,9 @@ class UsersController extends Controller {
 			}
 			
 			if($user->push()){
+			    if(Input::get('permissions')){
+                    $user->permissions()->sync(Input::get('permissions'));
+                }
 				Session::flash('message', 'Usuario actualizado correctamente!!');
 				return Redirect::to('profile/'.$id);
 			}
@@ -119,8 +129,13 @@ class UsersController extends Controller {
 
 	public function getAddUser()
 	{
+        $permissions = [];
+        foreach (Permission::orderBy('orde')->get() as $p){
+            if(!isset($permissions[$p->type])) $permissions[$p->type] = [];
+            $permissions[$p->type][] = $p;
+        }
 		$roles = \app\Role::all();
-		return view('user.new')->with('roles',$roles);
+		return view('user.new')->with('roles',$roles)->with('permissions', $permissions);
 
 	}
 
@@ -155,6 +170,9 @@ class UsersController extends Controller {
 
 
 			if($user->save()){
+                if(Input::get('permissions')){
+                    $user->permissions()->sync(Input::get('permissions'));
+                }
 				Session::flash('message', 'Usuario creado correctamente!!');
 				return Redirect::to('adduser');
 			}

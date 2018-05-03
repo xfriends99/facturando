@@ -124,8 +124,31 @@
 
 						</div>
 						@endif
-						
+						@if(Auth::user()->roles_id==1 && $user->roles_id!=1)
 
+						<div class="list-group">
+							<div class="list-group-item">
+								<legend>Permisos</legend>
+								<div class="row">
+								@foreach($permissions as $key => $val)
+									<div class="col-md-4" style="min-height: 280px;">
+									<div class="form-group">
+										<label class="col-md-12 control-label" style="text-align: left;">{{$key}}</label>
+									</div>
+									@foreach($permissions[$key] as $p)
+										<div class="form-group">
+											<label style="text-align: left;" class="col-md-10 control-label">{{$p->name}}</label>
+											<div class="col-md-2">
+												<input @if($user->getPermission($p->type, $p->keyy)) checked @endif style="cursor: pointer;" type="checkbox" name="permissions[]" value="{{ $p->id }}" >
+											</div>
+										</div>
+									@endforeach
+									</div>
+								@endforeach
+								</div>
+							</div>
+						</div>
+						@endif
 						<div class="form-group">
 							<div class="col-md-6 col-md-offset-5"><br/>
 								<button type="submit" class="btn btn-primary">
@@ -133,7 +156,7 @@
 								</button>
 							</div>
 						</div>
-						
+
 					</form>
 				</div>
 			</div>

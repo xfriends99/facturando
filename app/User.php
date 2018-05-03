@@ -31,6 +31,10 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
 	 */
 	protected $hidden = ['password', 'remember_token'];
 
+	public function permissions()
+    {
+        return $this->belongsToMany(Permission::class);
+    }
 
 	public function companies()
 	{
@@ -51,5 +55,27 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
 	{
 		return $this->hasMany('app\Pago', 'users_id');
 	}
+
+	public function getPermission($type, $keyy)
+    {
+        if($this->permissions){
+            $search = $this->permissions->search(function($item) use($type, $keyy){
+                return $item->type == $type && $item->keyy==$keyy;
+            });
+            return $search!==false;
+        }
+        return false;
+    }
+
+    public function getPermissionType($type)
+    {
+        if($this->permissions){
+            $search = $this->permissions->search(function($item) use($type){
+                return $item->type == $type;
+            });
+            return $search!==false;
+        }
+        return false;
+    }
 
 }
