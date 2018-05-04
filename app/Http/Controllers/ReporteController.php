@@ -1,8 +1,10 @@
 <?php namespace app\Http\Controllers;
 
+use app\ControlDeProduccion;
 use app\Linea;
 use app\Pago;
 use app\Pedido;
+use app\Produccion;
 use app\ProductoTDP;
 use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\Redirect;
@@ -127,6 +129,53 @@ public function listarCtaCte(\Illuminate\Http\Request $request){
 
     }
 
+    public function listadoControlProduccion(\Illuminate\Http\Request $request)
+    {
+        if (Input::has('desde') && Input::has('hasta')) {
+            $desde = Input::get('desde');
+            $hasta = Input::get('hasta');
+
+            $control = ControlDeProduccion::where('controlado', 1)
+                ->where('packs', '>', 0)
+                ->whereBetween('fecha', [$desde, $hasta])
+                ->groupBy('fecha')->groupBy('id_producto')->with(['producto'])
+                ->orderBy('fecha', 'desc')
+                ->get();
+            $produccion_data = [];
+            foreach ($control as $c) {
+                $pro = Produccion::select('produccion.*')
+                    ->addSelect(\DB::raw('SUM(mangas) as mangas_sum'))
+                    ->addSelect(\DB::raw('SUM(kg) as kg_suma'))
+                    ->addSelect(\DB::raw('COUNT(produccion.id_producto) as productos_count'))
+                    ->where('created_at', '>=', $c->fecha . ' 00:00:00')->where('created_at', '<=', $c->fecha . ' 23:59:59')
+                    ->where('id_producto', $c->id_producto)
+                    ->groupBy('produccion.id_producto')->get()->first();
+                $produccion_data[$c->id] = $pro;
+            }
+            return view('report.control_produccion',
+                compact('request', 'produccion_data', 'control', 'desde', 'hasta'));
+        } else {
+            $hoy = date("Y-m-d");
+            $control = ControlDeProduccion::where('controlado', 1)
+                ->where('packs', '>', 0)
+                ->where('fecha', '>=', $hoy . ' 00:00:00')
+                ->groupBy('fecha')->groupBy('id_producto')->with(['producto'])
+                ->orderBy('fecha', 'desc')
+                ->get();
+            $produccion_data = [];
+            foreach ($control as $c) {
+                $pro = Produccion::select('produccion.*')
+                    ->addSelect(\DB::raw('SUM(mangas) as mangas_sum'))
+                    ->addSelect(\DB::raw('SUM(kg) as kg_suma'))
+                    ->addSelect(\DB::raw('COUNT(produccion.id_producto) as productos_count'))
+                    ->where('created_at', '>=', $c->fecha . ' 00:00:00')->where('created_at', '<=', $c->fecha . ' 23:59:59')
+                    ->where('id_producto', $c->id_producto)
+                    ->groupBy('produccion.id_producto')->get()->first();
+                $produccion_data[$c->id] = $pro;
+            }
+            return view('report.control_produccion', compact('request', 'produccion_data', 'control', 'hoy'));
+        }
+    }
 public function ventas(\Illuminate\Http\Request $request){
     $reference = [['id' => 1, 'name'=> '1 - Fabricación Propia de Papelera'],
         ['id' => 2, 'name'=> '2 - Fabricación de Terceros de Papelera'],

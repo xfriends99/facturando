@@ -59,10 +59,10 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
 	public function getPermission($type, $keyy)
     {
         if($this->permissions){
-            $search = $this->permissions->search(function($item) use($type, $keyy){
+            $search = $this->permissions->filter(function($item) use($type, $keyy){
                 return $item->type == $type && $item->keyy==$keyy;
-            });
-            return $search!==false;
+            })->first();
+            return $search == true;
         }
         return false;
     }
@@ -70,10 +70,10 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
     public function getPermissionType($type)
     {
         if($this->permissions){
-            $search = $this->permissions->search(function($item) use($type){
+            $search = $this->permissions->filter(function($item) use($type){
                 return $item->type == $type;
-            });
-            return $search!==false;
+            })->first();
+            return $search == true;
         }
         return false;
     }

@@ -133,6 +133,7 @@ class ProduccionController extends Controller
                     $control = ControlDeProduccion::find($p);
                     if($control){
                         $control->controlado = 1;
+                        $control->a_stock = $request->stock[$index];
                         $control->save();
                         $producto = ProductoTDP::find($control->id_producto);
                         $producto->stock_Fisico = $producto->stock_Fisico+$request->stock[$index];

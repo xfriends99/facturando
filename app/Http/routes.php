@@ -178,7 +178,7 @@ Route::get('listadoProductoPedidos/{fechas?}', 'ReporteController@listadoProduct
 Route::get('listadoProducto/{fechas?}', 'ReporteController@listadoProducto');
 Route::get('listadoStock', 'ReporteController@listadoStock');
 Route::get('listadoStockTipo', 'ReporteController@listadoStockTipo');
-
+Route::get('listadoControlProduccion/{fechas?}', 'ReporteController@listadoControlProduccion');
 
 Route::get('listadoCtaCte/{fechas?}', 'ReporteController@pagosCtaCte');
 Route::get('listadoCtaCtes/{fechas?}', 'ReporteController@listadoCtaCte');

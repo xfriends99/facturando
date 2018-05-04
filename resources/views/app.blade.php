@@ -202,6 +202,9 @@
 								@if(Auth::user()->roles_id==1 || Auth::user()->getPermission('Listados', 'listado_stock'))
 									<li><a href="/listadoStockTipo">Listado Stock</a></li>
 								@endif
+								@if(Auth::user()->roles_id==1 || Auth::user()->getPermission('Listados', 'listado_control_produccion'))
+									<li><a href="/listadoControlProduccion">Listado Control de Producción</a></li>
+								@endif
 								@if(Auth::user()->roles_id==1 || Auth::user()->getPermission('Listados', 'listado_cta_cte'))
 									<li><a href="/listadoCtaCtes">Listado Cta. Cte.</a></li>
 								@endif
