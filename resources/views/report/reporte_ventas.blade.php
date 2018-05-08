@@ -81,6 +81,7 @@
                                                                 <th>Código de Producto</th>	
                                                                 <th>Nombre del Producto</th>
                                                                 <th>Cantidad Vendida</th>
+																<th>Peso</th>
                                                                 <th>Precio de Venta</th>
                                                                 <th>Importe de Venta</th>
                                                                 <th>Precio de Costo</th>
@@ -90,19 +91,18 @@
 						        </tr>
 						</thead>
 						<tbody>
-					<?php $venta = 0; $costo = 0; $gananciaa = 0;
+					<?php $venta = 0; $costo = 0; $gananciaa = 0; $peso = 0;
 
 
                                         ?>		
 							@foreach($invoices as $invoice)
 
 @foreach($invoice->invoice_lines as $linea)
-
 @if($invoice->status=='A' && ($invoice->cbte_tipo==1 || $invoice->cbte_tipo==99) && $linea->code!=null)
-	@if($request['type']=='' || ($request['type']=='f' && $invoice->cbte_tipo==1) || ($request['type']=='r' && $invoice->cbte_tipo==99))
+@if($request['type']=='' || ($request['type']=='f' && $invoice->cbte_tipo==1) || ($request['type']=='r' && $invoice->cbte_tipo==99))
 	@if(!isset($request['status']) || (isset($request['status']) && isset($order_states[$invoice->id_order]) && preg_match('/'.$order_states[$invoice->id_order].'/', $request['status'])))
 <?php
-$product = app\Product::find($linea->product_id);
+$product = app\ProductoTDP::where('id_product', $linea->product_id)->first();
 ?>
 @if($product && ($request['reference']=='' || preg_match('/'.explode('-', $product->reference)[0].'/', $request['reference'])))
 		<tr>
@@ -128,6 +128,8 @@ $product = app\Product::find($linea->product_id);
 								<td>@if($product!=null){{$product->reference}} @else {{$linea->code}} @endif</td>
 								<td>{{$linea->name}}</td>
 								<td>{{$linea->quantity}}</td>
+			<?php $pess = $product->peso_por_pack ? $linea->quantity * $product->peso_por_pack: 0; $peso += ($product->peso_por_pack) ? $linea->quantity * $product->peso_por_pack : 0; ?>
+								<td>{{number_format($pess, 2, ',', '.')}}</td>
                                                                 <td>{{ number_format($linea->price, 2, ',', '.') }}</td>
                                                                 <?php $imp_venta=$linea->quantity*$linea->price; $venta += $imp_venta;?>
 								<td>{{ number_format($imp_venta, 2, ',', '.') }}</td>
@@ -156,10 +158,13 @@ $product = app\Product::find($linea->product_id);
 							 <td></td>
 							 <td></td>
 							 <td></td>
+ 							 <td></td>
+							 <td>{{number_format($peso, 2, ',', '.')}}</td>
 							 <td>{{  number_format($venta, 2, ',', '.') }}</td>
 							 <td></td>
-							 <td>{{  number_format($costo, 2, ',', '.') }}</td>  
-							 <td>{{  number_format($gananciaa, 2, ',', '.') }}</td> 
+							 <td>{{  number_format($costo, 2, ',', '.') }}</td>
+								<td></td>
+							 <td>{{  number_format($gananciaa, 2, ',', '.') }}</td>
 							 <td></td>     
                                                         </tr>
 

@@ -49,13 +49,21 @@ class Saldo extends Model
         }
 
         $row = collect();
-
+        $idss = [];
+        foreach ($invoices as $i){
+            $idss[] = $i->id;
+        }
+        $pagos = Pago::select(\DB::raw('cta_ctes_id, SUM(pago) as pago'))->whereIn('cta_ctes_id', $idss)->where('is_active',1)
+            ->groupBy('cta_ctes_id')->get();
+        $papp = [];
+        foreach ($pagos as $pp){
+            $papp[$pp->cta_ctes_id] = $pp->pago;
+        }
         foreach ($invoices as $inv){
             $row->push(['type'=>'invoice', 'date' => $inv->fecha_facturacion,
                 'cbte_tipo' => $inv->cbte_tipo, 'nro_cbte'=> $inv->nro_cbte,
                 'imp_net' => $inv->imp_net, 'imp_total'=> $inv->imp_total,
-                'saldo' => Pago::where('cta_ctes_id', $inv->id)
-                    ->where('is_active',1)->sum('pago'),
+                'saldo' => isset($papp[$inv->id]) ? $papp[$inv->id] : 0,
                 'id' => $inv->id]);
         }
 

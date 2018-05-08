@@ -63,21 +63,11 @@
                                             <td>{{$l->producto->descripcion}}</td>
                                             @if($l->producto->operacion=='I')
                                                 <?php
-                                                if($l->type_manga=='c'){
-                                                    $division = 4;
-                                                } else {
-                                                    $division = 5;
-                                                }
-                                                $v3 = $l->packs;
-                                                $v4 = $l->producto->cant_por_man ? floor(($l->mangas*$division)/$l->producto->cant_por_pack) : 0;
-                                                $v5 = $l->kg*$l->mangas;
-                                                if($l->type_manga=='c'){
-                                                    $v6 = (($l->producto->peso_manga / $l->producto->cant_por_man) * $division)*$l->mangas;
-                                                }else{
-                                                    $v6 = $l->producto->peso_manga*$l->mangas;
-                                                }
-                                                $vRest = ($v5-$v6 < 0) ? $v6-$v5 : $v5-$v6;
-                                                $vRest10 = (5 * $v5) / 100;
+                                                    if($l->type_manga=='c'){
+                                                        $division = 4;
+                                                    } else {
+                                                        $division = 5;
+                                                    }
                                                 ?>
                                                 <td>{{$l->packs}}</td>
                                                 @if($l->producto->cant_por_man)
@@ -88,24 +78,15 @@
                                                 <td>{{$l->mangas}}</td>
                                                 <td>{{number_format($l->kg*$l->mangas, 2)}}</td>
                                                 @if($l->type_manga=='c')
-                                                    <td>{{number_format((($l->producto->peso_manga / $l->producto->cant_por_man) * $division)*$l->mangas, 2)}}</td>
+                                                    @if($l->producto->cant_por_man)
+                                                        <td>{{number_format((($l->producto->peso_manga / $l->producto->cant_por_man) * $division)*$l->mangas, 2)}}</td>
+                                                    @else
+                                                        <td>0</td>
+                                                    @endif
                                                 @else
                                                     <td>{{number_format($l->producto->peso_manga*$l->mangas, 2)}}</td>
                                                 @endif
                                             @else
-                                                <?php
-                                                $v3 = $l->packs;
-                                                if(isset($produccion_data[$l->id])){
-                                                    $v4 = $l->producto->cant_por_pack ? floor(($produccion_data[$l->id]->productos_count*$l->producto->cant_por_man)/$l->producto->cant_por_pack) : 0;
-                                                    $v5 = $produccion_data[$l->id]->kg_suma;
-                                                } else {
-                                                    $v4 = 0;
-                                                    $v5 = 0;
-                                                }
-                                                $v6 = $l->producto->cant_por_pack ? ($l->producto->peso_manga/$l->producto->cant_por_man)*$l->producto->cant_por_pack * $l->packs: 0;
-                                                $vRest = ($v5-$v6 < 0) ? $v6-$v5 : $v5-$v6;
-                                                $vRest10 = (5 * $v5) / 100;
-                                                ?>
                                                 <td>{{$l->packs}}</td>
                                                 @if($l->producto->cant_por_pack && isset($produccion_data[$l->id]))
                                                     <td>{{floor(($produccion_data[$l->id]->productos_count*$l->producto->cant_por_man)/$l->producto->cant_por_pack)}}</td>
@@ -119,8 +100,8 @@
                                                     <td>0</td>
                                                     <td>0</td>
                                                 @endif
-                                                @if($l->producto->cant_por_pack)
-                                                    <td>{{number_format(($l->producto->peso_manga/$l->producto->cant_por_man)*$l->producto->cant_por_pack * $l->packs, 2)}}</td>
+                                                @if(isset($produccion_data[$l->id]))
+                                                        <td>{{number_format($l->producto->peso_manga * $produccion_data[$l->id]->productos_count, 2)}}</td>
                                                 @else
                                                     <td>0</td>
                                                 @endif

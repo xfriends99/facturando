@@ -26,8 +26,13 @@ class StockController extends Controller {
         public function getStock()
 	{
         //$products = \app\Stock::all();
-        $products = \app\ProductoTDP::where('active', 1)->orderBy('reference')->get();
-		return view('stock.list')->with('products',$products);
+        $user = \Auth::user();
+        $products = \app\ProductoTDP::where('active', 1)->orderBy('reference');
+        if($user->roles_id!=1){
+            $products->where('reference', 'not like', '1-%');
+            $products->where('reference', 'not like', '6-%');
+        }
+		return view('stock.list')->with('products',$products->get());
 
 	}
 

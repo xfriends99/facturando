@@ -217,7 +217,6 @@ public function ventas(\Illuminate\Http\Request $request){
             $order_states[$p->id_order] = $p->current_state;
         }
         $request['type'] = $request->type ? $request->type : '';
-        $request['status'] = $request->status ? implode(',', $request->status) : '';
         $request['reference'] = $request->reference ? implode(',', $request->reference) : '';
          return view('report.reporte_ventas')->with('invoices',$invoices)
              ->with('request', $request->all())->with('statuses', $statuses)->with('order_states', $order_states)

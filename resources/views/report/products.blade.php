@@ -42,9 +42,17 @@
                             <tr>
                                 <th>#</th>
                                 <th>Descripción</th>
-                                <th>Stock Fisico</th>
-                                <th>Stock Pedido</th>
-                                <th>Stock Teorico</th>
+                                <th>Peso referencia</th>
+                                <th>Diámetro referencia</th>
+                                <th>Metros referencia</th>
+                                <th>Rollos referencia</th>
+                                <th>Peso Manga</th>
+                                <th>Diámetro Manga</th>
+                                <th>Metros Manga</th>
+                                <th>Cortes por Manga</th>
+                                <th>Peso por Pack</th>
+                                <th>Cortes por Pack</th>
+
                             </tr>
                             </thead>
                             <tbody>
@@ -54,9 +62,16 @@
                                     <tr>
                                         <th>{{ $i }}</th>
                                         <td>{{ $product->descripcion }}</td>
-                                        <td>{{ $product->stock_Fisico }}</td>
-                                        <td>{{ $product->stock_Pedido }}</td>
-                                        <td>{{ $product->stock_Fisico-$product->stock_Pedido }}</td>
+                                        <td>{{ $product->pesoRef }}</td>
+                                        <td>{{ $product->diametroRef }}</td>
+                                        <td>{{ $product->metrosRef }}</td>
+                                        <td>{{ $product->rollosRef }}</td>
+                                        <td>{{ $product->peso_manga }}</td>
+                                        <td>{{ $product->diametro }}</td>
+                                        <td>{{ $product->cant_metros }}</td>
+                                        <td>{{ $product->cant_por_man }}</td>
+                                        <td>{{ $product->peso_por_pack }}</td>
+                                        <td>{{ $product->cant_por_pack }}</td>
                                     </tr>
                                 @endif
                             @endforeach

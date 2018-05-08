@@ -18,6 +18,10 @@ class UpdateProductService
             ->leftJoin('ps_stock', 'ps_stock.id_product', '=', 'ps_product.id_product')
             ->groupBy('ps_product.id_product')->get();
 
+        $productTDP = [];
+        foreach (ProductoTDP::all() as $pp){
+            $productTDP[] = $pp->id_product;
+        }
         foreach ($productsPs as $p){
             $code = explode(' ', $p->name);
             $data = ['descripcion' => $p->name,
@@ -32,11 +36,10 @@ class UpdateProductService
                 'stock_Pedido' => 0,
                 'id_product' => $p->id_product,
                 'active' => $p->active];
-            $productTDP = ProductoTDP::where('id_product', $p->id_product)->get()->first();
-            if($productTDP){
+            if(in_array($p->id_product, $productTDP)){
                 unset($data['stock_Fisico']);
                 unset($data['stock_Pedido']);
-                $productTDP->update($data);
+                ProductoTDP::where('id_product', $p->id_product)->update($data);
             } else {
                 $lineas = Linea::select('ps_order_detail.*')
                     ->addSelect(\DB::raw('sum(ps_order_detail.product_quantity) as tot_product'))

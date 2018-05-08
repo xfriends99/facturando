@@ -68,6 +68,7 @@
                             @else
                                 <form method="POST" action="/controlProduccion/store" id="form-send">
                                 @foreach($control as $l)
+                                    @if($l->producto->operacion=='I' || ($l->producto->operacion!='I' && isset($produccion_data[$l->id])) || preg_match('/[xX]+$/', $l->producto->reference))
                                     <tr>
                                         <th>{{ date('d/m/Y',strtotime($l->fecha)) }}</th>
                                         <td>{{$l->producto->descripcion}}</td>
@@ -79,10 +80,10 @@
                                                 $division = 5;
                                             }
                                             $v3 = $l->packs;
-                                            $v4 = $l->producto->cant_por_man ? floor(($l->mangas*$division)/$l->producto->cant_por_pack) : 0;
+                                            $v4 = $l->producto->cant_por_pack ? floor(($l->mangas*$division)/$l->producto->cant_por_pack) : 0;
                                             $v5 = $l->kg*$l->mangas;
                                             if($l->type_manga=='c'){
-                                                $v6 = (($l->producto->peso_manga / $l->producto->cant_por_man) * $division)*$l->mangas;
+                                                $v6 = $l->producto->cant_por_man ? (($l->producto->peso_manga / $l->producto->cant_por_man) * $division)*$l->mangas: 0;
                                             }else{
                                                 $v6 = $l->producto->peso_manga*$l->mangas;
                                             }
@@ -97,11 +98,7 @@
                                                 @endif
                                             <td>{{$l->mangas}}</td>
                                             <td>{{number_format($l->kg*$l->mangas, 2)}}</td>
-                                            @if($l->type_manga=='c')
-                                                <td>{{number_format((($l->producto->peso_manga / $l->producto->cant_por_man) * $division)*$l->mangas, 2)}}</td>
-                                            @else
-                                                <td>{{number_format($l->producto->peso_manga*$l->mangas, 2)}}</td>
-                                            @endif
+                                            <td>{{number_format($v6, 2)}}</td>
                                         @else
                                             <?php
                                             $v3 = $l->packs;
@@ -112,7 +109,7 @@
                                                 $v4 = 0;
                                                 $v5 = 0;
                                             }
-                                            $v6 = $l->producto->cant_por_pack ? ($l->producto->peso_manga/$l->producto->cant_por_man)*$l->producto->cant_por_pack * $l->packs: 0;
+                                            $v6 = isset($produccion_data[$l->id]) ? $l->producto->peso_manga * $produccion_data[$l->id]->productos_count: 0;
                                             $vRest = ($v5-$v6 < 0) ? $v6-$v5 : $v5-$v6;
                                             $vRest10 = (5 * $v5) / 100;
                                             ?>
@@ -129,20 +126,21 @@
                                                 <td>0</td>
                                                 <td>0</td>
                                             @endif
-                                            @if($l->producto->cant_por_pack)
-                                                <td>{{number_format(($l->producto->peso_manga/$l->producto->cant_por_man)*$l->producto->cant_por_pack * $l->packs, 2)}}</td>
+                                            @if(isset($produccion_data[$l->id]))
+                                                <td>{{number_format($l->producto->peso_manga * $produccion_data[$l->id]->productos_count, 2)}}</td>
                                             @else
                                                 <td>0</td>
                                             @endif
                                         @endif
                                             @if($v3!=0 && $v4!=0 && $v3-$v4==0 && $v5!=0 && $v6!=0 && ($v5-$v6==0 || $vRest<$vRest10))
                                                 <td width="7%"><input value="{{$v3}}" class="form-control input-sm stock-{{$l->id}}" name="stock[]" id="stock-{{$l->id}}" data-val="{{$l->id}}"></td>
-                                                <td width="7%"><input readonly value="S" class="form-control input-sm ok-{{$l->id}}" id="ok-{{$l->id}}" name="ok[]" data-val="{{$l->id}}"></td>
+                                                <td width="7%"><input readonly value="S" class="form-control input-sm ok" id="ok-{{$l->id}}" name="ok[]" data-val="{{$l->id}}"></td>
                                             @else
                                                 <td width="7%"><input class="form-control input-sm stock-{{$l->id}}" id="stock-{{$l->id}}" name="stock[]" data-val="{{$l->id}}"></td>
                                                 <td width="7%"><input class="form-control input-sm ok" id="ok-{{$l->id}}" data-val="{{$l->id}}" name="ok[]"></td>
                                             @endif
                                     </tr>
+                                    @endif
                                 @endforeach
                                 </form>
                             @endif

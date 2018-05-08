@@ -38,9 +38,9 @@ class CheckPermission {
             return redirect('home');
         } elseif($url=='viewProd' && (Auth::guest() || (!Auth::user()->getPermission('Produccion', 'detalle') && Auth::user()->roles_id!=1))) {
             return redirect('home');
-        } elseif($url=='cargaManualProduccion' && (Auth::guest() || (!Auth::user()->getPermission('Produccion', 'control') && Auth::user()->roles_id!=1))) {
+        } elseif($url=='cargaManualProduccion' && (Auth::guest() || (!Auth::user()->getPermission('Produccion', 'carga_manual') && Auth::user()->roles_id!=1))) {
             return redirect('home');
-        } elseif($url=='controlProduccion' && (Auth::guest() || (!Auth::user()->getPermission('Produccion', 'carga_manual') && Auth::user()->roles_id!=1))) {
+        } elseif($url=='controlProduccion' && (Auth::guest() || (!Auth::user()->getPermission('Produccion', 'control') && Auth::user()->roles_id!=1))) {
             return redirect('home');
         } elseif($url=='costo' && (Auth::guest() || (!Auth::user()->getPermission('Costos', 'costos') && Auth::user()->roles_id!=1))) {
             return redirect('home');

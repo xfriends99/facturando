@@ -136,10 +136,11 @@ class ProduccionController extends Controller
                         $control->a_stock = $request->stock[$index];
                         $control->save();
                         $producto = ProductoTDP::find($control->id_producto);
-                        $producto->stock_Fisico = $producto->stock_Fisico+$request->stock[$index];
+                        $producto->stock_Fisico = $producto->stock_Fisico ? $producto->stock_Fisico+$request->stock[$index] : $request->stock[$index];
                         $producto->save();
                     }
                 }
+                $index++;
             }
             Session::flash('message', 'Producción actualizada correctamente!!');
             return Redirect::back();
