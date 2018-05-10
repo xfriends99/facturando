@@ -68,10 +68,10 @@
                             @else
                                 <form method="POST" action="/controlProduccion/store" id="form-send">
                                 @foreach($control as $l)
-                                    @if($l->producto->operacion=='I' || ($l->producto->operacion!='I' && isset($produccion_data[$l->id])) || preg_match('/[xX]+$/', $l->producto->reference))
+                                    @if($l->producto->operacion=='I' || ($l->producto->operacion!='I' && isset($produccion_data[$l->id])) || preg_match('/[xX]+$/', $l->producto->reference) || ($l->producto->operacion!='I' && $l->type_case!='' && !isset($produccion_data[$l->id])))
                                     <tr>
                                         <th>{{ date('d/m/Y',strtotime($l->fecha)) }}</th>
-                                        <td>{{$l->producto->descripcion}}</td>
+                                        <td> @if($l->type_case=='A') {{$l->old_name}} | Recodificado Código: {{$l->original_code}} @elseif($l->type_case=='B') {{$l->producto->descripcion}} | Scrap @else {{$l->producto->descripcion}} @endif</td>
                                         @if($l->producto->operacion=='I')
                                             <?php
                                             if($l->type_manga=='c'){
@@ -126,17 +126,21 @@
                                                 <td>0</td>
                                                 <td>0</td>
                                             @endif
-                                            @if(isset($produccion_data[$l->id]))
-                                                <td>{{number_format($l->producto->peso_manga * $produccion_data[$l->id]->productos_count, 2)}}</td>
+                                            @if(preg_match('/[xX]+$/', $l->producto->reference))
+                                                <td>{{number_format($l->producto->peso_por_pack*$l->packs, 2)}}</td>
                                             @else
-                                                <td>0</td>
+                                                @if(isset($produccion_data[$l->id]))
+                                                    <td>{{number_format($l->producto->peso_manga * $produccion_data[$l->id]->productos_count, 2)}}</td>
+                                                @else
+                                                    <td>0</td>
+                                                @endif
                                             @endif
                                         @endif
                                             @if($v3!=0 && $v4!=0 && $v3-$v4==0 && $v5!=0 && $v6!=0 && ($v5-$v6==0 || $vRest<$vRest10))
                                                 <td width="7%"><input value="{{$v3}}" class="form-control input-sm stock-{{$l->id}}" name="stock[]" id="stock-{{$l->id}}" data-val="{{$l->id}}"></td>
-                                                <td width="7%"><input readonly value="S" class="form-control input-sm ok" id="ok-{{$l->id}}" name="ok[]" data-val="{{$l->id}}"></td>
+                                                <td width="7%"><input value="S" class="form-control input-sm ok" id="ok-{{$l->id}}" name="ok[]" data-val="{{$l->id}}"></td>
                                             @else
-                                                <td width="7%"><input class="form-control input-sm stock-{{$l->id}}" id="stock-{{$l->id}}" name="stock[]" data-val="{{$l->id}}"></td>
+                                                <td width="7%"><input @if($l->type_case=='B') value="0" readonly @endif class="form-control input-sm stock-{{$l->id}}" id="stock-{{$l->id}}" name="stock[]" data-val="{{$l->id}}"></td>
                                                 <td width="7%"><input class="form-control input-sm ok" id="ok-{{$l->id}}" data-val="{{$l->id}}" name="ok[]"></td>
                                             @endif
                                     </tr>

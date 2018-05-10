@@ -60,7 +60,7 @@
                                     @foreach($control as $l)
                                         <tr>
                                             <th>{{ date('d/m/Y',strtotime($l->fecha)) }}</th>
-                                            <td>{{$l->producto->descripcion}}</td>
+                                            <td> @if($l->type_case=='A') {{$l->old_name}} | Recodificado Código: {{$l->original_code}} @elseif($l->type_case=='B') {{$l->producto->descripcion}} | Scrap @else {{$l->producto->descripcion}} @endif</td>
                                             @if($l->producto->operacion=='I')
                                                 <?php
                                                     if($l->type_manga=='c'){

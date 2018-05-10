@@ -17,4 +17,9 @@ public function users()
     {
         return $this->belongsTo('app\ProductoTDP', 'id_producto');
     }
+
+    public function productoOld()
+    {
+        return $this->belongsTo('app\ProductoTDP', 'codigo', 'codigo');
+    }
 }

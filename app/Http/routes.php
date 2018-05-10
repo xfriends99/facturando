@@ -38,6 +38,14 @@ Route::get('products/{id}/edit', 'ProductsController@getEditProduct');
 Route::post('products/{id}/update', 'ProductsController@postEditProduct');
 Route::get('products/{id}/delete', 'ProductsController@deleteProduct');
 
+Route::get('produccion', 'ProduccionController@listProduccion');
+Route::get('produccion/create', 'ProduccionController@getAddProduccion');
+Route::post('produccion/store', 'ProduccionController@postAddProduccion');
+Route::get('produccion/{id}/edit', 'ProduccionController@getEditProduccion');
+Route::post('produccion/{id}/update', 'ProduccionController@postEditProduccion');
+Route::get('produccion/{id}/delete', 'ProduccionController@deleteProduccion');
+
+
 Route::get('addProduccion', function(){
 
 return view('produccion.add');

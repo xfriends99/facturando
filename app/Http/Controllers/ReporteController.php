@@ -136,19 +136,33 @@ public function listarCtaCte(\Illuminate\Http\Request $request){
             $hasta = Input::get('hasta');
 
             $control = ControlDeProduccion::where('controlado', 1)
-                ->where('packs', '>', 0)
+                ->where(function($q){
+                    $q->where('packs', '>', 0);
+                    $q->orWhere('type_case', 'B');
+                })
                 ->whereBetween('fecha', [$desde, $hasta])
                 ->groupBy('fecha')->groupBy('id_producto')->with(['producto'])
                 ->orderBy('fecha', 'desc')
                 ->get();
             $produccion_data = [];
             foreach ($control as $c) {
+                $id = $c->id_producto;
+                if($c->type_case=='A'){
+                    $pp = ProductoTDP::where('codigo', $c->original_code)->first();
+                    if($pp){
+                        $c->old_name = $c->producto->descripcion;
+                        $c->producto = $pp;
+                        $id = $pp->id;
+                    } else {
+                        continue;
+                    }
+                }
                 $pro = Produccion::select('produccion.*')
                     ->addSelect(\DB::raw('SUM(mangas) as mangas_sum'))
                     ->addSelect(\DB::raw('SUM(kg) as kg_suma'))
                     ->addSelect(\DB::raw('COUNT(produccion.id_producto) as productos_count'))
                     ->where('created_at', '>=', $c->fecha . ' 00:00:00')->where('created_at', '<=', $c->fecha . ' 23:59:59')
-                    ->where('id_producto', $c->id_producto)
+                    ->where('id_producto', $id)
                     ->groupBy('produccion.id_producto')->get()->first();
                 $produccion_data[$c->id] = $pro;
             }
@@ -157,19 +171,33 @@ public function listarCtaCte(\Illuminate\Http\Request $request){
         } else {
             $hoy = date("Y-m-d");
             $control = ControlDeProduccion::where('controlado', 1)
-                ->where('packs', '>', 0)
+                ->where(function($q){
+                    $q->where('packs', '>', 0);
+                    $q->orWhere('type_case', 'B');
+                })
                 ->where('fecha', '>=', $hoy . ' 00:00:00')
                 ->groupBy('fecha')->groupBy('id_producto')->with(['producto'])
                 ->orderBy('fecha', 'desc')
                 ->get();
             $produccion_data = [];
             foreach ($control as $c) {
+                $id = $c->id_producto;
+                if($c->type_case=='A'){
+                    $pp = ProductoTDP::where('codigo', $c->original_code)->first();
+                    if($pp){
+                        $c->old_name = $c->producto->descripcion;
+                        $c->producto = $pp;
+                        $id = $pp->id;
+                    } else {
+                        continue;
+                    }
+                }
                 $pro = Produccion::select('produccion.*')
                     ->addSelect(\DB::raw('SUM(mangas) as mangas_sum'))
                     ->addSelect(\DB::raw('SUM(kg) as kg_suma'))
                     ->addSelect(\DB::raw('COUNT(produccion.id_producto) as productos_count'))
                     ->where('created_at', '>=', $c->fecha . ' 00:00:00')->where('created_at', '<=', $c->fecha . ' 23:59:59')
-                    ->where('id_producto', $c->id_producto)
+                    ->where('id_producto', $id)
                     ->groupBy('produccion.id_producto')->get()->first();
                 $produccion_data[$c->id] = $pro;
             }
@@ -218,6 +246,7 @@ public function ventas(\Illuminate\Http\Request $request){
         }
         $request['type'] = $request->type ? $request->type : '';
         $request['reference'] = $request->reference ? implode(',', $request->reference) : '';
+        $request['status'] = $request->status ? implode(',', $request->status) : '';
          return view('report.reporte_ventas')->with('invoices',$invoices)
              ->with('request', $request->all())->with('statuses', $statuses)->with('order_states', $order_states)
              ->with('desde',Input::get('desde'))->with('reference', $reference)

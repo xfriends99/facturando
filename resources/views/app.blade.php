@@ -109,6 +109,9 @@
 						<li class="dropdown">
 							<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Producción<span class="caret"></span></a>
 							<ul class="dropdown-menu" role="menu">
+								@if(Auth::user()->roles_id==1 || Auth::user()->getPermission('Produccion', 'produccion'))
+									<li><a href="/produccion">Producción</a></li>
+								@endif
 								@if(Auth::user()->roles_id==1 || Auth::user()->getPermission('Produccion', 'detalle'))
 									<li><a href="/viewProd">Detalle</a></li>
 								@endif
